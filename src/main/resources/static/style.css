@@ -1,0 +1,42 @@
+/*
+ * Archivo: style.css
+ * Estilos personalizados para MetaMapa
+ */
+
+/* ======== Hero Section (Página Principal) ======== */
+.hero-section {
+    position: relative;
+    height: 70vh;
+    min-height: 400px;
+    background-image: url('https://i.pinimg.com/736x/20/68/07/206807f8bf5f8b96cb1ffc6e97708c71.jpg');
+    background-size: cover;
+    background-position: center;
+    background-color: rgba(0, 0, 0, 0.6);
+    background-blend-mode: multiply;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-section .container {
+    position: relative;
+    z-index: 2;
+}
+
+/* ======== Estilos de Tarjetas (Cards) ======== */
+.card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ======== Contenido de Páginas Interiores (Formularios) ======== */
+/* Da espacio vertical a las páginas que no son la landing */
+.page-content {
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+    min-height: 60vh; /* Asegura que el footer no suba demasiado en páginas con poco contenido */
+}

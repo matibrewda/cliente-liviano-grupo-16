@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class Hecho {
+    @Setter
     private Long id;
     @Setter
     private String titulo;
