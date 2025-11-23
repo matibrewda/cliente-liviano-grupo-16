@@ -103,22 +103,24 @@
 
                     <div class="col-md-3">
                         <label for="categoria" class="form-label">Categoría</label>
-                        <input type="text"
-                               class="form-control"
-                               id="categoria"
-                               name="categoria"
-                               placeholder="Incidente vial, Climático..."
-                               th:value="${param.categoria}">
+                        <select class="form-select" name="categoria" id="categoria">
+                            <option value="">Todas</option>
+                            <option th:each="cat : ${categoriasDisponibles}"
+                                    th:value="${cat}"
+                                    th:text="${cat}">
+                            </option>
+                        </select>
                     </div>
 
                     <div class="col-md-3">
-                        <label for="origen" class="form-label">Origen / Fuente</label>
-                        <input type="text"
-                               class="form-control"
-                               id="origen"
-                               name="origen"
-                               placeholder="Estática, Ciudadana..."
-                               th:value="${param.origen}">
+                        <label for="origen" class="form-label">Origen</label>
+                        <select class="form-select" name="origen" id="origen">
+                            <option value="">Todas</option>
+                            <option th:each="orig : ${origenesDisponibles}"
+                                    th:value="${orig}"
+                                    th:text="${orig}">
+                            </option>
+                        </select>
                     </div>
 
                     <div class="col-12 d-flex justify-content-end mt-2">

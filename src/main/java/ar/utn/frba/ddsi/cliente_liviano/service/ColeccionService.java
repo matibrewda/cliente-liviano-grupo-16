@@ -5,14 +5,12 @@ import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
 
 import ar.utn.frba.ddsi.cliente_liviano.DTO.OrigenDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.UbicacionDTO;
-import ar.utn.frba.ddsi.cliente_liviano.models.Categoria;
-import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
-import ar.utn.frba.ddsi.cliente_liviano.models.Origen;
-import ar.utn.frba.ddsi.cliente_liviano.models.Ubicacion;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,11 +25,34 @@ public class ColeccionService {
     private final String BASE_URL = "http://localhost:8080/api/colecciones";
     private final String URL_HECHOS = BASE_URL + "/{coleccionId}/hechos";
 
-    public List<HechoDTO> obtenerHechosPorColeccion(String coleccionId) {
-        try {
-            ResponseEntity<HechoDTO[]> response = this.restTemplate.getForEntity(URL_HECHOS, HechoDTO[].class, coleccionId);
-            return List.of(response.getBody());
+    public List<HechoDTO> obtenerHechosPorColeccion(String coleccionId,
+                                                    String fechaDesde,
+                                                    String fechaHasta,
+                                                    String ubicacion,
+                                                    String categoria,
+                                                    String origen) {
 
+        UriComponentsBuilder builder = UriComponentsBuilder
+                .fromUriString(BASE_URL)
+                .path("/{coleccionId}/hechos");
+
+        if (fechaDesde != null && !fechaDesde.isEmpty())
+            builder.queryParam("fechaDesde", fechaDesde);
+        if (fechaHasta != null && !fechaHasta.isEmpty())
+            builder.queryParam("fechaHasta", fechaHasta);
+        if (ubicacion != null && !ubicacion.isEmpty())
+            builder.queryParam("ubicacion", ubicacion);
+        if (categoria != null && !categoria.isEmpty())
+            builder.queryParam("categoria", categoria);
+        if (origen != null && !origen.isEmpty())
+            builder.queryParam("origen", origen);
+
+        URI uri = builder.build(coleccionId);
+
+        try {
+            ResponseEntity<HechoDTO[]> response =
+                    restTemplate.getForEntity(uri, HechoDTO[].class);
+            return List.of(response.getBody());
         } catch (Exception e) {
             //Creo coleccion de prueba
             List<HechoDTO> hechos = new ArrayList<>();
@@ -59,7 +80,26 @@ public class ColeccionService {
 
             hechos.add(hechoDTO);
             hechos.add(hechoDTO2);
-            return hechos;
+            return hechos.stream().filter(h ->
+                            fechaDesde == null || fechaDesde.isBlank() ||
+                                    !h.getFechaAcontecimiento().isBefore(LocalDate.parse(fechaDesde))
+                    )
+                    .filter(h ->
+                            fechaHasta == null || fechaHasta.isBlank() ||
+                                    !h.getFechaAcontecimiento().isAfter(LocalDate.parse(fechaHasta))
+                    )
+                    .filter(h ->
+                            categoria == null || categoria.isBlank() ||
+                                    (h.getCategoriaDTO() != null &&
+                                            categoria.equalsIgnoreCase(h.getCategoriaDTO().getNombre()))
+                    )
+                    .filter(h ->
+                            origen == null || origen.isBlank() ||
+                                    (h.getOrigenDTO() != null &&
+                                            origen.equalsIgnoreCase(h.getOrigenDTO().getDescripcion()))
+                    )
+                    .toList();
+
 
         }
     }
