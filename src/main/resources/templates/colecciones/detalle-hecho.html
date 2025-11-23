@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${hecho.titulo} + ' - MetaMapa'">Detalle Hecho - MetaMapa</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">
+            <i class="bi bi-map-fill"></i> MetaMapa
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       th:href="@{'/colecciones/' + ${coleccionId} + '/hechos'}">
+                        Explorar Hechos
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link btn btn-primary btn-sm px-3 ms-lg-2 text-white"
+                       th:href="@{/login}">
+                        Iniciar Sesión / Registro
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- CONTENIDO -->
+<main class="page-content container my-5">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+
+            <h1 class="fw-bold mb-4" th:text="${hecho.titulo}">
+                Título del Hecho
+            </h1>
+
+            <p class="text-muted">
+                Información detallada del hecho reportado.
+            </p>
+
+            <div class="mb-3">
+                <label class="form-label">Título</label>
+                <p class="form-control-plaintext border rounded p-2"
+                   th:text="${hecho.titulo}">Título aquí</p>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Descripción</label>
+                <p class="form-control-plaintext border rounded p-3"
+                   th:text="${hecho.descripcion}">
+                    Descripción del hecho...
+                </p>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Categoría</label>
+                <p class="form-control-plaintext border rounded p-2"
+                   th:text="${hecho.categoriaDTO != null ? hecho.categoriaDTO.nombre : 'Sin categoría'}">
+                    Categoría
+                </p>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Origen</label>
+                <p class="form-control-plaintext border rounded p-2"
+                   th:text="${hecho.origenDTO != null ? hecho.origenDTO.descripcion : 'Sin origen'}">
+                    Origen
+                </p>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Latitud</label>
+                    <p class="form-control-plaintext border rounded p-2"
+                       th:text="${hecho.ubicacionDTO != null ? hecho.ubicacionDTO.latitud : 'N/A'}">
+                        -34.6037
+                    </p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Longitud</label>
+                    <p class="form-control-plaintext border rounded p-2"
+                       th:text="${hecho.ubicacionDTO != null ? hecho.ubicacionDTO.longitud : 'N/A'}">
+                        -58.3816
+                    </p>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Fecha del acontecimiento</label>
+                <p class="form-control-plaintext border rounded p-2"
+                   th:text="${hecho.fechaAcontecimiento}">
+                    2025-01-01
+                </p>
+            </div>
+
+            <!-- BOTÓN VOLVER -->
+            <div class="mt-4">
+                <a class="btn btn-secondary w-100"
+                   th:href="@{'/colecciones/' + ${coleccionId} + '/hechos'}">
+                    <i class="bi bi-arrow-left"></i> Volver a la lista de hechos
+                </a>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="py-4 bg-dark text-white">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <p class="col-md-4 mb-0 text-muted">&copy; 2025 MetaMapa (ONG)</p>
+
+            <a th:href="@{/}"
+               class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-light fs-4">
+                <i class="bi bi-map"></i>
+            </a>
+
+            <ul class="nav col-md-4 justify-content-end">
+                <li class="nav-item"><a th:href="@{/legal}" class="nav-link px-2 text-muted">Información Legal</a></li>
+                <li class="nav-item"><a th:href="@{/privacidad}" class="nav-link px-2 text-muted">Política de Privacidad</a></li>
+            </ul>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
