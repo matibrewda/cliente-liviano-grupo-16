@@ -74,6 +74,20 @@
                       method="get">
 
                     <div class="col-md-3">
+                        <label class="form-label">Modo de navegación</label>
+                        <select class="form-select" name="modoNavegacion">
+                            <option value="">Todas</option>
+                            <option value="CURADA"
+                                    th:selected="${modoNavegacion} == 'CURADA'">
+                                Curado
+                            </option>
+                            <option value="IRRESTRICTA"
+                                    th:selected="${modoNavegacion} == 'IRRESTRICTA'">
+                                Irrestricto
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
                         <label for="fechaDesde" class="form-label">Fecha desde</label>
                         <input type="date"
                                class="form-control"

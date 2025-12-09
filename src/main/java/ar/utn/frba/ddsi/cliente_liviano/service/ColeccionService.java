@@ -30,7 +30,8 @@ public class ColeccionService {
                                                     String fechaHasta,
                                                     String ubicacion,
                                                     String categoria,
-                                                    String origen) {
+                                                    String origen,
+                                                    String modoNavegacion) {
 
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString(BASE_URL)
@@ -46,6 +47,9 @@ public class ColeccionService {
             builder.queryParam("categoria", categoria);
         if (origen != null && !origen.isEmpty())
             builder.queryParam("origen", origen);
+
+        if (modoNavegacion != null && !modoNavegacion.isBlank())
+            builder.queryParam("modoNavegacion", modoNavegacion);
 
         URI uri = builder.build(coleccionId);
 
@@ -66,7 +70,7 @@ public class ColeccionService {
             hechoDTO.setFechaAcontecimiento(LocalDate.of(2025, 3, 12));
             hechoDTO.setFechaCarga(LocalDateTime.now());
             hechoDTO.setOrigenDTO(new OrigenDTO("Estatica"));
-
+            hechoDTO.setModoNavegacion("Curada");
 
             var hechoDTO2 = new HechoDTO();
             hechoDTO2.setId(5L);
@@ -77,6 +81,7 @@ public class ColeccionService {
             hechoDTO2.setFechaAcontecimiento(LocalDate.of(2025, 3, 15));
             hechoDTO2.setFechaCarga(LocalDateTime.now());
             hechoDTO2.setOrigenDTO(new OrigenDTO("Dinamica"));
+            hechoDTO2.setModoNavegacion("Irrestricta");
 
             hechos.add(hechoDTO);
             hechos.add(hechoDTO2);
@@ -92,6 +97,11 @@ public class ColeccionService {
                             categoria == null || categoria.isBlank() ||
                                     (h.getCategoriaDTO() != null &&
                                             categoria.equalsIgnoreCase(h.getCategoriaDTO().getNombre()))
+                    )
+                    .filter(h ->
+                            modoNavegacion == null || modoNavegacion.isBlank() ||
+                                    (h.getModoNavegacion() != null &&
+                                            modoNavegacion.equalsIgnoreCase(h.getModoNavegacion()))
                     )
                     .filter(h ->
                             origen == null || origen.isBlank() ||

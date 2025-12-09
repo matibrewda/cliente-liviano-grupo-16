@@ -24,6 +24,7 @@ public class HechoDTO {
     private LocalDateTime fechaCarga;
     private Boolean borradoLogico;
     private LocalDateTime fechaBorradoLogico;
+    private String modoNavegacion;
 
     public HechoDTO(){}
     public HechoDTO(String titulo,

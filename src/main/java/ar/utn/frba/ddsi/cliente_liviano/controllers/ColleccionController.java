@@ -32,10 +32,11 @@ public class ColleccionController {
             @RequestParam(required = false) String ubicacion,
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) String origen,
+            @RequestParam(required = false) String modoNavegacion,
             Model model
     ) {
         List<HechoDTO> hechos = coleccionService.obtenerHechosPorColeccion(
-                coleccionId, fechaDesde, fechaHasta, ubicacion, categoria, origen
+                coleccionId, fechaDesde, fechaHasta, ubicacion, categoria, origen, modoNavegacion
         );
 
         model.addAttribute("coleccionId", coleccionId);
@@ -59,6 +60,8 @@ public class ColleccionController {
 
         model.addAttribute("categoriasDisponibles", categoriasDisponibles);
         model.addAttribute("origenesDisponibles", origenesDisponibles);
+
+        model.addAttribute("modoActual", modoNavegacion);
 
         return "colecciones/hechos";
     }
