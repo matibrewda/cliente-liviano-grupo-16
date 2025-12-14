@@ -37,6 +37,7 @@ public class Hecho {
                  LocalDate fechaAcontecimiento,
                  LocalDateTime fechaCarga) {
 
+        this.id = 1L;
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;

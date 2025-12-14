@@ -1,8 +1,12 @@
 package ar.utn.frba.ddsi.cliente_liviano.models;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
+@Getter
+@Setter
 public class Ubicacion {
     private double latitud;
     private double longitud;

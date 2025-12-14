@@ -6,11 +6,12 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Categoria {
-    public Long id;
+    public Integer id;
     private String nombre;
 
     public Categoria() {}
-    public Categoria(String nombre) {
+    public Categoria(Integer id, String nombre) {
+        this.id = id;
         this.nombre = nombre;
     }
 }
