@@ -28,6 +28,7 @@ public class HechoDTO {
 
     public Hecho ToDomain () {
         return new Hecho(
+                this.id,
                 this.titulo,
                 this.descripcion,
                 this.categoria,

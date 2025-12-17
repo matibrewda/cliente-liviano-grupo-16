@@ -37,13 +37,21 @@ public class HechosRepository {
     public List<Hecho> findAll(){return hechos;}
 
     public Optional<Hecho> findById(Long id){
-        this.hechos.add(new Hecho("titulo",
-                "descripcion",
-                new Categoria(1, "categoria"),
-                new Ubicacion(-34.123, -58.45),
-                LocalDate.now(),
-                LocalDateTime.now()));
-        return this.hechos.stream().filter(hecho -> hecho.getId().equals(id)).findFirst();
+        Hecho hecho;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(this.baseURL + "/api/hechos/" + id))
+                .header("Content-Type", "application/json")
+                .GET()
+                .build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            FuenteDinamicaHechoResponse hechoDTO = mapper.readValue(response.body(), FuenteDinamicaHechoResponse.class);
+            hecho = hechoDTO.toHecho();
+        } catch (InterruptedException | IOException e) {
+            throw new RuntimeException("Request was interrupted", e);
+        }
+
+        return Optional.of(hecho);
     }
 
     public Hecho save(Hecho hechoNuevo){
@@ -78,6 +86,40 @@ public class HechosRepository {
 
         return hecho;
     }
+
+    public Hecho update(Hecho hechoNuevo){
+        Hecho hecho;
+
+        String jsonBody;
+        try {
+            jsonBody = mapper.writeValueAsString(new FuenteDinamicaHechoRequest(
+                    hechoNuevo.getTitulo(),
+                    hechoNuevo.getDescripcion(),
+                    hechoNuevo.getCategoria().getId(),
+                    hechoNuevo.getUbicacion().getLatitud(),
+                    hechoNuevo.getUbicacion().getLongitud(),
+                    hechoNuevo.getFechaAcontecimiento())
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(this.baseURL + "/api/hechos/" + hechoNuevo.getId()))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            FuenteDinamicaHechoResponse hechoDTO = mapper.readValue(response.body(), FuenteDinamicaHechoResponse.class);
+            hecho = hechoDTO.toHecho();
+        } catch (InterruptedException | IOException e) {
+            throw new RuntimeException("Request was interrupted", e);
+        }
+
+        return hecho;
+    }
+
 }
 
 

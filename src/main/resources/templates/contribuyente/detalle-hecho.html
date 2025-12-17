@@ -7,6 +7,10 @@
         <span th:text="${titulo}">Detalle del Hecho</span>
       </h1>
       <div>
+        <a th:href="@{/hechos/{id}/editar(id=${hecho.id})}" class="btn btn-warning me-2">
+          <i class="fas fa-edit me-1"></i>
+          Editar
+        </a>
         <a href="/hechos" class="btn btn-secondary">
           <i class="fas fa-arrow-left me-1"></i>
           Volver a la Lista
@@ -28,24 +32,22 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="mb-3">
-                  <label class="form-label fw-bold">ID:</label>
-                  <p class="form-control-plaintext">
-                    <span class="badge bg-primary fs-6" th:text="${hecho.id}">LEG001</span>
-                  </p>
+                  <label class="form-label fw-bold">Titulo:</label>
+                  <p class="form-control-plaintext" th:text="${hecho.titulo}">Titulo</p>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="mb-3">
-                  <label class="form-label fw-bold">Titulo:</label>
-                  <p class="form-control-plaintext" th:text="${hecho.titulo}">Titulo</p>
+                  <label class="form-label fw-bold">Descripcion:</label>
+                  <p class="form-control-plaintext" th:text="${hecho.descripcion}">Descripcion</p>
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="col-md-6">
                 <div class="mb-3">
-                  <label class="form-label fw-bold">Descripcion:</label>
-                  <p class="form-control-plaintext" th:text="${hecho.descripcion}">Descripcion</p>
+                  <label class="form-label fw-bold">Categoria:</label>
+                  <p class="form-control-plaintext" th:text="${hecho.categoria.id}">Categoria</p>
                 </div>
               </div>
               <div class="col-md-6">
@@ -61,6 +63,8 @@
                   <label class="form-label fw-bold">Latitud:</label>
                   <p class="form-control-plaintext" th:text="${hecho.ubicacion.latitud}">-34.35351</p>
                 </div>
+              </div>
+              <div class="col-md-6">
                 <div class="mb-3">
                   <label class="form-label fw-bold">Longitud:</label>
                   <p class="form-control-plaintext" th:text="${hecho.ubicacion.longitud}">-58.123124</p>

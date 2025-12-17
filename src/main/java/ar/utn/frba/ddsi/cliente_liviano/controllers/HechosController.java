@@ -26,16 +26,6 @@ public class HechosController {
         return "listar-hechos";
     }
 
-    @GetMapping("/nuevo")
-    public String mostrarFormularioCrear(Model model) {
-        Hecho hecho = new Hecho();
-        hecho.setUbicacion(new Ubicacion());
-        hecho.setCategoria(new Categoria());
-        model.addAttribute("hecho", hecho);
-        model.addAttribute("titulo", "Crear Nuevo Hecho");
-        return "/contribuyente/crear-hecho";
-    }
-
     @GetMapping("/{id}")
     public String verDetalleAlumno(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
@@ -52,6 +42,16 @@ public class HechosController {
         }
     }
 
+    @GetMapping("/nuevo")
+    public String mostrarFormularioCrear(Model model) {
+        Hecho hecho = new Hecho();
+        hecho.setUbicacion(new Ubicacion());
+        hecho.setCategoria(new Categoria());
+        model.addAttribute("hecho", hecho);
+        model.addAttribute("titulo", "Crear Nuevo Hecho");
+        return "/contribuyente/crear-hecho";
+    }
+
     @PostMapping("/crear")
     public String crearHecho(@ModelAttribute("hecho")HechoDTO hecho,
                              BindingResult bindingResult,
@@ -64,5 +64,39 @@ public class HechosController {
         redirectAttributes.addFlashAttribute("tipoMensaje", "success");
 
         return "redirect:/hechos/" + hechoCreado.getId();
+    }
+
+    @GetMapping("/{id}/editar")
+    public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            HechoDTO hechoDTO = hechosService.obtenerHechoPorID(id).get();
+            model.addAttribute("hecho", hechoDTO);
+            model.addAttribute("titulo", "Editar Hecho");
+            return "/contribuyente/editar-hecho";
+        }
+        catch (NotFoundException ex) {
+            redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+            return "redirect:/404";
+        }
+    }
+
+    @PostMapping("/{id}/actualizar")
+    public String actualizarAlumno(@PathVariable Long id,
+                                   @ModelAttribute("hecho") HechoDTO hechoDTO,
+                                   BindingResult bindingResult,
+                                   Model model,
+                                   RedirectAttributes redirectAttributes
+    ){
+        try {
+            Hecho hechoActualizado = hechosService.actualizarHecho(id, hechoDTO);
+
+            redirectAttributes.addFlashAttribute("mensaje", "Hecho actualizado exitosamente");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+            return "redirect:/hechos/" + hechoActualizado.getId();
+        }
+        catch (NotFoundException ex) {
+            redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+            return "redirect:/404";
+        }
     }
 }

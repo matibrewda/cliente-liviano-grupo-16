@@ -30,14 +30,15 @@ public class Hecho {
     private LocalDateTime fechaBorradoLogico;
 
     public Hecho(){}
-    public Hecho(String titulo,
+    public Hecho(Long id,
+                 String titulo,
                  String descripcion,
                  Categoria categoria,
                  Ubicacion ubicacion,
                  LocalDate fechaAcontecimiento,
                  LocalDateTime fechaCarga) {
 
-        this.id = 1L;
+        this.id = id;
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
