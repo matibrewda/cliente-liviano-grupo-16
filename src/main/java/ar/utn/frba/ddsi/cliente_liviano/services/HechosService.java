@@ -20,6 +20,12 @@ public class HechosService {
         return this.hechosRepository.save(hecho);
     }
 
+    public Hecho actualizarHecho(Long id, HechoDTO hechoDTO) {
+        Hecho hecho = intentarRecuperarHecho(id);
+
+        return hechosRepository.update(convertirDTOHEntity(hechoDTO));
+    }
+
     public Optional<HechoDTO> obtenerHechoPorID(Long id) {
         Hecho hecho = intentarRecuperarHecho(id);
         return Optional.of(convertirHDTO(hecho));
@@ -38,8 +44,20 @@ public class HechosService {
         dto.setId(hecho.getId());
         dto.setTitulo(hecho.getTitulo());
         dto.setDescripcion(hecho.getDescripcion());
+        dto.setCategoria(hecho.getCategoria());
         dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
         dto.setUbicacion(hecho.getUbicacion());
         return dto;
+    }
+
+    private Hecho convertirDTOHEntity(HechoDTO hechoDTO) {
+        Hecho hecho = new Hecho();
+        hecho.setId(hechoDTO.getId());
+        hecho.setTitulo(hechoDTO.getTitulo());
+        hecho.setDescripcion(hechoDTO.getDescripcion());
+        hecho.setCategoria(hechoDTO.getCategoria());
+        hecho.setFechaAcontecimiento(hechoDTO.getFechaAcontecimiento());
+        hecho.setUbicacion(hechoDTO.getUbicacion());
+        return hecho;
     }
 }

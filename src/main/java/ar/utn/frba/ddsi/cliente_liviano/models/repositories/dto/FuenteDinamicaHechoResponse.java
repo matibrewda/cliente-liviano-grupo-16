@@ -39,6 +39,7 @@ public class FuenteDinamicaHechoResponse {
 
     public Hecho toHecho() {
         return new Hecho(
+                this.getId(),
                 this.getTitulo(),
                 this.getDescripcion(),
                 new Categoria(this.getCategoria(), ""),
