@@ -81,7 +81,7 @@ public class HechosController {
     }
 
     @PostMapping("/{id}/actualizar")
-    public String actualizarAlumno(@PathVariable Long id,
+    public String actualizarHecho(@PathVariable Long id,
                                    @ModelAttribute("hecho") HechoDTO hechoDTO,
                                    BindingResult bindingResult,
                                    Model model,
