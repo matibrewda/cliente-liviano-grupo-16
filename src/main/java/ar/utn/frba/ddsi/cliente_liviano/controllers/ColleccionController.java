@@ -22,6 +22,6 @@ public class ColleccionController {
         model.addAttribute("hecho", hecho);
         model.addAttribute("coleccionId",coleccionId);
 
-        return "colecciones/detalle-hecho";
+        return "colecciones/detalle-hecho-coleccion";
     }
 }
