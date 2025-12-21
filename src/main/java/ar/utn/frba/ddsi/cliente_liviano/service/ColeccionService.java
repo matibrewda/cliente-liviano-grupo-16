@@ -1,11 +1,14 @@
 package ar.utn.frba.ddsi.cliente_liviano.service;
 
+import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.ColeccionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ColeccionService {
@@ -15,6 +18,25 @@ public class ColeccionService {
     public ColeccionService(ColeccionRepository coleccionRepository) {
         this.coleccionRepository = coleccionRepository;
     }
+
+    public List<ColeccionDTO> obtenerColecciones(){
+        try {
+            return coleccionRepository.findAll();
+        }catch (Exception e){
+            //Creo coleccion de prueba
+            List <ColeccionDTO> colecciones = new ArrayList<>();
+            var coleccionDTO = new ColeccionDTO();
+            coleccionDTO.setHandle("AR-1011");
+            coleccionDTO.setDescripcion("Por la noche del viernes ...");
+            coleccionDTO.setTitulo("Incendio en Ezeiza");
+            colecciones.add(coleccionDTO);
+            return colecciones;
+        }
+    }
+
+
+
+
     public HechoDTO obtenerHechoPorColeccionId(String coleccionId, String hechoId) {
 
         String path = UriComponentsBuilder
@@ -22,7 +44,6 @@ public class ColeccionService {
                 .buildAndExpand(coleccionId, hechoId)
                 .toUriString();
 
-        System.out.println(path);
 
         return coleccionRepository.obtenerHechoDeColeccion(path);
     }
