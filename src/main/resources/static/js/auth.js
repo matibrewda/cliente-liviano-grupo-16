@@ -2,8 +2,8 @@ function isLoggedIn() {
     return sessionStorage.getItem("jwt") !== null;
 }
 
-function getUsername() {
-    return sessionStorage.getItem("username");
+function getNombreReal() {
+    return sessionStorage.getItem("nombreReal");
 }
 
 function logout() {

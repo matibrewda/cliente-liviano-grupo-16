@@ -89,6 +89,7 @@
         const data = await res.json();
         sessionStorage.setItem("jwt", data.token);
         sessionStorage.setItem("username", req.username);
+        sessionStorage.setItem("nombreReal", data.nombreReal);
         window.location.href = "/";
     });
 
