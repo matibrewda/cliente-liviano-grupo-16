@@ -25,7 +25,7 @@ public class FuenteDinamicaHechoResponse {
     private String descripcion;
 
     @JsonProperty("categoria")
-    private Integer categoria;
+    private Long categoria;
 
     @JsonProperty("ubicacionLatitud")
     private double ubicacionLatitud;
