@@ -3,7 +3,9 @@ package ar.utn.frba.ddsi.cliente_liviano.DTO;
 import ar.utn.frba.ddsi.cliente_liviano.models.Categoria;
 import ar.utn.frba.ddsi.cliente_liviano.models.Origen;
 import ar.utn.frba.ddsi.cliente_liviano.models.Ubicacion;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -11,6 +13,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class HechoDTO {
 
     private Long id;
@@ -19,14 +23,14 @@ public class HechoDTO {
     private byte[] datosMultimedia;
     private CategoriaDTO categoriaDTO;
     private UbicacionDTO ubicacionDTO;
-    private OrigenDTO origenDTO;
+    private String origen;
     private LocalDate fechaAcontecimiento;
     private LocalDateTime fechaCarga;
     private Boolean borradoLogico;
     private LocalDateTime fechaBorradoLogico;
-    private String modoNavegacion;
+    private boolean visible;
+    private boolean consenso;
 
-    public HechoDTO(){}
     public HechoDTO(String titulo,
                  String descripcion,
                  CategoriaDTO categoria,
@@ -40,7 +44,6 @@ public class HechoDTO {
         this.ubicacionDTO = ubicacion;
         this.fechaAcontecimiento = fechaAcontecimiento;
         this.fechaCarga = fechaCarga;
-        this.borradoLogico = false;
     }
 
 }

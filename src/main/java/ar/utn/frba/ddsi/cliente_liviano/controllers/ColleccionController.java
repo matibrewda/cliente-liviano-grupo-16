@@ -27,8 +27,8 @@ public class ColleccionController {
     @GetMapping("/{coleccionId}/hechos")
     public String listarHechosDeColeccion(
             @PathVariable String coleccionId,
-            @RequestParam(required = false) String fechaDesde,
-            @RequestParam(required = false) String fechaHasta,
+            @RequestParam(required = false) String fechaIncidenteDesde,
+            @RequestParam(required = false) String fechafechaIncidenteDesdeHasta,
             @RequestParam(required = false) String ubicacion,
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) String origen,
@@ -36,31 +36,25 @@ public class ColleccionController {
             Model model
     ) {
         List<HechoDTO> hechos = coleccionService.obtenerHechosPorColeccion(
-                coleccionId, fechaDesde, fechaHasta, ubicacion, categoria, origen, modoNavegacion
+                coleccionId, fechaIncidenteDesde, fechaIncidenteDesde, ubicacion, categoria, origen, modoNavegacion
         );
 
         model.addAttribute("coleccionId", coleccionId);
         model.addAttribute("hechos", hechos);
 
-        List<String> categoriasDisponibles = hechos.stream()
+        List<CategoriaDTO> categoriasDisponibles = hechos.stream()
                 .map(h -> h.getCategoriaDTO())
-                .filter(Objects::nonNull)
-                .map(CategoriaDTO::getNombre)
                 .filter(Objects::nonNull)
                 .distinct()
                 .toList();
-
         List<String> origenesDisponibles = hechos.stream()
-                .map(HechoDTO::getOrigenDTO)
-                .filter(Objects::nonNull)
-                .map(OrigenDTO::getDescripcion)
+                .map(HechoDTO::getOrigen)
                 .filter(Objects::nonNull)
                 .distinct()
                 .toList();
 
         model.addAttribute("categoriasDisponibles", categoriasDisponibles);
         model.addAttribute("origenesDisponibles", origenesDisponibles);
-
         model.addAttribute("modoActual", modoNavegacion);
 
         return "colecciones/hechos";

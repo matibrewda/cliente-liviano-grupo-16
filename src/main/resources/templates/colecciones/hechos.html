@@ -76,19 +76,13 @@
                     <div class="col-md-3">
                         <label class="form-label">Modo de navegación</label>
                         <select class="form-select" name="modoNavegacion">
-                            <option value="">Todas</option>
-                            <option value="CURADA"
-                                    th:selected="${modoNavegacion} == 'CURADA'">
-                                Curado
-                            </option>
-                            <option value="IRRESTRICTA"
-                                    th:selected="${modoNavegacion} == 'IRRESTRICTA'">
-                                Irrestricto
-                            </option>
+                            <option value="" th:selected="${modoNavegacion} == null or ${modoNavegacion} == ''">Todas</option>
+                            <option value="true"  th:selected="${modoNavegacion} == 'true'">Curado</option>
+                            <option value="false" th:selected="${modoNavegacion} == 'false'">Irrestricto</option>
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label for="fechaDesde" class="form-label">Fecha desde</label>
+                        <label for="fechaDesde" class="form-label">Fecha acontecimiento desde</label>
                         <input type="date"
                                class="form-control"
                                id="fechaDesde"
@@ -97,7 +91,7 @@
                     </div>
 
                     <div class="col-md-3">
-                        <label for="fechaHasta" class="form-label">Fecha hasta</label>
+                        <label for="fechaHasta" class="form-label">Fecha acontecimiento hasta</label>
                         <input type="date"
                                class="form-control"
                                id="fechaHasta"
@@ -120,8 +114,8 @@
                         <select class="form-select" name="categoria" id="categoria">
                             <option value="">Todas</option>
                             <option th:each="cat : ${categoriasDisponibles}"
-                                    th:value="${cat}"
-                                    th:text="${cat}">
+                                    th:value="${cat.getId()}"
+                                    th:text="${cat.getNombre()}">
                             </option>
                         </select>
                     </div>
@@ -157,7 +151,7 @@
                 <tr>
                     <th scope="col">ID</th>
                     <th scope="col">Título</th>
-                    <th scope="col">Fecha</th>
+                    <th scope="col">Fecha Incidente</th>
                     <th scope="col">Ubicación</th>
                     <th scope="col">Categoría</th>
                     <th scope="col">Origen / Fuente</th>
@@ -175,9 +169,6 @@
 
                     <!-- Muestra lat/long o descripción si la agregás después -->
                     <td>
-                        <!--     <span th:text="${h.ubicacionDTO != null ? h.ubicacionDTO.descripcion : 'Ubicación sin descripción'}"
-                                  th:if="${h.ubicacionDTO != null and h.ubicacionDTO.descripcion != null}">Obelisco, CABA</span>
-                            <span th:if="${h.ubicacionDTO != null and h.ubicacionDTO.descripcion == null}"> -->
                         <span th:if="${h.ubicacionDTO != null}">
                                 Lat: <span th:text="${h.ubicacionDTO.latitud}">-34.60</span>,
                                 Lon: <span th:text="${h.ubicacionDTO.longitud}">-58.38</span>
@@ -187,11 +178,10 @@
                             </span>
                         </td>
 
-                        <!-- Categoria: uso toString() para que no te rompa si cambia el modelo -->
-                    <td th:text="${h.categoriaDTO.nombre}">Categoria-1</td>
+                    <td th:text="${h.categoriaDTO.nombre != null ? h.categoriaDTO.nombre : 'N/D'}">Categoria-1</td>
 
                     <!-- Origen / fuente -->
-                    <td th:text="${h.origenDTO != null ? h.origenDTO.descripcion : 'N/D'}">Estática</td>
+                    <td th:text="${h.origen != null ? h.origen : 'N/D'}">Estática</td>
 
                     <!-- LocalDateTime -->
                     <td th:text="${h.fechaCarga}">2025-03-12T14:30</td>
