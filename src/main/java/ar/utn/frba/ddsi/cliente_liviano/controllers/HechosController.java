@@ -3,7 +3,6 @@ package ar.utn.frba.ddsi.cliente_liviano.controllers;
 import ar.utn.frba.ddsi.cliente_liviano.exceptions.NotFoundException;
 import ar.utn.frba.ddsi.cliente_liviano.models.Categoria;
 import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
-import ar.utn.frba.ddsi.cliente_liviano.models.Origen;
 import ar.utn.frba.ddsi.cliente_liviano.models.Ubicacion;
 import ar.utn.frba.ddsi.cliente_liviano.models.dto.HechoDTO;
 import ar.utn.frba.ddsi.cliente_liviano.services.HechosService;
@@ -37,7 +36,7 @@ public class HechosController {
     }
 
     @GetMapping("/{id}")
-    public String verDetalleAlumno(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+    public String verDetalleHecho(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
             HechoDTO hecho = hechosService.obtenerHechoPorID(id).get();
 
