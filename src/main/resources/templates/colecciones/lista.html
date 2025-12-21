@@ -1,0 +1,49 @@
+<html th:replace="~{colecciones/base-colecciones ::html}">
+<div th:fragment="contenido" class="row">
+    <section class="py-4 bg-light">
+        <div class="container">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h4 mb-0">Listado de colecciones</h2>
+                <span class="badge bg-primary">
+                    Total: <span th:text="${totalColecciones}">0</span>
+                </span>
+            </div>
+
+            <div class="table-responsive shadow-sm bg-white rounded-3">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-dark">
+                    <tr>
+                        <th scope="col">Título</th>
+                        <th scope="col">Descripción</th>
+                        <th scope="col" class="text-center">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr th:each="c : ${colecciones}">
+                        <td th:text="${c.titulo}">Incidentes viales CABA</td>
+                        <td th:text="${c.descripcion}">Hechos reportados...</td>
+                        <td class="text-center">
+                            <a class="btn btn-sm btn-outline-primary"
+                               th:href="@{|/colecciones/${c.handle}/hechos|}">
+                                <i class="bi bi-eye"></i> Ver hechos
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(colecciones)}">
+                        <td colspan="3" class="text-center text-muted py-4">
+                            No hay colecciones disponibles por el momento.
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+</html>
