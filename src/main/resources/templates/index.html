@@ -136,11 +136,11 @@
     const authArea = document.getElementById("auth-area");
 
     if (isLoggedIn()) {
-    const username = getUsername();
+    const nombreReal = getNombreReal();
 
     authArea.innerHTML = `
     <div class="d-flex align-items-center">
-        <span class="me-2 px-3 ms-lg-2 text-white">Hola, <strong>${username}</strong></span>
+        <span class="me-2 px-3 ms-lg-2 text-white">Hola, <strong>${nombreReal}</strong></span>
         <button class="btn btn-outline-danger btn-sm" onclick="logout()">Cerrar Sesión</button>
     </div>
     `;
