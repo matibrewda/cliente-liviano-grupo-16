@@ -1,5 +1,6 @@
 package ar.utn.frba.ddsi.cliente_liviano.DTO;
 
+import ar.utn.frba.ddsi.cliente_liviano.models.Coleccion;
 import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
 import ar.utn.frba.ddsi.cliente_liviano.models.interfaces.IConsensoStrategy;
 import ar.utn.frba.ddsi.cliente_liviano.models.interfaces.ICriterioDePertenencia;
