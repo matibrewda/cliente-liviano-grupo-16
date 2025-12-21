@@ -44,7 +44,7 @@ public class ColeccionRepository {
 
             ColeccionResponse[] coleccionesResponse =
                     mapper.readValue(response.body(), ColeccionResponse[].class);
-
+            System.out.println("Colecciones: " + Arrays.stream(coleccionesResponse).toList());
             return Arrays.stream(coleccionesResponse)
                     .map(ColeccionResponse::toColeccionDTO)
                     .toList();

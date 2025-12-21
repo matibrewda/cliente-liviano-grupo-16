@@ -1,13 +1,5 @@
-<div xmlns:th="http://www.thymeleaf.org" th:fragment="contenido">
-    <header class="hero-section text-black text-center">
-        <div class="container d-flex flex-column justify-content-center align-items-center h-100 py-5">
-            <h1 class="display-5 fw-bold">Colecciones disponibles</h1>
-            <p class="lead my-3">
-                Explorá las colecciones curadas de MetaMapa y descubrí los hechos geo-localizados que contienen.
-            </p>
-        </div>
-    </header>
-
+<html th:replace="~{colecciones/base-colecciones ::html}">
+<div th:fragment="contenido" class="row">
     <section class="py-4 bg-light">
         <div class="container">
 
@@ -54,3 +46,4 @@
     </section>
 
 </div>
+</html>
