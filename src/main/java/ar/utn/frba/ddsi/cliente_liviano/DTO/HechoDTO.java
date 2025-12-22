@@ -1,5 +1,8 @@
 package ar.utn.frba.ddsi.cliente_liviano.DTO;
 
+import ar.utn.frba.ddsi.cliente_liviano.models.Categoria;
+import ar.utn.frba.ddsi.cliente_liviano.models.Origen;
+import ar.utn.frba.ddsi.cliente_liviano.models.Ubicacion;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,11 +32,12 @@ public class HechoDTO {
     private boolean consenso;
 
     public HechoDTO(String titulo,
-                    String descripcion,
-                    CategoriaDTO categoria,
-                    UbicacionDTO ubicacion,
-                    LocalDate fechaAcontecimiento,
-                    LocalDateTime fechaCarga) {
+                 String descripcion,
+                 CategoriaDTO categoria,
+                 UbicacionDTO ubicacion,
+                 LocalDate fechaAcontecimiento,
+                 LocalDateTime fechaCarga) {
+
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoriaDTO = categoria;
@@ -41,4 +45,5 @@ public class HechoDTO {
         this.fechaAcontecimiento = fechaAcontecimiento;
         this.fechaCarga = fechaCarga;
     }
+
 }

@@ -30,7 +30,6 @@ public class ColeccionRepository {
         this.client = HttpClient.newHttpClient();
     }
 
-
     public HechoDTO obtenerHechoDeColeccion(String path) {
         URI uri = URI.create(baseURL + path);
 
@@ -57,6 +56,43 @@ public class ColeccionRepository {
 
             return hechosResponse.toHechoDTO();
 
+
+        } catch (IOException e) {
+            throw new RuntimeException("Error parseando respuesta de hechos", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Request interrumpida al consultar agregador", e);
+        }
+    }
+
+    public List<HechoDTO> obtenerHechosPorColeccion(String path){
+
+        URI uri = URI.create(baseURL + path);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", "application/json")
+                .GET()
+                .build();
+        try {
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() / 100 != 2) {
+                throw new RuntimeException(
+                        "Error llamando al agregador: " +
+                                response.statusCode() + " - " + response.body()
+                );
+            }
+
+            HechoResponse[] hechosResponse =
+                    mapper.readValue(response.body(), HechoResponse[].class);
+
+            System.out.println(Arrays.toString(hechosResponse));
+
+            return Arrays.stream(hechosResponse)
+                    .map(HechoResponse::toHechoDTO)
+                    .toList();
 
         } catch (IOException e) {
             throw new RuntimeException("Error parseando respuesta de hechos", e);

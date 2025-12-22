@@ -1,0 +1,165 @@
+<html th:replace="~{colecciones/base-colecciones::html}">
+<div th:fragment="contenido" class="row">
+    <section class="py-4 bg-light">
+        <div class="container">
+
+            <!-- Botón volver -->
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+                <a class="btn btn-outline-secondary btn-sm"
+                   th:href="@{/colecciones}">
+                    <i class="bi bi-arrow-left"></i> Volver a colecciones
+                </a>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">
+                        <i class="bi bi-funnel"></i> Filtros
+                    </h2>
+
+                    <form class="row g-3"
+                          th:action="@{|/colecciones/${coleccionId}/hechos|}"
+                          method="get">
+
+                        <div class="col-md-3">
+                            <label class="form-label">Modo de navegación</label>
+                            <select class="form-select" name="modoNavegacion">
+                                <option value=""
+                                        th:selected="${modoNavegacion == null or modoNavegacion == ''}">
+                                    Todas
+                                </option>
+                                <option value="true" th:selected="${modoNavegacion == 'true'}">Curado</option>
+                                <option value="false" th:selected="${modoNavegacion == 'false'}">Irrestricto</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="fechaDesde" class="form-label">Fecha acontecimiento desde</label>
+                            <input type="date"
+                                   class="form-control"
+                                   id="fechaDesde"
+                                   name="fechaDesde"
+                                   th:value="${param.fechaDesde}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="fechaHasta" class="form-label">Fecha acontecimiento hasta</label>
+                            <input type="date"
+                                   class="form-control"
+                                   id="fechaHasta"
+                                   name="fechaHasta"
+                                   th:value="${param.fechaHasta}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="ubicacion" class="form-label">Ubicación</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="ubicacion"
+                                   name="ubicacion"
+                                   placeholder="CABA, Rosario..."
+                                   th:value="${param.ubicacion}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="categoria" class="form-label">Categoría</label>
+                            <select class="form-select" name="categoria" id="categoria">
+                                <option value="">Todas</option>
+                                <option th:each="cat : ${categoriasDisponibles}"
+                                        th:value="${cat.id}"
+                                        th:text="${cat.nombre}"
+                                        th:selected="${param.categoria != null and param.categoria[0] == #strings.toString(cat.id)}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="origen" class="form-label">Origen</label>
+                            <select class="form-select" name="origen" id="origen">
+                                <option value="">Todas</option>
+                                <option th:each="orig : ${origenesDisponibles}"
+                                        th:value="${orig}"
+                                        th:text="${orig}"
+                                        th:selected="${param.origen != null and param.origen[0] == orig}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 d-flex justify-content-end mt-2">
+                            <a class="btn btn-outline-secondary me-2"
+                               th:href="@{|/colecciones/${coleccionId}/hechos|}">
+                                Limpiar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Aplicar filtros
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tabla de hechos -->
+            <div class="table-responsive shadow-sm bg-white rounded-3">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-dark">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Título</th>
+                        <th scope="col">Fecha Incidente</th>
+                        <th scope="col">Ubicación</th>
+                        <th scope="col">Categoría</th>
+                        <th scope="col">Origen / Fuente</th>
+                        <th scope="col">Fecha carga</th>
+                        <th scope="col" class="text-center">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr th:each="h : ${hechos}">
+                        <td th:text="${h.id}">1</td>
+                        <td th:text="${h.titulo}">Choque leve en Av. Corrientes</td>
+
+                        <td th:text="${h.fechaAcontecimiento}">2025-03-12</td>
+
+                        <td>
+                            <span th:if="${h.ubicacionDTO != null}">
+                                Lat: <span th:text="${h.ubicacionDTO.latitud}">-34.60</span>,
+                                Lon: <span th:text="${h.ubicacionDTO.longitud}">-58.38</span>
+                            </span>
+                            <span th:if="${h.ubicacionDTO == null}">
+                                Sin datos
+                            </span>
+                        </td>
+
+                        <td th:text="${h.categoriaDTO != null and h.categoriaDTO.nombre != null ? h.categoriaDTO.nombre : 'N/D'}">
+                            Categoria-1
+                        </td>
+
+                        <td th:text="${h.origen != null ? h.origen : 'N/D'}">Estática</td>
+
+                        <td th:text="${h.fechaCarga}">2025-03-12T14:30</td>
+
+                        <td class="text-center">
+                            <a class="btn btn-sm btn-outline-primary"
+                               th:href="@{|/colecciones/${coleccionId}/hechos/${h.id}|}">
+                                <i class="bi bi-eye"></i> Ver detalle
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(hechos)}">
+                        <td colspan="8" class="text-center text-muted py-4">
+                            No se encontraron hechos para esta colección con los filtros aplicados.
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+</html>

@@ -47,6 +47,6 @@ public class HechoResponse {
         hechoDTO.setCategoriaDTO(new CategoriaDTO(categoria.getId(),categoria.getNombre()));
         hechoDTO.setVisible(visible);
         hechoDTO.setConsenso(consenso);
-        return hechoDTO;
+    return hechoDTO;
     }
 }
