@@ -3,11 +3,18 @@ package ar.utn.frba.ddsi.cliente_liviano.models;
 import ar.utn.frba.ddsi.cliente_liviano.models.interfaces.IConsensoStrategy;
 import ar.utn.frba.ddsi.cliente_liviano.models.interfaces.ICriterioDePertenencia;
 import ar.utn.frba.ddsi.cliente_liviano.models.interfaces.IFuenteDeDatos;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.UUID;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Coleccion {
     private String handle;
     private String titulo;

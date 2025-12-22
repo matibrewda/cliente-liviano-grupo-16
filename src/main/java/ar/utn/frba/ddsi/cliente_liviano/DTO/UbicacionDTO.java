@@ -1,5 +1,4 @@
 package ar.utn.frba.ddsi.cliente_liviano.DTO;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

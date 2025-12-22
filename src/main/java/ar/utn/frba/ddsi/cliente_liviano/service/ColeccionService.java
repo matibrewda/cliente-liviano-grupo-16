@@ -1,16 +1,12 @@
 package ar.utn.frba.ddsi.cliente_liviano.service;
 
-import ar.utn.frba.ddsi.cliente_liviano.DTO.CategoriaDTO;
+import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
-
-import ar.utn.frba.ddsi.cliente_liviano.DTO.UbicacionDTO;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.ColeccionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +17,20 @@ public class ColeccionService {
 
     public ColeccionService(ColeccionRepository coleccionRepository) {
         this.coleccionRepository = coleccionRepository;
+    }
+    public List<ColeccionDTO> obtenerColecciones(){
+        try {
+            return coleccionRepository.findAll();
+        }catch (Exception e){
+            //Creo coleccion de prueba
+            List <ColeccionDTO> colecciones = new ArrayList<>();
+            var coleccionDTO = new ColeccionDTO();
+            coleccionDTO.setHandle("AR-1011");
+            coleccionDTO.setDescripcion("Por la noche del viernes ...");
+            coleccionDTO.setTitulo("Incendio en Ezeiza");
+            colecciones.add(coleccionDTO);
+            return colecciones;
+        }
     }
 
     public List<HechoDTO> obtenerHechosPorColeccion(String coleccionId,
@@ -69,6 +79,26 @@ public class ColeccionService {
                 .toUriString();
 
         return coleccionRepository.obtenerHechosPorColeccion(path);
+    }
+
+
+
+
+
+
+
+
+
+
+    public HechoDTO obtenerHechoPorColeccionId(String coleccionId, String hechoId) {
+
+        String path = UriComponentsBuilder
+                .fromPath("/colecciones/{coleccionId}/hechos/{hechoId}")
+                .buildAndExpand(coleccionId, hechoId)
+                .toUriString();
+
+
+        return coleccionRepository.obtenerHechoDeColeccion(path);
     }
 
     private String agregarHoraInicio(String fecha) {

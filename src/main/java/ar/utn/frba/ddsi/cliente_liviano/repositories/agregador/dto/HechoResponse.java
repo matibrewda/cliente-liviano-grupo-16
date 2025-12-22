@@ -1,15 +1,14 @@
 package ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto;
 
+
 import ar.utn.frba.ddsi.cliente_liviano.DTO.CategoriaDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.UbicacionDTO;
-import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)

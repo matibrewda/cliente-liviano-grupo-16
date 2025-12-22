@@ -1,6 +1,4 @@
 package ar.utn.frba.ddsi.cliente_liviano.DTO;
-
-import ar.utn.frba.ddsi.cliente_liviano.models.Usuario;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
