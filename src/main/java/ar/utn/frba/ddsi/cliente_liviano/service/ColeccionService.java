@@ -1,9 +1,11 @@
 package ar.utn.frba.ddsi.cliente_liviano.service;
 
 import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
+import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.ColeccionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,4 +35,16 @@ public class ColeccionService {
     }
 
 
+
+
+    public HechoDTO obtenerHechoPorColeccionId(String coleccionId, String hechoId) {
+
+        String path = UriComponentsBuilder
+                .fromPath("/colecciones/{coleccionId}/hechos/{hechoId}")
+                .buildAndExpand(coleccionId, hechoId)
+                .toUriString();
+
+
+        return coleccionRepository.obtenerHechoDeColeccion(path);
+    }
 }
