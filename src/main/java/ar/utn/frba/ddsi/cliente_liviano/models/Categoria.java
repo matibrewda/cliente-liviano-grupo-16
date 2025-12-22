@@ -10,7 +10,8 @@ public class Categoria {
     private String nombre;
 
     public Categoria() {}
-    public Categoria(String nombre) {
+    public Categoria(Long id, String nombre) {
+        this.id = id;
         this.nombre = nombre;
     }
 }
