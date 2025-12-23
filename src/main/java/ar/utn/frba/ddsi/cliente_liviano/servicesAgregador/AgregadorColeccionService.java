@@ -1,4 +1,4 @@
-package ar.utn.frba.ddsi.cliente_liviano.service;
+package ar.utn.frba.ddsi.cliente_liviano.servicesAgregador;
 
 import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ColeccionService {
+public class AgregadorColeccionService {
     @Autowired
     private final ColeccionRepository coleccionRepository;
 
-    public ColeccionService(ColeccionRepository coleccionRepository) {
+    public AgregadorColeccionService(ColeccionRepository coleccionRepository) {
         this.coleccionRepository = coleccionRepository;
     }
     public List<ColeccionDTO> obtenerColecciones(){
