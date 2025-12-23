@@ -52,7 +52,7 @@
 
                         <td class="text-center">
                             <a class="btn btn-sm btn-outline-primary"
-                               th:href="@{|/colecciones/${coleccionId}/hechos/${h.id}|}">
+                               th:href="@{|/hechos/detalle/${h.id}|}">
                                 <i class="bi bi-eye"></i> Ver detalle
                             </a>
                         </td>
@@ -60,7 +60,7 @@
 
                     <tr th:if="${#lists.isEmpty(hechos)}">
                         <td colspan="8" class="text-center text-muted py-4">
-                            No se encontraron hechos para esta colección con los filtros aplicados.
+                            No se encontraron hechos.
                         </td>
                     </tr>
 

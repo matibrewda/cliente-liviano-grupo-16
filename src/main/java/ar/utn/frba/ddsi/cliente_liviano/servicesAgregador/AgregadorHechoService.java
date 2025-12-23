@@ -22,4 +22,9 @@ public class AgregadorHechoService {
     public List<HechoDTO> obtenerTodosLosHechos(){
         return agregadorHechoRepository.obtenerTodosLosHechos();
     }
+
+    public HechoDTO getHechoById(Long id){
+
+        return agregadorHechoRepository.getHechoById(id);
+    }
 }

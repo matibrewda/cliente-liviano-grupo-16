@@ -33,6 +33,12 @@ public class HechosController {
         model.addAttribute("hechos", hechos);
         return "listar-hechos";
     }
+    @GetMapping("/detalle/{idHecho}")
+    public String detalleHechoByID(@PathVariable Long idHecho, Model model) {
+        var hecho = agregadorHechoService.getHechoById(idHecho);
+        model.addAttribute("hecho", hecho);
+        return "detalle-un-hecho";
+    }
 
 
     @GetMapping("/{id}")

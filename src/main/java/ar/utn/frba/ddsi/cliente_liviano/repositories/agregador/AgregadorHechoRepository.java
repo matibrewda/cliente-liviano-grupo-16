@@ -65,4 +65,38 @@ public class AgregadorHechoRepository {
             throw new RuntimeException("Request interrumpida al consultar agregador", e);
         }
     }
+
+    public HechoDTO getHechoById(Long id){
+
+        URI uri = URI.create(baseURL + "/hechos/" + id);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", "application/json")
+                .GET()
+                .build();
+        try {
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() / 100 != 2) {
+                throw new RuntimeException(
+                        "Error llamando al agregador: " +
+                                response.statusCode() + " - " + response.body()
+                );
+            }
+
+            HechoResponse hechoResponse = mapper.readValue(response.body(), HechoResponse.class);
+
+            return hechoResponse.toHechoDTO();
+
+        } catch (IOException e) {
+            throw new RuntimeException("Error parseando respuesta de hechos", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Request interrumpida al consultar agregador", e);
+        }
+    }
+
 }
+
