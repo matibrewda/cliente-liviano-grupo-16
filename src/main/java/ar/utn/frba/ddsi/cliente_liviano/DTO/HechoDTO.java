@@ -28,7 +28,6 @@ public class HechoDTO {
     private LocalDateTime fechaCarga;
     private Boolean borradoLogico;
     private LocalDateTime fechaBorradoLogico;
-    private boolean visible;
     private boolean consenso;
 
     public HechoDTO(String titulo,
