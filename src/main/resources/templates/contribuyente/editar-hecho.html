@@ -78,22 +78,25 @@
 
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="categoria" class="form-label">Categoria <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control" id="categoria" th:field="*{categoria.id}"
-                                               placeholder="Ej: 1" required>
-                                        <div th:if="${#fields.hasErrors('categoria')}" class="text-danger">
-                                            <small th:errors="*{categoria}">Error en categoria</small>
-                                        </div>
+                                    <div class="md-3">
+                                        <label for="categoria" class="form-label">Categoría</label>
+                                        <select class="form-select " name="categoria" th:field="*{categoria.id}" id="categoria">
+                                            <option th:each="cat : ${categoriasDisponibles}"
+                                                    th:value="${cat.id}"
+                                                    th:text="${cat.nombre}"
+                                                    th:selected="${param.categoria != null and param.categoria[0] == #strings.toString(cat.id)}">
+                                            </option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="fechaAcontecimiento" class="form-label">Fecha del Acontecimiento <span class="text-danger">*</span></label>
-                                        <input type="date" class="form-control" id="fechaAcontecimiento" th:field="*{fechaAcontecimiento}"
-                                               placeholder="Ej: 23/12/2022" required>
+                                        <input type="date" class="form-control" id="fechaAcontecimiento"
+                                               th:name="fechaAcontecimiento"
+                                               th:value="${hecho.fechaAcontecimiento}" placeholder="Ej: 23/12/2022"  required>
                                         <div th:if="${#fields.hasErrors('fechaAcontecimiento')}" class="text-danger">
-                                            <small th:errors="*{descripcion}">Error en la fecha del acontecimiento</small>
+                                            <small th:errors="*{fechaAcontecimiento}">Error en la fecha del acontecimiento</small>
                                         </div>
                                     </div>
                                 </div>
