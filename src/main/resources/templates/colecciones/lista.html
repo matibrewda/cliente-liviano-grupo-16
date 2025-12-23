@@ -25,10 +25,16 @@
                         <td th:text="${c.titulo}">Incidentes viales CABA</td>
                         <td th:text="${c.descripcion}">Hechos reportados...</td>
                         <td class="text-center">
-                            <a class="btn btn-sm btn-outline-primary"
-                               th:href="@{|/colecciones/${c.handle}/hechos|}">
-                                <i class="bi bi-eye"></i> Ver hechos
-                            </a>
+                            <div class="btn-group" role="group">
+                                <a class="btn btn-sm btn-outline-primary"
+                                   th:href="@{|/colecciones/${c.handle}/hechos|}">
+                                    <i class="bi bi-eye"></i> Ver hechos
+                                </a>
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   th:href="@{|/admin/colecciones/${c.handle}/consenso|}">
+                                    <i class="bi bi-gear"></i> Configurar consenso
+                                </a>
+                            </div>
                         </td>
                     </tr>
 

@@ -1,0 +1,156 @@
+<html th:replace="~{base::html}">
+<div th:fragment="contenido" class="row">
+    <section class="py-4 bg-light">
+        <div class="container">
+
+            <!-- Botón volver -->
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+                <a class="btn btn-outline-secondary btn-sm"
+                   th:href="@{/colecciones}">
+                    <i class="bi bi-arrow-left"></i> Volver a colecciones
+                </a>
+            </div>
+
+            <!-- Información de la colección -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">
+                        <i class="bi bi-gear"></i> Configurar Algoritmo de Consenso
+                    </h2>
+                    <p class="text-muted mb-0">
+                        Colección: <strong th:text="${coleccion.titulo}">Título de la colección</strong>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Formulario de configuración -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form id="formConfigurarConsenso">
+                        <input type="hidden" id="coleccionId" th:value="${coleccion.handle}">
+
+                        <div class="mb-4">
+                            <label for="tipoConsenso" class="form-label fw-bold">
+                                Tipo de Algoritmo de Consenso
+                            </label>
+                            <select class="form-select" id="tipoConsenso" required>
+                                <option value="">Seleccione un tipo...</option>
+                                <option value="absoluta">Absoluta</option>
+                                <option value="mayoria simple">Mayoría Simple</option>
+                                <option value="multiples menciones">Múltiples Menciones</option>
+                            </select>
+                            <div class="form-text">
+                                Seleccione el algoritmo de consenso que se utilizará para esta colección.
+                            </div>
+                        </div>
+
+                        <div id="alertContainer"></div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a class="btn btn-outline-secondary"
+                               th:href="@{/colecciones}">
+                                Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary" id="btnGuardar">
+                                <i class="bi bi-save"></i> Guardar Configuración
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Toast container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("formConfigurarConsenso");
+            if (!form) return;
+
+            form.addEventListener("submit", async e => {
+                e.preventDefault();
+
+                const coleccionId = document.getElementById("coleccionId").value;
+                const tipoConsenso = document.getElementById("tipoConsenso").value;
+                const btnGuardar = document.getElementById("btnGuardar");
+                const alertContainer = document.getElementById("alertContainer");
+
+                if (!tipoConsenso) {
+                    alertContainer.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            Por favor seleccione un tipo de consenso
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                btnGuardar.disabled = true;
+                btnGuardar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...';
+
+                const res = await apiFetch(`/admin/colecciones/${coleccionId}/consenso`, {
+                    method: "PUT",
+                    body: JSON.stringify({ tipo: tipoConsenso })
+                });
+
+                if (!res || !res.ok) {
+                    let errorMessage = 'Error al guardar la configuración';
+                    if (res) {
+                        if (res.status === 404) {
+                            errorMessage = 'Colección no encontrada';
+                        } else if (res.status === 400) {
+                            errorMessage = 'Datos inválidos. Por favor verifique la información';
+                        } else if (res.status === 500) {
+                            errorMessage = 'Error del servidor. Por favor intente más tarde';
+                        }
+                    }
+                    alertContainer.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            ${errorMessage}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `;
+                    btnGuardar.disabled = false;
+                    btnGuardar.innerHTML = '<i class="bi bi-save"></i> Guardar Configuración';
+                    return;
+                }
+
+                // Mostrar toast de éxito
+                const toastContainer = document.getElementById('toastContainer');
+                const toastId = 'toast-success-' + Date.now();
+                const toastHtml = `
+                    <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header bg-success text-white">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            <strong class="me-auto">Éxito</strong>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body">
+                            Configuración de consenso guardada exitosamente
+                        </div>
+                    </div>
+                `;
+                toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+                
+                const toastElement = document.getElementById(toastId);
+                const toast = new bootstrap.Toast(toastElement, { autohide: true, delay: 5000 });
+                toast.show();
+                
+                // Limpiar el toast del DOM después de que se oculte
+                toastElement.addEventListener('hidden.bs.toast', () => {
+                    toastElement.remove();
+                });
+
+                setTimeout(() => {
+                    window.location.href = "/colecciones";
+                }, 1500);
+            });
+        });
+    </script>
+
+</div>
+</html>
+
