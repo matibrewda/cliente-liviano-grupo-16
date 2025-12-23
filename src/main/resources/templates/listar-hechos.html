@@ -18,13 +18,18 @@
         <a class="navbar-brand fw-bold" th:href="@{/}">
             <i class="bi bi-map-fill"></i> MetaMapa
         </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="visualizacion.html">Explorar Hechos</a>
+                    <a class="nav-link" th:href="@{/hechos}">Explorar Hechos</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link btn btn-primary btn-sm px-3 ms-lg-2 text-white" href="login.html">Iniciar Sesión / Registro</a>
+                <li class="nav-item" id="auth-area">
+                    <a class="nav-link btn btn-primary btn-sm px-3 ms-lg-2 text-white" th:href="@{/login}">
+                        Iniciar Sesión / Registro
+                    </a>
                 </li>
             </ul>
         </div>
@@ -98,6 +103,31 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
 <script src="script.js"></script>
+
+<script src="/js/auth.js"></script>
+
+<script th:inline="javascript">
+    window.BACKEND_URL = [[${backendUrl}]];
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const authArea = document.getElementById("auth-area");
+
+        if (isLoggedIn()) {
+            const nombreReal = getNombreReal();
+
+            authArea.innerHTML = `
+    <div class="d-flex align-items-center">
+        <span class="me-2 px-3 ms-lg-2 text-white">Hola, <strong>${nombreReal}</strong></span>
+        <button class="btn btn-outline-danger btn-sm" onclick="logout()">Cerrar Sesión</button>
+    </div>
+    `;
+        }
+    });
+</script>
+
 </body>
 </html>
