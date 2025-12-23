@@ -5,6 +5,7 @@ import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
 import ar.utn.frba.ddsi.cliente_liviano.models.Origen;
 import ar.utn.frba.ddsi.cliente_liviano.models.Ubicacion;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ public class HechoInputDTO {
     private Categoria categoria;
     private Ubicacion ubicacion;
     private Origen origen;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaAcontecimiento;
 
     public Hecho ToDomain () {

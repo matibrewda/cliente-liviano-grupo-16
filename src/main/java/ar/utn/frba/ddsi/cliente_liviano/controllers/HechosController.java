@@ -6,6 +6,7 @@ import ar.utn.frba.ddsi.cliente_liviano.models.Categoria;
 import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
 import ar.utn.frba.ddsi.cliente_liviano.models.Ubicacion;
 import ar.utn.frba.ddsi.cliente_liviano.models.dto.HechoInputDTO;
+import ar.utn.frba.ddsi.cliente_liviano.services.CategoriaService;
 import ar.utn.frba.ddsi.cliente_liviano.services.HechosService;
 import ar.utn.frba.ddsi.cliente_liviano.servicesAgregador.AgregadorHechoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ import java.util.List;
 public class HechosController {
     @Autowired
     private HechosService hechosService;
+    @Autowired
+    private CategoriaService categoriaService;
 
     @Autowired
     private AgregadorHechoService agregadorHechoService;
@@ -45,6 +48,12 @@ public class HechosController {
     public String verDetalleHecho(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
             HechoInputDTO hecho = hechosService.obtenerHechoPorID(id).get();
+            List<Categoria> categorias = categoriaService.getAll();
+            categorias.forEach(categoria -> {
+                if (categoria.getId().equals(hecho.getCategoria().getId())) {
+                    hecho.setCategoria(categoria);
+                }
+            });
 
             model.addAttribute("hecho", hecho);
             model.addAttribute("titulo", "Detalle del Hecho");
@@ -62,6 +71,8 @@ public class HechosController {
         Hecho hecho = new Hecho();
         hecho.setUbicacion(new Ubicacion());
         hecho.setCategoria(new Categoria());
+        List<Categoria> categoriasDisponibles = categoriaService.getAll();
+        model.addAttribute("categoriasDisponibles", categoriasDisponibles);
         model.addAttribute("hecho", hecho);
         model.addAttribute("titulo", "Crear Nuevo Hecho");
         return "/contribuyente/crear-hecho";
@@ -85,6 +96,8 @@ public class HechosController {
     public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
             HechoInputDTO hechoDTO = hechosService.obtenerHechoPorID(id).get();
+            List<Categoria> categoriasDisponibles = categoriaService.getAll();
+            model.addAttribute("categoriasDisponibles", categoriasDisponibles);
             model.addAttribute("hecho", hechoDTO);
             model.addAttribute("titulo", "Editar Hecho");
             return "/contribuyente/editar-hecho";
