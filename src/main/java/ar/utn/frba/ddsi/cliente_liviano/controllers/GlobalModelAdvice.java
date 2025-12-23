@@ -10,8 +10,16 @@ public class GlobalModelAdvice {
     @Value("${backend.api.url}")
     private String backendUrl;
 
+    @Value("${agregador.base-url}")
+    private String agregadorUrl;
+
     @ModelAttribute("backendUrl")
     public String backendUrl() {
         return backendUrl;
+    }
+
+    @ModelAttribute("agregadorUrl")
+    public String agregadorUrl() {
+        return agregadorUrl;
     }
 }
