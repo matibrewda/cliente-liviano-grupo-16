@@ -1,5 +1,6 @@
 package ar.utn.frba.ddsi.cliente_liviano.controllers;
 
+import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
 import ar.utn.frba.ddsi.cliente_liviano.exceptions.NotFoundException;
 import ar.utn.frba.ddsi.cliente_liviano.models.Categoria;
 import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
@@ -7,6 +8,7 @@ import ar.utn.frba.ddsi.cliente_liviano.models.Ubicacion;
 import ar.utn.frba.ddsi.cliente_liviano.models.dto.HechoInputDTO;
 import ar.utn.frba.ddsi.cliente_liviano.services.CategoriaService;
 import ar.utn.frba.ddsi.cliente_liviano.services.HechosService;
+import ar.utn.frba.ddsi.cliente_liviano.servicesAgregador.AgregadorHechoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -25,10 +27,22 @@ public class HechosController {
     @Autowired
     private CategoriaService categoriaService;
 
+    @Autowired
+    private AgregadorHechoService agregadorHechoService;
+
     @GetMapping
     public String listarHechos(Model model) {
+        List<HechoDTO> hechos = agregadorHechoService.obtenerTodosLosHechos();
+        model.addAttribute("hechos", hechos);
         return "listar-hechos";
     }
+    @GetMapping("/detalle/{idHecho}")
+    public String detalleHechoByID(@PathVariable Long idHecho, Model model) {
+        var hecho = agregadorHechoService.getHechoById(idHecho);
+        model.addAttribute("hecho", hecho);
+        return "detalle-un-hecho";
+    }
+
 
     @GetMapping("/{id}")
     public String verDetalleHecho(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
