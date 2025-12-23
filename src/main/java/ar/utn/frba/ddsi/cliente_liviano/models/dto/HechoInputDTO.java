@@ -5,7 +5,6 @@ import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
 import ar.utn.frba.ddsi.cliente_liviano.models.Origen;
 import ar.utn.frba.ddsi.cliente_liviano.models.Ubicacion;
 import lombok.*;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-public class HechoDTO {
+public class HechoInputDTO {
     private Long id;
     private String titulo;
     private String descripcion;
