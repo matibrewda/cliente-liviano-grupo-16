@@ -4,7 +4,7 @@ import ar.utn.frba.ddsi.cliente_liviano.exceptions.NotFoundException;
 import ar.utn.frba.ddsi.cliente_liviano.models.Categoria;
 import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
 import ar.utn.frba.ddsi.cliente_liviano.models.Ubicacion;
-import ar.utn.frba.ddsi.cliente_liviano.models.dto.HechoDTO;
+import ar.utn.frba.ddsi.cliente_liviano.models.dto.HechoInputDTO;
 import ar.utn.frba.ddsi.cliente_liviano.services.HechosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -28,7 +28,7 @@ public class HechosController {
     @GetMapping("/{id}")
     public String verDetalleHecho(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
-            HechoDTO hecho = hechosService.obtenerHechoPorID(id).get();
+            HechoInputDTO hecho = hechosService.obtenerHechoPorID(id).get();
 
             model.addAttribute("hecho", hecho);
             model.addAttribute("titulo", "Detalle del Hecho");
@@ -52,7 +52,7 @@ public class HechosController {
     }
 
     @PostMapping("/crear")
-    public String crearHecho(@ModelAttribute("hecho")HechoDTO hecho,
+    public String crearHecho(@ModelAttribute("hecho") HechoInputDTO hecho,
                              BindingResult bindingResult,
                              Model model,
                              RedirectAttributes redirectAttributes) {
@@ -68,7 +68,7 @@ public class HechosController {
     @GetMapping("/{id}/editar")
     public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
-            HechoDTO hechoDTO = hechosService.obtenerHechoPorID(id).get();
+            HechoInputDTO hechoDTO = hechosService.obtenerHechoPorID(id).get();
             model.addAttribute("hecho", hechoDTO);
             model.addAttribute("titulo", "Editar Hecho");
             return "/contribuyente/editar-hecho";
@@ -81,7 +81,7 @@ public class HechosController {
 
     @PostMapping("/{id}/actualizar")
     public String actualizarHecho(@PathVariable Long id,
-                                   @ModelAttribute("hecho") HechoDTO hechoDTO,
+                                   @ModelAttribute("hecho") HechoInputDTO hechoDTO,
                                    BindingResult bindingResult,
                                    Model model,
                                    RedirectAttributes redirectAttributes
