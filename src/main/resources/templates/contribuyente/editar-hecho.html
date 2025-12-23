@@ -89,11 +89,11 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="fechaAcontecimiento" class="form-label">Categoria <span class="text-danger">*</span></label>
+                                        <label for="fechaAcontecimiento" class="form-label">Fecha del Acontecimiento <span class="text-danger">*</span></label>
                                         <input type="date" class="form-control" id="fechaAcontecimiento" th:field="*{fechaAcontecimiento}"
-                                               placeholder="Ej: 1" required>
+                                               placeholder="Ej: 23/12/2022" required>
                                         <div th:if="${#fields.hasErrors('fechaAcontecimiento')}" class="text-danger">
-                                            <small th:errors="*{fechaAcontecimiento}">Error en fecha de acontecimiento</small>
+                                            <small th:errors="*{descripcion}">Error en la fecha del acontecimiento</small>
                                         </div>
                                     </div>
                                 </div>
