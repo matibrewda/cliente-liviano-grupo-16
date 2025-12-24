@@ -15,7 +15,7 @@ public class ArchivoService {
     ArchivosRepository archivosRepository;
 
     public void almacenarArchivo(MultipartFile file) {
-        archivosRepository.almacenarArchivo(file);
+        archivosRepository.save(file);
 
     }
 }

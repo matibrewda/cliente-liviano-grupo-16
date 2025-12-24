@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 
 
 @Repository
@@ -16,10 +18,12 @@ public class ArchivosRepository {
     @Value("${fuente-estatica.base-url}")
     private String baseURL;
 
-    public  ArchivosRepository(ObjectMapper objectMapper){
+    public ArchivosRepository(ObjectMapper objectMapper){
         this.client = HttpClient.newHttpClient();
     }
 
-    public void almacenarArchivo(MultipartFile file) {
+    public void save(MultipartFile file) {/*
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(this.baseURL + ""))*/
     }
 }

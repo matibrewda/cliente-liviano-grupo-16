@@ -118,7 +118,7 @@ public class HechosController {
 
         try {
             // Llamada al servicio que creamos antes
-            ArchivoService.almacenarArchivo(file);
+            archivoService.almacenarArchivo(file);
             // Mensaje Flash: Sobrevive a la redirección y se borra después
             redirectAttributes.addFlashAttribute("mensajeExito",
                     "Archivo cargado correctamente: " + file.getOriginalFilename());
