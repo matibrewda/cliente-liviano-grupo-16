@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moderación de Solicitudes - MetaMapa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/">
+            <i class="bi bi-shield-lock-fill"></i> MetaMapa Admin
+        </a>
+    </div>
+</nav>
+
+<div class="container">
+    <h2 class="fw-bold mb-4">Solicitudes Pendientes</h2>
+
+    <div class="row g-4">
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-pencil-square"></i> Modificaciones</h5>
+                    <span class="badge bg-white text-primary" th:text="${listaModificaciones.size()}">0</span>
+                </div>
+                <div class="list-group list-group-flush">
+
+                    <div th:if="${listaModificaciones.empty}" class="list-group-item text-center text-muted py-4">
+                        <i class="bi bi-check-circle"></i> No hay solicitudes pendientes.
+                    </div>
+
+                    <div th:each="hecho : ${listaModificaciones}" class="list-group-item p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold mb-0 text-primary" th:text="${hecho.titulo}">Título del Hecho</h6>
+                            <small class="text-muted">#<span th:text="${hecho.id}">ID</span></small>
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end mt-2">
+                            <a th:href="@{/hechos/ver/{id}(id=${hecho.id})}" class="btn btn-sm btn-outline-secondary" target="_blank">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                            <a th:href="@{/admin/aprobar-modificacion/{id}(id=${hecho.id})}" class="btn btn-sm btn-success">
+                                <i class="bi bi-check-lg"></i> Aprobar
+                            </a>
+                            <a th:href="@{/admin/rechazar/{id}(id=${hecho.id})}" class="btn btn-sm btn-danger">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-trash3-fill"></i> Eliminaciones</h5>
+                    <span class="badge bg-white text-danger" th:text="${listaEliminaciones.size()}">0</span>
+                </div>
+                <div class="list-group list-group-flush">
+
+                    <div th:if="${listaEliminaciones.empty}" class="list-group-item text-center text-muted py-4">
+                        <i class="bi bi-check-circle"></i> No hay solicitudes pendientes.
+                    </div>
+
+                    <div th:each="hecho : ${listaEliminaciones}" class="list-group-item p-3 border-start border-danger border-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold mb-0 text-danger" th:text="${hecho.titulo}">Título a Eliminar</h6>
+                            <small class="text-muted">#<span th:text="${hecho.id}">ID</span></small>
+                        </div>
+
+                        <p class="small text-muted mb-2">Solicitud: Eliminar por contenido inapropiado.</p>
+
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a th:href="@{/hechos/ver/{id}(id=${hecho.id})}" class="btn btn-sm btn-outline-secondary" target="_blank">
+                                <i class="bi bi-eye"></i> Revisar
+                            </a>
+                            <form th:action="@{/admin/confirmar-eliminacion}" method="post" style="display:inline;">
+                                <input type="hidden" name="id" th:value="${hecho.id}" />
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

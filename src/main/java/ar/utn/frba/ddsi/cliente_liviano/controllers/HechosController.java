@@ -6,12 +6,14 @@ import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
 import ar.utn.frba.ddsi.cliente_liviano.models.Ubicacion;
 import ar.utn.frba.ddsi.cliente_liviano.models.dto.HechoDTO;
 import ar.utn.frba.ddsi.cliente_liviano.services.HechosService;
+import ar.utn.frba.ddsi.cliente_liviano.services.ArchivoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -19,6 +21,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class HechosController {
     @Autowired
     private HechosService hechosService;
+    @Autowired
+    private ArchivoService archivoService;
 
     @GetMapping
     public String listarHechos(Model model) {
@@ -98,4 +102,33 @@ public class HechosController {
             return "redirect:/404";
         }
     }
+
+    @GetMapping("/carga-masiva")
+    public String formArchivo(Model model){
+        return "/contribuyente/carga-masiva";
+    }
+
+    @PostMapping("/carga-masiva")
+    public String subirArchivo(Model model, @RequestParam("archivo") MultipartFile file,
+                               RedirectAttributes redirectAttributes){
+        if (file.isEmpty()) {
+            redirectAttributes.addFlashAttribute("mensajeError", "Por favor selecciona un archivo válido.");
+            return "redirect:/hechos/carga";
+        }
+
+        try {
+            // Llamada al servicio que creamos antes
+            ArchivoService.almacenarArchivo(file);
+            // Mensaje Flash: Sobrevive a la redirección y se borra después
+            redirectAttributes.addFlashAttribute("mensajeExito",
+                    "Archivo cargado correctamente: " + file.getOriginalFilename());
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensajeError", "Error: " + e.getMessage());
+        }
+
+        // Redirigimos de vuelta a la página de carga para limpiar el formulario
+        return "redirect:/hechos/carga";
+    }
+
 }
