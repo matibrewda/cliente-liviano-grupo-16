@@ -1,9 +1,7 @@
 package ar.utn.frba.ddsi.cliente_liviano.models.repositories;
 
 import ar.utn.frba.ddsi.cliente_liviano.models.Categoria;
-import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
 import ar.utn.frba.ddsi.cliente_liviano.models.repositories.dto.CategoriaDTO;
-import ar.utn.frba.ddsi.cliente_liviano.models.repositories.dto.FuenteDinamicaHechoResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +13,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Repository

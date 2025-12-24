@@ -1,5 +1,6 @@
 package ar.utn.frba.ddsi.cliente_liviano.models;
 
+import ar.utn.frba.ddsi.cliente_liviano.models.usuario.Usuario;
 import lombok.Getter;
 import lombok.Setter;
 
