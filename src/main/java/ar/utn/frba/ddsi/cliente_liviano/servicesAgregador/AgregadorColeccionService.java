@@ -85,12 +85,6 @@ public class AgregadorColeccionService {
 
 
 
-
-
-
-
-
-
     public HechoDTO obtenerHechoPorColeccionId(String coleccionId, String hechoId) {
 
         String path = UriComponentsBuilder
@@ -119,5 +113,9 @@ public class AgregadorColeccionService {
 
     public ColeccionDTO crear(ColeccionInputDTO coleccionInputDTO) {
         return this.coleccionRepository.save(coleccionInputDTO);
+    }
+
+    public ColeccionDTO obtenerColeccionPorId(Long id){
+        return coleccionRepository.findById(id);
     }
 }

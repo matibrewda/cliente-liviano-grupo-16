@@ -35,6 +35,10 @@
                         <td class="text-center">
                             <div class="btn-group" role="group">
                                 <a class="btn btn-sm btn-outline-primary"
+                                   th:href="@{|/colecciones/${c.handle}|}">
+                                    <i class="bi bi-eye"></i> Ver Coleccion
+                                </a>
+                                <a class="btn btn-sm btn-outline-primary"
                                    th:href="@{|/colecciones/${c.handle}/hechos|}">
                                     <i class="bi bi-eye"></i> Ver hechos
                                 </a>

@@ -4,7 +4,7 @@ import ar.utn.frba.ddsi.cliente_liviano.DTO.CategoriaDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.input.ColeccionInputDTO;
-import ar.utn.frba.ddsi.cliente_liviano.models.Coleccion;
+import ar.utn.frba.ddsi.cliente_liviano.exceptions.NotFoundException;
 import ar.utn.frba.ddsi.cliente_liviano.servicesAgregador.AgregadorColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -102,9 +102,30 @@ public class ColleccionController {
         );
         redirectAttributes.addFlashAttribute("tipoMensaje", "success");
 
-        return "redirect:/colecciones";
+        return "redirect:/colecciones/" + coleccionCreada.getHandle();
 
     }
+
+    @GetMapping("/{id}")
+    public String verDetalleColeccion(
+            @PathVariable Long id,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            ColeccionDTO coleccion = coleccionService.obtenerColeccionPorId(id);
+
+            model.addAttribute("coleccion", coleccion);
+            model.addAttribute("titulo", "Detalle de la Colección");
+
+            return "colecciones/ABM/detalle-coleccion";
+        }
+        catch (NotFoundException ex) {
+            redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+            return "redirect:/404";
+        }
+    }
+
 
 
 }

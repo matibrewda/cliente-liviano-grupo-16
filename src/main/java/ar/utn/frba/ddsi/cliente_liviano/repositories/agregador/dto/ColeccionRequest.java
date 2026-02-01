@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ColeccionRequest {
 
-
     @JsonProperty("titulo")
     private String titulo;
 
@@ -25,7 +24,6 @@ public class ColeccionRequest {
         ColeccionDTO coleccionDTO = new ColeccionDTO();
         coleccionDTO.setTitulo(this.titulo);
         coleccionDTO.setDescripcion(this.descripcion);
-
         return coleccionDTO;
     }
 }

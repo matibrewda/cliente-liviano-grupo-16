@@ -162,4 +162,37 @@ public class ColeccionRepository {
         return coleccion;
     }
 
+    public ColeccionDTO findById(Long id) {
+
+        ColeccionDTO coleccion;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(this.baseURL + "/admin/colecciones/" + id))
+                .header("Content-Type", "application/json")
+                .GET()
+                .build();
+
+        try {
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() / 100 != 2) {
+                throw new RuntimeException(
+                        "Error llamando al agregador: " +
+                                response.statusCode() + " - " + response.body()
+                );
+            }
+
+            ColeccionResponse coleccionResponse =
+                    mapper.readValue(response.body(), ColeccionResponse.class);
+
+            coleccion = coleccionResponse.toColeccionDTO();
+
+        } catch (InterruptedException | IOException e) {
+            throw new RuntimeException("Request was interrupted", e);
+        }
+
+        return coleccion;
+    }
+
 }
