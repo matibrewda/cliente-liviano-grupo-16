@@ -3,14 +3,15 @@ package ar.utn.frba.ddsi.cliente_liviano.controllers;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.CategoriaDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
+import ar.utn.frba.ddsi.cliente_liviano.DTO.input.ColeccionInputDTO;
+import ar.utn.frba.ddsi.cliente_liviano.models.Coleccion;
 import ar.utn.frba.ddsi.cliente_liviano.servicesAgregador.AgregadorColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -72,4 +73,38 @@ public class ColleccionController {
 
         return "colecciones/hechos";
     }
+
+    @GetMapping("/nuevo")
+    public String mostrarFormularioCrearColeccion(Model model) {
+        ColeccionDTO coleccionDTO = new ColeccionDTO();
+        model.addAttribute("coleccion", coleccionDTO);
+        model.addAttribute("titulo", "Crear Nueva Colección");
+        return "colecciones/ABM/crear-coleccion";
+    }
+
+    @PostMapping("/crear")
+    public String crearColeccion(
+            @ModelAttribute("coleccion") ColeccionInputDTO coleccion,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("titulo", "Crear Nueva Colección");
+            return "colecciones/ABM/crear-coleccion";
+        }
+
+        ColeccionDTO coleccionCreada = this.coleccionService.crear(coleccion);
+
+        redirectAttributes.addFlashAttribute(
+                "mensaje",
+                "Colección \"" + coleccionCreada.getTitulo() + "\" creada exitosamente"
+        );
+        redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+
+        return "redirect:/colecciones";
+
+    }
+
+
 }

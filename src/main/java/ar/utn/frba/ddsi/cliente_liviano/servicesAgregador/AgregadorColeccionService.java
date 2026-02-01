@@ -1,6 +1,7 @@
 package ar.utn.frba.ddsi.cliente_liviano.servicesAgregador;
 
 import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
+import ar.utn.frba.ddsi.cliente_liviano.DTO.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.ColeccionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,4 +116,8 @@ public class AgregadorColeccionService {
         return fecha + "T23:59:59";
     }
 
+
+    public ColeccionDTO crear(ColeccionInputDTO coleccionInputDTO) {
+        return this.coleccionRepository.save(coleccionInputDTO);
+    }
 }
