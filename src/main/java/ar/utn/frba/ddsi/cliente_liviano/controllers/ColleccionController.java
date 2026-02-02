@@ -5,6 +5,8 @@ import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.cliente_liviano.exceptions.NotFoundException;
+import ar.utn.frba.ddsi.cliente_liviano.models.Coleccion;
+import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
 import ar.utn.frba.ddsi.cliente_liviano.servicesAgregador.AgregadorColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -126,6 +128,45 @@ public class ColleccionController {
         }
     }
 
+    @GetMapping("/{id}/editar")
+    public String mostrarFormularioEditarColeccion(@PathVariable Long id,
+                                                   Model model,
+                                                   RedirectAttributes redirectAttributes) {
+
+        try {
+            ColeccionDTO coleccionDTO = coleccionService.obtenerColeccionPorId(id);
+
+            model.addAttribute("coleccion", coleccionDTO);
+            model.addAttribute("titulo", "Editar Coleccion");
+
+            return "colecciones/ABM/editar-coleccion";
+        }catch (NotFoundException ex) {
+            redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+            return "redirect:/404";
+        }
+
+    }
+
+
+    @PostMapping("/{id}/actualizar")
+    public String actualizarColeccion(@PathVariable Long id,
+                                      @ModelAttribute("coleccion") ColeccionInputDTO coleccionInputDTO,
+                                      BindingResult bindingResult,
+                                      Model model,
+                                      RedirectAttributes redirectAttributes){
+
+        try {
+            ColeccionDTO coleccionActualizada = coleccionService.actualizarColeccion(id, coleccionInputDTO);
+
+            redirectAttributes.addFlashAttribute("mensaje", "Coleccion actualizado exitosamente");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+            return "redirect:/colecciones/" + coleccionActualizada.getHandle();
+        }
+        catch (NotFoundException ex) {
+            redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+            return "redirect:/404";
+        }
+    }
 
 
 }

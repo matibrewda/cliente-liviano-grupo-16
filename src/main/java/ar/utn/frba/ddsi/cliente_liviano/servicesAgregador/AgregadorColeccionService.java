@@ -118,4 +118,8 @@ public class AgregadorColeccionService {
     public ColeccionDTO obtenerColeccionPorId(Long id){
         return coleccionRepository.findById(id);
     }
+
+    public ColeccionDTO actualizarColeccion(Long id, ColeccionInputDTO coleccionInputDTO) {
+        return coleccionRepository.actualizarColeccion(id, coleccionInputDTO);
+    }
 }

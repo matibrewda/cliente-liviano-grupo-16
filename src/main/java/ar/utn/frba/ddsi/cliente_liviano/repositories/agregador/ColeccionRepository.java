@@ -195,4 +195,52 @@ public class ColeccionRepository {
         return coleccion;
     }
 
+
+
+    public ColeccionDTO actualizarColeccion(Long idColeccion, ColeccionInputDTO coleccionNueva) {
+        ColeccionDTO coleccion;
+
+        String jsonBody;
+        try {
+            jsonBody = mapper.writeValueAsString(new ColeccionRequest(
+                    coleccionNueva.getTitulo(),
+                    coleccionNueva.getDescripcion()
+            ));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(this.baseURL + "/admin/colecciones/" + idColeccion))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+
+        try {
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // si no es 2xx, error
+            if (response.statusCode() / 100 != 2) {
+                throw new RuntimeException(
+                        "Error actualizando colección: " + response.statusCode() + " - " + response.body()
+                );
+            }
+
+            ColeccionResponse coleccionResponse =
+                    mapper.readValue(response.body(), ColeccionResponse.class);
+
+            coleccion = coleccionResponse.toColeccionDTO();
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Request was interrupted", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Error parseando respuesta de colección", e);
+        }
+
+        return coleccion;
+    }
+
+
 }
