@@ -36,6 +36,11 @@
             </li>
           </ul>
         </div>
+        <a th:href="@{/colecciones/{id}/eliminar(id=${coleccion.handle})}"
+           class="btn btn-danger me-2">
+          <i class="fas fa-trash me-1"></i>
+          Eliminar
+        </a>
         <a th:href="@{/colecciones/{id}/editar(id=${coleccion.handle})}" class="btn btn-warning me-2">
           <i class="fas fa-edit me-1"></i>
           Editar

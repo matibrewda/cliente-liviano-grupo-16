@@ -122,4 +122,8 @@ public class AgregadorColeccionService {
     public ColeccionDTO actualizarColeccion(Long id, ColeccionInputDTO coleccionInputDTO) {
         return coleccionRepository.actualizarColeccion(id, coleccionInputDTO);
     }
+
+    public void eliminar(Long id) {
+        coleccionRepository.eliminar(id);
+    }
 }

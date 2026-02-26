@@ -241,6 +241,8 @@ public class ColeccionRepository {
 
         return coleccion;
     }
+    public void eliminar(Long id){
 
+    }
 
 }

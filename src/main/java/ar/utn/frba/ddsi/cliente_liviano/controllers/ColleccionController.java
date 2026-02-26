@@ -168,5 +168,21 @@ public class ColleccionController {
         }
     }
 
+    @GetMapping("/{id:\\d+}/eliminar")
+    public String confirmarEliminar(@PathVariable Long id, Model model) {
+        var coleccion = coleccionService.obtenerColeccionPorId(id);
+        model.addAttribute("coleccion", coleccion);
+        model.addAttribute("titulo", "Eliminar colección");
+        return "colecciones/ABM/confirmar-eliminacion";
+    }
+
+    @PostMapping("/{id:\\d+}/eliminar")
+    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        coleccionService.eliminar(id);
+        redirectAttributes.addFlashAttribute("ok", "Colección eliminada correctamente.");
+        return "redirect:/colecciones";
+    }
+
+
 
 }
