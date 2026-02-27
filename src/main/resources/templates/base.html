@@ -26,6 +26,11 @@
         <li class="nav-item">
           <a class="nav-link" th:href="@{/hechos}">Explorar Hechos</a>
         </li>
+        <li class="nav-item" id="admin-area" style="display: none;">
+          <a class="nav-link" th:href="@{/solicitud/admin}">
+            <i class="fas fa-clipboard-list me-1"></i> Admin Solicitudes
+          </a>
+        </li>
         <li class="nav-item" id="auth-area">
           <a class="nav-link btn btn-primary btn-sm px-3 ms-lg-2 text-white" th:href="@{/login}">
             Iniciar Sesión / Registro
@@ -86,6 +91,7 @@
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const authArea = document.getElementById("auth-area");
+    const adminArea = document.getElementById("admin-area");
 
     if (isLoggedIn()) {
       const nombreReal = getNombreReal();
@@ -96,6 +102,10 @@
         <button class="btn btn-outline-danger btn-sm" onclick="logout()">Cerrar Sesión</button>
     </div>
     `;
+
+      if (adminArea) {
+        adminArea.style.display = "block";
+      }
     }
   });
 </script>
