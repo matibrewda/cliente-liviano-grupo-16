@@ -4,6 +4,7 @@ import ar.utn.frba.ddsi.cliente_liviano.DTO.CategoriaDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.input.ColeccionInputDTO;
+import ar.utn.frba.ddsi.cliente_liviano.exceptions.AgregadorApiException;
 import ar.utn.frba.ddsi.cliente_liviano.exceptions.NotFoundException;
 import ar.utn.frba.ddsi.cliente_liviano.models.Coleccion;
 import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
@@ -177,12 +178,20 @@ public class ColleccionController {
     }
 
     @PostMapping("/{id:\\d+}/eliminar")
-    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        coleccionService.eliminar(id);
-        redirectAttributes.addFlashAttribute("ok", "Colección eliminada correctamente.");
-        return "redirect:/colecciones";
-    }
+    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes,Model model) {
+        try {
+            coleccionService.eliminar(id);
+            redirectAttributes.addFlashAttribute("ok", "Colección eliminada correctamente.");
+            return "redirect:/colecciones";
 
+        } catch (AgregadorApiException e) {
+            var coleccion = coleccionService.obtenerColeccionPorId(id);
+            model.addAttribute("coleccion", coleccion);
+            model.addAttribute("titulo", "Eliminar colección");
+            model.addAttribute("error", "No se pudo eliminar la colección. Por favor, intente más tarde.");
+            return "colecciones/ABM/confirmar-eliminacion";
+        }
+}
 
 
 }

@@ -4,6 +4,7 @@ package ar.utn.frba.ddsi.cliente_liviano.repositories.agregador;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
+import ar.utn.frba.ddsi.cliente_liviano.exceptions.AgregadorApiException;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto.ColeccionResponse;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto.ColeccionRequest;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto.HechoResponse;
@@ -241,8 +242,27 @@ public class ColeccionRepository {
 
         return coleccion;
     }
-    public void eliminar(Long id){
+    public void eliminar(Long id) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(this.baseURL + "/admin/colecciones/" + id))
+                .header("Content-Type", "application/json")
+                .DELETE()
+                .build();
 
+        try {
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() / 100 != 2) {
+                throw new AgregadorApiException(response.statusCode(), response.body());
+            }
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Request interrumpida al eliminar colección", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Error de IO al eliminar colección", e);
+        }
     }
 
 }
