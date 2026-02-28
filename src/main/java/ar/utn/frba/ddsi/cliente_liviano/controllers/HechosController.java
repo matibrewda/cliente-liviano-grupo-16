@@ -126,12 +126,31 @@ public class HechosController {
     @PostMapping("/{id}/actualizar")
     public String actualizarHecho(@PathVariable Long id,
                                    @ModelAttribute("hecho") HechoInputDTO hechoDTO,
+                                  @RequestParam(value = "archivo", required = false) MultipartFile archivo,
                                    BindingResult bindingResult,
                                    Model model,
                                    RedirectAttributes redirectAttributes
     ){
         try {
             Hecho hechoActualizado = hechosService.actualizarHecho(id, hechoDTO);
+
+
+            // Si adjunto imagen
+            if (archivo != null && !archivo.isEmpty()) {
+                try {
+                    hechosService.subirMultimedia(id, archivo);
+                } catch (IllegalArgumentException e) {
+                    redirectAttributes.addFlashAttribute("mensaje",
+                            "Hecho actualizado, pero la imagen no es válida: " + e.getMessage());
+                    redirectAttributes.addFlashAttribute("tipoMensaje", "warning");
+                    return "redirect:/hechos/" + id;
+                } catch (Exception e) {
+                    redirectAttributes.addFlashAttribute("mensaje",
+                            "Hecho actualizado, pero no se pudo subir la imagen.");
+                    redirectAttributes.addFlashAttribute("tipoMensaje", "warning");
+                    return "redirect:/hechos/" + id;
+                }
+            }
 
             redirectAttributes.addFlashAttribute("mensaje", "Hecho actualizado exitosamente");
             redirectAttributes.addFlashAttribute("tipoMensaje", "success");

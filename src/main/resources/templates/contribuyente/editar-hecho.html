@@ -28,7 +28,7 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/hechos/{id}/actualizar(id=${hecho.id})}" th:object="${hecho}" method="post">
+                        <form th:action="@{/hechos/{id}/actualizar(id=${hecho.id})}" th:object="${hecho}" method="post" enctype="multipart/form-data">
                             <!-- Información básica -->
                             <div class="row">
                                 <div class="col-md-6">
@@ -102,6 +102,19 @@
                                 </div>
                             </div>
 
+                            <div class="mb-3" th:if="${hecho.multimediaUrl != null}">
+                                <label class="form-label">Imagen actual</label><br/>
+                                <a class="btn btn-outline-primary btn-sm mb-2" th:href="${hecho.multimediaUrl}" target="_blank">
+                                    Ver archivo actual
+                                </a>
+
+
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Reemplazar imagen (opcional)</label>
+                                <input class="form-control" type="file" name="archivo" accept="image/*" />
+                                <div class="form-text">Si elegís un archivo, se reemplaza la imagen anterior.</div>
+                            </div>
                             <hr>
 
                             <!-- Botones -->
