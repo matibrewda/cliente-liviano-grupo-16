@@ -1,7 +1,9 @@
 package ar.utn.frba.ddsi.cliente_liviano.repositories.agregador;
 
 
+import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto.ComentarioRequest;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto.SolicitudEliminacionRequest;
+import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto.SolicitudResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +14,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Arrays;
+import java.util.List;
 
 
 @Repository
@@ -61,6 +65,81 @@ public class AgregadorSolicitudRepository {
                 );
             }
 
+
+        } catch (IOException e) {
+            throw new RuntimeException("Error llamando al agregador (IO)", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Request interrumpida al llamar agregador", e);
+        }
+    }
+
+    public List<SolicitudResponse> obtenerSolicitudes() {
+        URI uri = URI.create(baseURL + "/solicitudes");
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", "application/json")
+                .GET()
+                .build();
+
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() / 100 != 2) {
+                throw new RuntimeException(
+                        "Error llamando al agregador (obtener solicitudes): " +
+                                response.statusCode() + " - " + response.body()
+                );
+            }
+
+            SolicitudResponse[] solicitudes = mapper.readValue(response.body(), SolicitudResponse[].class);
+            return Arrays.asList(solicitudes);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Error llamando al agregador (IO)", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Request interrumpida al llamar agregador", e);
+        }
+    }
+
+    public void aprobarSolicitud(Long id, String comentario) {
+        procesarSolicitud(id, comentario, "aprobar");
+    }
+
+    public void rechazarSolicitud(Long id, String comentario) {
+        procesarSolicitud(id, comentario, "rechazar");
+    }
+
+    private void procesarSolicitud(Long id, String comentario, String accion) {
+        if (id == null) {
+            throw new IllegalArgumentException("id no puede ser null");
+        }
+
+        URI uri = URI.create(baseURL + "/solicitudes/" + id + "/" + accion);
+        String jsonBody;
+        try {
+            jsonBody = mapper.writeValueAsString(new ComentarioRequest(comentario));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error serializando body de solicitud", e);
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() / 100 != 2) {
+                throw new RuntimeException(
+                        "Error llamando al agregador (" + accion + " solicitud): " +
+                                response.statusCode() + " - " + response.body()
+                );
+            }
 
         } catch (IOException e) {
             throw new RuntimeException("Error llamando al agregador (IO)", e);
