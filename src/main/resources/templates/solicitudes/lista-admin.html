@@ -21,7 +21,6 @@
                         <th scope="col">ID Solicitud</th>
                         <th scope="col">ID Hecho</th>
                         <th scope="col">Título del Hecho</th>
-                        <th scope="col">Motivo</th>
                         <th scope="col">Estado</th>
                         <th scope="col" class="text-center">Acciones</th>
                     </tr>
@@ -33,7 +32,6 @@
                         <td th:text="${s.idSolicitud}">1</td>
                         <td th:text="${s.idHecho}">10</td>
                         <td th:text="${s.tituloHecho}">Título del hecho</td>
-                        <td th:text="${s.motivo}">Motivo de eliminación</td>
                         <td>
                             <span th:if="${s.estado == 'PENDIENTE'}" class="badge bg-warning text-dark">
                                 <i class="fas fa-clock me-1"></i>
@@ -52,20 +50,13 @@
                             </span>
                         </td>
                         <td class="text-center">
-                            <div th:if="${s.estado == 'PENDIENTE'}" class="d-flex justify-content-center gap-2">
-                                <button type="button"
-                                        class="btn btn-sm btn-success"
-                                        data-bs-toggle="modal"
-                                        th:data-bs-target="'#modalAprobar' + ${s.idSolicitud}">
-                                    <i class="fas fa-check me-1"></i> Aprobar
-                                </button>
-                                <button type="button"
-                                        class="btn btn-sm btn-danger"
-                                        data-bs-toggle="modal"
-                                        th:data-bs-target="'#modalRechazar' + ${s.idSolicitud}">
-                                    <i class="fas fa-times me-1"></i> Rechazar
-                                </button>
-                            </div>
+                            <button th:if="${s.estado == 'PENDIENTE'}"
+                                    type="button"
+                                    class="btn btn-sm btn-primary"
+                                    data-bs-toggle="modal"
+                                    th:data-bs-target="'#modalProcesar' + ${s.idSolicitud}">
+                                <i class="fas fa-gavel me-1"></i> Procesar
+                            </button>
                             <span th:if="${s.estado == 'APROBADO' or s.estado == 'RECHAZADO'}" class="text-muted">
                                 <i class="fas fa-lock me-1"></i> Procesada
                             </span>
@@ -73,7 +64,7 @@
                     </tr>
 
                     <tr th:if="${#lists.isEmpty(solicitudes)}">
-                        <td colspan="6" class="text-center text-muted py-4">
+                        <td colspan="5" class="text-center text-muted py-4">
                             No se encontraron solicitudes de eliminación.
                         </td>
                     </tr>
@@ -86,74 +77,63 @@
     </section>
 
     <div th:each="s : ${solicitudes}" th:if="${s.estado == 'PENDIENTE'}">
-        <div class="modal fade" th:id="'modalAprobar' + ${s.idSolicitud}" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
+        <div class="modal fade" th:id="'modalProcesar' + ${s.idSolicitud}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
-                    <div class="modal-header bg-success text-white">
+                    <div class="modal-header bg-primary text-white">
                         <h5 class="modal-title">
-                            <i class="fas fa-check-circle me-2"></i>
-                            Aprobar Solicitud
+                            <i class="fas fa-gavel me-2"></i>
+                            Procesar Solicitud #<span th:text="${s.idSolicitud}">1</span>
                         </h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form th:action="@{/solicitudes/{id}/aprobar(id=${s.idSolicitud})}" method="post">
-                        <div class="modal-body">
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-1"></i>
-                                Vas a aprobar la eliminación del hecho: <strong th:text="${s.tituloHecho}">Título</strong>
+                    <div class="modal-body">
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <i class="fas fa-file-alt me-1"></i>
+                                <strong>Hecho:</strong> <span th:text="${s.tituloHecho}">Título del hecho</span>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Comentario</label>
-                                <textarea name="comentario"
-                                          class="form-control"
-                                          rows="3"
-                                          placeholder="Ingresá un comentario sobre la aprobación..."
-                                          required></textarea>
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Motivo de la solicitud de eliminación:</h6>
+                                <p class="card-text" th:text="${s.motivo}" style="white-space: pre-wrap;">Motivo de la solicitud...</p>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-check me-1"></i> Confirmar Aprobación
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
 
-        <div class="modal fade" th:id="'modalRechazar' + ${s.idSolicitud}" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title">
-                            <i class="fas fa-times-circle me-2"></i>
-                            Rechazar Solicitud
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-comment me-1"></i>
+                                Comentario de resolución
+                            </label>
+                            <textarea th:id="'comentario' + ${s.idSolicitud}"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Ingresá un comentario sobre tu decisión..."
+                                      required></textarea>
+                        </div>
                     </div>
-                    <form th:action="@{/solicitudes/{id}/rechazar(id=${s.idSolicitud})}" method="post">
-                        <div class="modal-body">
-                            <div class="alert alert-warning">
-                                <i class="fas fa-exclamation-triangle me-1"></i>
-                                Vas a rechazar la eliminación del hecho: <strong th:text="${s.tituloHecho}">Título</strong>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Motivo del rechazo</label>
-                                <textarea name="comentario"
-                                          class="form-control"
-                                          rows="3"
-                                          placeholder="Explicá brevemente por qué rechazás esta solicitud..."
-                                          required></textarea>
-                            </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i> Cancelar
+                        </button>
+                        <div class="d-flex gap-2">
+                            <form th:action="@{/solicitudes/{id}/rechazar(id=${s.idSolicitud})}" method="post" class="d-inline">
+                                <input type="hidden" name="comentario" th:id="'comentarioRechazar' + ${s.idSolicitud}">
+                                <button type="submit"
+                                        class="btn btn-danger"
+                                        th:onclick="'document.getElementById(\'comentarioRechazar' + ${s.idSolicitud} + '\').value = document.getElementById(\'comentario' + ${s.idSolicitud} + '\').value; return document.getElementById(\'comentario' + ${s.idSolicitud} + '\').value.trim() !== \'\' || (alert(\'Ingresá un comentario\'), false);'">
+                                    <i class="fas fa-times me-1"></i> Rechazar
+                                </button>
+                            </form>
+                            <form th:action="@{/solicitudes/{id}/aprobar(id=${s.idSolicitud})}" method="post" class="d-inline">
+                                <input type="hidden" name="comentario" th:id="'comentarioAprobar' + ${s.idSolicitud}">
+                                <button type="submit"
+                                        class="btn btn-success"
+                                        th:onclick="'document.getElementById(\'comentarioAprobar' + ${s.idSolicitud} + '\').value = document.getElementById(\'comentario' + ${s.idSolicitud} + '\').value; return document.getElementById(\'comentario' + ${s.idSolicitud} + '\').value.trim() !== \'\' || (alert(\'Ingresá un comentario\'), false);'">
+                                    <i class="fas fa-check me-1"></i> Aprobar
+                                </button>
+                            </form>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-danger">
-                                <i class="fas fa-times me-1"></i> Confirmar Rechazo
-                            </button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
