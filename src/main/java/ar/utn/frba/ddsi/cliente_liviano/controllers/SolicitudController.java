@@ -25,10 +25,8 @@ public class SolicitudController {
     @PostMapping("/crear/solicitud-eliminacion/hecho/{idHecho:\\d+}")
     public String enviarSolicitud(@PathVariable Long idHecho,
                                   @RequestParam String motivo) {
-        System.out.println("Motivo: " + motivo);
-        System.out.println("hecho: " + idHecho);
         agregadorSolicitudesService.crearSolicitud(idHecho, motivo);
-        return "redirect:/";
+        return "redirect:/hechos";
     }
 
     @GetMapping("/admin")
