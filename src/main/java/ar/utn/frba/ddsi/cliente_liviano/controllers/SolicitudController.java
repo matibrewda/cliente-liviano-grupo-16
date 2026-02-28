@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/solicitud")
+@RequestMapping("/solicitudes")
 public class SolicitudController {
     @Autowired
     private AgregadorSolicitudesService agregadorSolicitudesService;
@@ -43,13 +43,13 @@ public class SolicitudController {
     public String aprobarSolicitud(@PathVariable Long id,
                                    @RequestParam String comentario) {
         agregadorSolicitudesService.aprobarSolicitud(id, comentario);
-        return "redirect:/solicitud/admin";
+        return "redirect:/solicitudes/admin";
     }
 
     @PostMapping("/{id}/rechazar")
     public String rechazarSolicitud(@PathVariable Long id,
                                     @RequestParam String comentario) {
         agregadorSolicitudesService.rechazarSolicitud(id, comentario);
-        return "redirect:/solicitud/admin";
+        return "redirect:/solicitudes/admin";
     }
 }
