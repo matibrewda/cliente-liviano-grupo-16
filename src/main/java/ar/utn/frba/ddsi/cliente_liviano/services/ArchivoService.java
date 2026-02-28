@@ -15,7 +15,12 @@ public class ArchivoService {
     ArchivosRepository archivosRepository;
 
     public void almacenarArchivo(MultipartFile file) {
-        archivosRepository.save(file);
+        try {
+            archivosRepository.save(file);
+        } catch (Exception e){
+
+        }
+
 
     }
 }

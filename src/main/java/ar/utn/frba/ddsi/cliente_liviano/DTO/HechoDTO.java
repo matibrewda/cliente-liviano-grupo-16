@@ -1,6 +1,7 @@
 package ar.utn.frba.ddsi.cliente_liviano.DTO;
 
 import ar.utn.frba.ddsi.cliente_liviano.models.Categoria;
+import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
 import ar.utn.frba.ddsi.cliente_liviano.models.Origen;
 import ar.utn.frba.ddsi.cliente_liviano.models.Ubicacion;
 import lombok.AllArgsConstructor;
@@ -46,4 +47,15 @@ public class HechoDTO {
         this.fechaCarga = fechaCarga;
     }
 
+    public Hecho toHecho() {
+        return new Hecho(
+                this.getId(),
+                this.getTitulo(),
+                this.getDescripcion(),
+                new Categoria(this.getCategoriaDTO().getId(),this.getCategoriaDTO().getNombre()),
+                new Ubicacion(this.getUbicacionDTO().getLatitud(),this.getUbicacionDTO().getLongitud()),
+                this.getFechaAcontecimiento(),
+                this.getFechaCarga()
+        );
+    }
 }

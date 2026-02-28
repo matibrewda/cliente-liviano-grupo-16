@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
 import java.util.Optional;
 
@@ -59,5 +60,9 @@ public class HechosService {
         hecho.setFechaAcontecimiento(hechoDTO.getFechaAcontecimiento());
         hecho.setUbicacion(hechoDTO.getUbicacion());
         return hecho;
+    }
+
+    public List<Hecho> obtenerHechos() {
+        return hechosRepository.findAll();
     }
 }

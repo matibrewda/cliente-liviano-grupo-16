@@ -16,6 +16,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/hechos")
 public class HechosController {
@@ -128,7 +133,32 @@ public class HechosController {
         }
 
         // Redirigimos de vuelta a la página de carga para limpiar el formulario
-        return "redirect:/hechos/carga";
+        return "redirect:/hechos/carga-masiva";
     }
 
-}
+    @GetMapping("/mapa")
+    public String mapaDeHechos(Model model){
+        List<Hecho> hechos = hechosService.obtenerHechos();
+        List<Map<String, Object>> hechosParaElMapa = new ArrayList<>();
+
+        for (Hecho h : hechos) {
+            Map<String, Object> dto = new HashMap<>();
+            dto.put("id", h.getId());
+            dto.put("titulo", h.getTitulo());
+            dto.put("categoria", h.getCategoria().getNombre());
+
+            // Extraemos latitud y longitud manualmente y nos aseguramos de que no sean nulos
+            if (h.getUbicacion() != null) {
+                dto.put("lat", h.getUbicacion().getLatitud());
+                dto.put("lng", h.getUbicacion().getLongitud());
+                hechosParaElMapa.add(dto); // Solo enviamos los que tienen coordenadas
+            }
+        }
+
+        // Enviamos esta lista simplificada a la vista
+        model.addAttribute("listaHechos", hechosParaElMapa);
+
+        return "mapa";
+    }
+    }
+
