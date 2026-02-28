@@ -1,12 +1,15 @@
 package ar.utn.frba.ddsi.cliente_liviano.controllers;
 
+import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
 import ar.utn.frba.ddsi.cliente_liviano.exceptions.NotFoundException;
 import ar.utn.frba.ddsi.cliente_liviano.models.Categoria;
 import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
 import ar.utn.frba.ddsi.cliente_liviano.models.Ubicacion;
-import ar.utn.frba.ddsi.cliente_liviano.models.dto.HechoDTO;
+import ar.utn.frba.ddsi.cliente_liviano.models.dto.HechoInputDTO;
+import ar.utn.frba.ddsi.cliente_liviano.services.CategoriaService;
 import ar.utn.frba.ddsi.cliente_liviano.services.HechosService;
 import ar.utn.frba.ddsi.cliente_liviano.services.ArchivoService;
+import ar.utn.frba.ddsi.cliente_liviano.servicesAgregador.AgregadorHechoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -28,16 +31,36 @@ public class HechosController {
     private HechosService hechosService;
     @Autowired
     private ArchivoService archivoService;
+    @Autowired
+    private CategoriaService categoriaService;
+
+    @Autowired
+    private AgregadorHechoService agregadorHechoService;
 
     @GetMapping
     public String listarHechos(Model model) {
+        List<HechoDTO> hechos = agregadorHechoService.obtenerTodosLosHechos();
+        model.addAttribute("hechos", hechos);
         return "listar-hechos";
     }
+    @GetMapping("/detalle/{idHecho}")
+    public String detalleHechoByID(@PathVariable Long idHecho, Model model) {
+        var hecho = agregadorHechoService.getHechoById(idHecho);
+        model.addAttribute("hecho", hecho);
+        return "detalle-un-hecho";
+    }
+
 
     @GetMapping("/{id}")
     public String verDetalleHecho(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
-            HechoDTO hecho = hechosService.obtenerHechoPorID(id).get();
+            HechoInputDTO hecho = hechosService.obtenerHechoPorID(id).get();
+            List<Categoria> categorias = categoriaService.getAll();
+            categorias.forEach(categoria -> {
+                if (categoria.getId().equals(hecho.getCategoria().getId())) {
+                    hecho.setCategoria(categoria);
+                }
+            });
 
             model.addAttribute("hecho", hecho);
             model.addAttribute("titulo", "Detalle del Hecho");
@@ -55,13 +78,15 @@ public class HechosController {
         Hecho hecho = new Hecho();
         hecho.setUbicacion(new Ubicacion());
         hecho.setCategoria(new Categoria());
+        List<Categoria> categoriasDisponibles = categoriaService.getAll();
+        model.addAttribute("categoriasDisponibles", categoriasDisponibles);
         model.addAttribute("hecho", hecho);
         model.addAttribute("titulo", "Crear Nuevo Hecho");
         return "/contribuyente/crear-hecho";
     }
 
     @PostMapping("/crear")
-    public String crearHecho(@ModelAttribute("hecho")HechoDTO hecho,
+    public String crearHecho(@ModelAttribute("hecho") HechoInputDTO hecho,
                              BindingResult bindingResult,
                              Model model,
                              RedirectAttributes redirectAttributes) {
@@ -77,7 +102,9 @@ public class HechosController {
     @GetMapping("/{id}/editar")
     public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
-            HechoDTO hechoDTO = hechosService.obtenerHechoPorID(id).get();
+            HechoInputDTO hechoDTO = hechosService.obtenerHechoPorID(id).get();
+            List<Categoria> categoriasDisponibles = categoriaService.getAll();
+            model.addAttribute("categoriasDisponibles", categoriasDisponibles);
             model.addAttribute("hecho", hechoDTO);
             model.addAttribute("titulo", "Editar Hecho");
             return "/contribuyente/editar-hecho";
@@ -90,7 +117,7 @@ public class HechosController {
 
     @PostMapping("/{id}/actualizar")
     public String actualizarHecho(@PathVariable Long id,
-                                   @ModelAttribute("hecho") HechoDTO hechoDTO,
+                                   @ModelAttribute("hecho") HechoInputDTO hechoDTO,
                                    BindingResult bindingResult,
                                    Model model,
                                    RedirectAttributes redirectAttributes

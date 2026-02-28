@@ -17,12 +17,11 @@
   <th:block th:replace="${extraCss}" />
 </head>
 <body class="d-flex flex-column min-vh-100">
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+<!-- Fragmento de navegación -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
   <div class="container">
     <a class="navbar-brand fw-bold" th:href="@{/}">
-      <i class="fas fa-map-marked-alt me-2"></i>
-      MetaMapa
+      <i class="bi bi-map-fill"></i> MetaMapa
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
@@ -30,18 +29,19 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" th:href="@{/hechos}">
-            <i class="bi bi-list-ul me-1"></i> Lista de Hechos
-          </a>
+          <a class="nav-link" th:href="@{/colecciones}">Explorar Colecciones</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" th:href="@{/mapa}">
-            <i class="bi bi-globe-americas me-1"></i> Ver Mapa
+          <a class="nav-link" th:href="@{/hechos}">Explorar Hechos</a>
+        </li>
+        <li class="nav-item" id="admin-area" style="display: none;">
+          <a class="nav-link" th:href="@{/solicitudes/admin}">
+            <i class="fas fa-clipboard-list me-1"></i> Admin Solicitudes
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link btn btn-light btn-sm text-primary px-3 ms-lg-2 mt-2 mt-lg-0" th:href="@{/hechos/nuevo}">
-            <i class="bi bi-plus-circle me-1"></i> Nuevo Hecho
+        <li class="nav-item" id="auth-area">
+          <a class="nav-link btn btn-primary btn-sm px-3 ms-lg-2 text-white" th:href="@{/login}">
+            Iniciar Sesión / Registro
           </a>
         </li>
       </ul>
@@ -74,6 +74,46 @@
     </div>
   </div>
 </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script th:inline="javascript">
+  const token = [[${token}]];
+  const nombre = [[${nombreReal}]];
+  const username = [[${username}]];
+
+  if (token) {
+    sessionStorage.setItem('jwt', token);
+    sessionStorage.setItem('nombreReal', nombre);
+    sessionStorage.setItem('username', username);
+  }
+</script>
+
+<script src="script.js"></script>
+
+<script src="/js/auth.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const authArea = document.getElementById("auth-area");
+    const adminArea = document.getElementById("admin-area");
+
+    if (isLoggedIn()) {
+      const nombreReal = getNombreReal();
+
+      authArea.innerHTML = `
+    <div class="d-flex align-items-center">
+        <span class="me-2 px-3 ms-lg-2 text-white">Hola, <strong>${nombreReal}</strong></span>
+        <button class="btn btn-outline-danger btn-sm" onclick="logout()">Cerrar Sesión</button>
+    </div>
+    `;
+
+      if (adminArea) {
+        adminArea.style.display = "block";
+      }
+    }
+  });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/common.js" onerror="this.style.display='none'"></script>

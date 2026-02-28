@@ -40,7 +40,7 @@
                         var popupContent = `
                             <div class="popup-titulo">${hecho.titulo || 'Sin título'}</div>
                             <div class="small text-muted mb-2">${hecho.categoria || ''}</div>
-                            <a href="/hechos/${hecho.id}" class="btn btn-sm btn-primary w-100">Ver Detalles</a>
+                            <a href="/hechos/detalle/${hecho.id}" class="btn btn-sm btn-primary w-100">Ver Detalles</a>
                         `;
                         marker.bindPopup(popupContent);
                     }

@@ -12,13 +12,21 @@ async function apiFetch(endpoint, options = {}) {
         }
     };
 
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, finalOptions);
+    const url = `${API_BASE_URL}${endpoint}`;
 
-    if (response.status === 401 || response.status === 403) {
-        console.warn("Token inválido o expirado. Redirigiendo a login...");
-        sessionStorage.clear();
-        return;
+    try {
+        const response = await fetch(url, finalOptions);
+        console.log('apiFetch - Response status:', response.status);
+
+        if (response.status === 401 || response.status === 403) {
+            console.warn("Token inválido o expirado. Redirigiendo a login...");
+            sessionStorage.clear();
+            return null;
+        }
+
+        return response;
+    } catch (error) {
+        console.error('apiFetch - Error en fetch:', error);
+        throw error;
     }
-
-    return response;
 }

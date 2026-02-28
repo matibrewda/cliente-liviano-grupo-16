@@ -2,10 +2,9 @@ package ar.utn.frba.ddsi.cliente_liviano.services;
 
 import ar.utn.frba.ddsi.cliente_liviano.exceptions.NotFoundException;
 import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
-import ar.utn.frba.ddsi.cliente_liviano.models.dto.HechoDTO;
+import ar.utn.frba.ddsi.cliente_liviano.models.dto.HechoInputDTO;
 import ar.utn.frba.ddsi.cliente_liviano.models.repositories.HechosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 
@@ -21,13 +20,13 @@ public class HechosService {
         return this.hechosRepository.save(hecho);
     }
 
-    public Hecho actualizarHecho(Long id, HechoDTO hechoDTO) {
+    public Hecho actualizarHecho(Long id, HechoInputDTO hechoDTO) {
         Hecho hecho = intentarRecuperarHecho(id);
 
         return hechosRepository.update(convertirDTOHEntity(hechoDTO));
     }
 
-    public Optional<HechoDTO> obtenerHechoPorID(Long id) {
+    public Optional<HechoInputDTO> obtenerHechoPorID(Long id) {
         Hecho hecho = intentarRecuperarHecho(id);
         return Optional.of(convertirHDTO(hecho));
     }
@@ -40,8 +39,8 @@ public class HechosService {
         return hecho.get();
     }
 
-    private HechoDTO convertirHDTO(Hecho hecho) {
-        HechoDTO dto = new HechoDTO();
+    private HechoInputDTO convertirHDTO(Hecho hecho) {
+        HechoInputDTO dto = new HechoInputDTO();
         dto.setId(hecho.getId());
         dto.setTitulo(hecho.getTitulo());
         dto.setDescripcion(hecho.getDescripcion());
@@ -51,7 +50,7 @@ public class HechosService {
         return dto;
     }
 
-    private Hecho convertirDTOHEntity(HechoDTO hechoDTO) {
+    private Hecho convertirDTOHEntity(HechoInputDTO hechoDTO) {
         Hecho hecho = new Hecho();
         hecho.setId(hechoDTO.getId());
         hecho.setTitulo(hechoDTO.getTitulo());

@@ -30,8 +30,6 @@ public class HechoResponse {
     private LocalDateTime fechaCarga;
     @JsonProperty("origen")
     private String origen;
-    @JsonProperty("visible")
-    private Boolean visible;
     @JsonProperty("consenso")
     private Boolean consenso;
 
@@ -45,7 +43,6 @@ public class HechoResponse {
         hechoDTO.setFechaCarga(fechaCarga);
         hechoDTO.setUbicacionDTO(new UbicacionDTO(ubicacion.getLatitud(),  ubicacion.getLongitud()));
         hechoDTO.setCategoriaDTO(new CategoriaDTO(categoria.getId(),categoria.getNombre()));
-        hechoDTO.setVisible(visible);
         hechoDTO.setConsenso(consenso);
     return hechoDTO;
     }
