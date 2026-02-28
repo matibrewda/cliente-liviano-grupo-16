@@ -73,28 +73,28 @@
             </div>
 
 
-            <!-- Multimedia (misma estética, sin editar) -->
+            <!-- Multimedia -->
             <div class="mb-3">
               <label class="form-label fw-bold">Multimedia</label>
+              <div th:if="${hecho.multimediaUrl != null and hecho.multimediaUrl != ''}">
 
-              <div th:if="${hecho.multimediaUrl != null}">
-
-                <a th:href="${hecho.multimediaUrl}"
-                   target="_blank"
-                   class="btn btn-outline-primary mb-3">
-                  <i class="fas fa-external-link-alt me-1"></i>
-                  Ver archivo adjunto
+                <a th:href="${hecho.multimediaUrl}" target="_blank">
+                  <img th:src="${hecho.multimediaUrl}"
+                       class="img-fluid rounded border shadow-sm"
+                       alt="Vista previa"
+                       style="max-height: 400px; cursor: pointer;"
+                       onerror="this.style.display='none';" />
                 </a>
-
-
 
               </div>
 
-              <div th:if="${hecho.multimediaUrl == null}"
+              <div th:if="${hecho.multimediaUrl == null or hecho.multimediaUrl == ''}"
                    class="alert alert-secondary mb-0">
                 Este hecho no tiene multimedia adjunta.
               </div>
             </div>
+
+
           </div>
         </div>
 

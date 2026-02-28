@@ -102,13 +102,21 @@
                                 </div>
                             </div>
 
-                            <div class="mb-3" th:if="${hecho.multimediaUrl != null}">
+                            <div th:if="${hecho.multimediaUrl != null and hecho.multimediaUrl != ''}">
                                 <label class="form-label">Imagen actual</label><br/>
-                                <a class="btn btn-outline-primary btn-sm mb-2" th:href="${hecho.multimediaUrl}" target="_blank">
-                                    Ver archivo actual
+                                <a th:href="${hecho.multimediaUrl}" target="_blank">
+                                    <img th:src="${hecho.multimediaUrl}"
+                                         class="img-fluid rounded border shadow-sm"
+                                         alt="Vista previa"
+                                         style="max-height: 400px; cursor: pointer;"
+                                         onerror="this.style.display='none';" />
                                 </a>
 
+                            </div>
 
+                            <div th:if="${hecho.multimediaUrl == null or hecho.multimediaUrl == ''}"
+                                 class="alert alert-secondary mb-0">
+                                Este hecho no tiene multimedia adjunta.
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Reemplazar imagen (opcional)</label>
