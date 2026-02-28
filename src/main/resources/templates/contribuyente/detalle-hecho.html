@@ -71,47 +71,33 @@
                 </div>
               </div>
             </div>
+
+
+            <!-- Multimedia (misma estética, sin editar) -->
+            <div class="mb-3">
+              <label class="form-label fw-bold">Multimedia</label>
+
+              <div th:if="${hecho.multimediaUrl != null}">
+
+                <a th:href="${hecho.multimediaUrl}"
+                   target="_blank"
+                   class="btn btn-outline-primary mb-3">
+                  <i class="fas fa-external-link-alt me-1"></i>
+                  Ver archivo adjunto
+                </a>
+
+
+
+              </div>
+
+              <div th:if="${hecho.multimediaUrl == null}"
+                   class="alert alert-secondary mb-0">
+                Este hecho no tiene multimedia adjunta.
+              </div>
+            </div>
           </div>
         </div>
 
-
-        <small class="text-muted">
-          DEBUG multimediaUrl: <span th:text="${hecho.multimediaUrl}">null</span>
-        </small>
-        <!-- Multimedia -->
-        <div class="card mb-4">
-          <div class="card-header">
-            <h5 class="card-title mb-0">
-              <i class="fas fa-paperclip me-2"></i>
-              Multimedia
-            </h5>
-          </div>
-
-          <div class="card-body">
-
-            <!-- Si existe multimedia -->
-            <div th:if="${hecho.multimediaUrl != null}">
-
-              <!-- Botón siempre visible urlDinamica +-->
-              <a th:href="${ hecho.multimediaUrl}"
-                 target="_blank"
-                 class="btn btn-outline-primary mb-3">
-                <i class="fas fa-external-link-alt me-1"></i>
-                Ver archivo adjunto
-              </a>
-
-
-
-            </div>
-
-            <!-- Si no existe -->
-            <div th:if="${hecho.multimediaUrl == null}"
-                 class="alert alert-secondary mb-0">
-              Este hecho no tiene multimedia adjunta.
-            </div>
-
-          </div>
-        </div>
       </div>
 
     </div>
