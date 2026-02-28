@@ -7,6 +7,7 @@ import ar.utn.frba.ddsi.cliente_liviano.models.repositories.dto.FuenteDinamicaHe
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
+import org.thymeleaf.spring6.ISpringTemplateEngine;
 
 import java.io.IOException;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 @Repository
 public class HechosRepository {
+    private final ISpringTemplateEngine iSpringTemplateEngine;
     private HttpClient client;
     private ObjectMapper mapper;
 
@@ -29,9 +31,10 @@ public class HechosRepository {
 
     private final List<Hecho> hechos = new ArrayList<Hecho>();
 
-    public HechosRepository(ObjectMapper objectMapper){
+    public HechosRepository(ObjectMapper objectMapper, ISpringTemplateEngine iSpringTemplateEngine){
         this.mapper = objectMapper;
         this.client = HttpClient.newHttpClient();
+        this.iSpringTemplateEngine = iSpringTemplateEngine;
     }
 
     public List<Hecho> findAll(){return hechos;}

@@ -29,13 +29,15 @@ public class HechoDTO {
     private Boolean borradoLogico;
     private LocalDateTime fechaBorradoLogico;
     private boolean consenso;
+    private String multimediaUrl;
 
     public HechoDTO(String titulo,
-                 String descripcion,
-                 CategoriaDTO categoria,
-                 UbicacionDTO ubicacion,
-                 LocalDate fechaAcontecimiento,
-                 LocalDateTime fechaCarga) {
+                    String descripcion,
+                    CategoriaDTO categoria,
+                    UbicacionDTO ubicacion,
+                    LocalDate fechaAcontecimiento,
+                    LocalDateTime fechaCarga,
+                    String multimediaUrl) {
 
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -43,6 +45,7 @@ public class HechoDTO {
         this.ubicacionDTO = ubicacion;
         this.fechaAcontecimiento = fechaAcontecimiento;
         this.fechaCarga = fechaCarga;
+        this.multimediaUrl = multimediaUrl;
     }
 
 }

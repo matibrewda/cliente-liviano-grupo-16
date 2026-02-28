@@ -45,6 +45,7 @@ public class HechosService {
         dto.setCategoria(hecho.getCategoria());
         dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
         dto.setUbicacion(hecho.getUbicacion());
+        dto.setMultimediaUrl(hecho.getMultimediaUrl());
         return dto;
     }
 

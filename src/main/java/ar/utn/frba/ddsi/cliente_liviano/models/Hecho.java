@@ -26,6 +26,8 @@ public class Hecho {
     private LocalDate fechaAcontecimiento;
     @Setter
     private LocalDateTime fechaCarga;
+    @Setter
+    private String multimediaUrl;
     private Boolean borradoLogico;
     private LocalDateTime fechaBorradoLogico;
 
@@ -36,7 +38,8 @@ public class Hecho {
                  Categoria categoria,
                  Ubicacion ubicacion,
                  LocalDate fechaAcontecimiento,
-                 LocalDateTime fechaCarga) {
+                 LocalDateTime fechaCarga,
+                 String multimediaUrl) {
 
         this.id = id;
         this.titulo = titulo;
@@ -46,6 +49,7 @@ public class Hecho {
         this.fechaAcontecimiento = fechaAcontecimiento;
         this.fechaCarga = fechaCarga;
         this.borradoLogico = false;
+        this.multimediaUrl = multimediaUrl;
     }
 
 
