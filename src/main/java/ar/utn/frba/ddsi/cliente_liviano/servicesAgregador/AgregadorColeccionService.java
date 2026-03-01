@@ -1,6 +1,7 @@
 package ar.utn.frba.ddsi.cliente_liviano.servicesAgregador;
 
 import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
+import ar.utn.frba.ddsi.cliente_liviano.DTO.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.ColeccionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,12 +85,6 @@ public class AgregadorColeccionService {
 
 
 
-
-
-
-
-
-
     public HechoDTO obtenerHechoPorColeccionId(String coleccionId, String hechoId) {
 
         String path = UriComponentsBuilder
@@ -115,4 +110,20 @@ public class AgregadorColeccionService {
         return fecha + "T23:59:59";
     }
 
+
+    public ColeccionDTO crear(ColeccionInputDTO coleccionInputDTO) {
+        return this.coleccionRepository.save(coleccionInputDTO);
+    }
+
+    public ColeccionDTO obtenerColeccionPorId(Long id){
+        return coleccionRepository.findById(id);
+    }
+
+    public ColeccionDTO actualizarColeccion(Long id, ColeccionInputDTO coleccionInputDTO) {
+        return coleccionRepository.actualizarColeccion(id, coleccionInputDTO);
+    }
+
+    public void eliminar(Long id) {
+        coleccionRepository.eliminar(id);
+    }
 }

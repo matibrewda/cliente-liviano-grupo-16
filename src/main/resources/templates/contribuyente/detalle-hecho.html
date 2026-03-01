@@ -1,4 +1,4 @@
-<html th:replace="~{base ::html}">
+<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{}, ~{})}">
 <div th:fragment="contenido" class="row">
   <div class="col-12">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -71,6 +71,30 @@
                 </div>
               </div>
             </div>
+
+
+            <!-- Multimedia -->
+            <div class="mb-3">
+              <label class="form-label fw-bold">Multimedia</label>
+              <div th:if="${hecho.multimediaUrl != null and hecho.multimediaUrl != ''}">
+
+                <a th:href="${hecho.multimediaUrl}" target="_blank">
+                  <img th:src="${hecho.multimediaUrl}"
+                       class="img-fluid rounded border shadow-sm"
+                       alt="Vista previa"
+                       style="max-height: 400px; cursor: pointer;"
+                       onerror="this.style.display='none';" />
+                </a>
+
+              </div>
+
+              <div th:if="${hecho.multimediaUrl == null or hecho.multimediaUrl == ''}"
+                   class="alert alert-secondary mb-0">
+                Este hecho no tiene multimedia adjunta.
+              </div>
+            </div>
+
+
           </div>
         </div>
 

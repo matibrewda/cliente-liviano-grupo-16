@@ -2,8 +2,11 @@ package ar.utn.frba.ddsi.cliente_liviano.repositories.agregador;
 
 
 import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
+import ar.utn.frba.ddsi.cliente_liviano.DTO.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
+import ar.utn.frba.ddsi.cliente_liviano.exceptions.AgregadorApiException;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto.ColeccionResponse;
+import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto.ColeccionRequest;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto.HechoResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -123,6 +126,142 @@ public class ColeccionRepository {
 
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error al obtener colecciones desde el agregador", e);
+        }
+    }
+
+
+    public ColeccionDTO save(ColeccionInputDTO coleccionNueva) {
+        ColeccionDTO coleccion;
+
+        String jsonBody;
+        try {
+            jsonBody = mapper.writeValueAsString(new ColeccionRequest(
+                    coleccionNueva.getTitulo(),
+                    coleccionNueva.getDescripcion()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(this.baseURL + "/admin/colecciones"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+
+        try {
+            HttpResponse<String> response =client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            ColeccionResponse coleccionResponse =mapper.readValue(response.body(), ColeccionResponse.class);
+
+            coleccion = coleccionResponse.toColeccionDTO();
+
+        } catch (InterruptedException | IOException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Request was interrupted", e);
+        }
+
+        return coleccion;
+    }
+
+    public ColeccionDTO findById(Long id) {
+
+        ColeccionDTO coleccion;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(this.baseURL + "/admin/colecciones/" + id))
+                .header("Content-Type", "application/json")
+                .GET()
+                .build();
+
+        try {
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() / 100 != 2) {
+                throw new RuntimeException(
+                        "Error llamando al agregador: " +
+                                response.statusCode() + " - " + response.body()
+                );
+            }
+
+            ColeccionResponse coleccionResponse =
+                    mapper.readValue(response.body(), ColeccionResponse.class);
+
+            coleccion = coleccionResponse.toColeccionDTO();
+
+        } catch (InterruptedException | IOException e) {
+            throw new RuntimeException("Request was interrupted", e);
+        }
+
+        return coleccion;
+    }
+
+
+
+    public ColeccionDTO actualizarColeccion(Long idColeccion, ColeccionInputDTO coleccionNueva) {
+        ColeccionDTO coleccion;
+
+        String jsonBody;
+        try {
+            jsonBody = mapper.writeValueAsString(new ColeccionRequest(
+                    coleccionNueva.getTitulo(),
+                    coleccionNueva.getDescripcion()
+            ));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(this.baseURL + "/admin/colecciones/" + idColeccion))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+
+        try {
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // si no es 2xx, error
+            if (response.statusCode() / 100 != 2) {
+                throw new RuntimeException(
+                        "Error actualizando colección: " + response.statusCode() + " - " + response.body()
+                );
+            }
+
+            ColeccionResponse coleccionResponse =
+                    mapper.readValue(response.body(), ColeccionResponse.class);
+
+            coleccion = coleccionResponse.toColeccionDTO();
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Request was interrupted", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Error parseando respuesta de colección", e);
+        }
+
+        return coleccion;
+    }
+    public void eliminar(Long id) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(this.baseURL + "/admin/colecciones/" + id))
+                .header("Content-Type", "application/json")
+                .DELETE()
+                .build();
+
+        try {
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() / 100 != 2) {
+                throw new AgregadorApiException(response.statusCode(), response.body());
+            }
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Request interrumpida al eliminar colección", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Error de IO al eliminar colección", e);
         }
     }
 

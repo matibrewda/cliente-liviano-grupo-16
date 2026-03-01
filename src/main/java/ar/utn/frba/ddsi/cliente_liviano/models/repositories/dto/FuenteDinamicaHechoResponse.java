@@ -36,6 +36,8 @@ public class FuenteDinamicaHechoResponse {
     @JsonProperty("fechaAcontecimiento")
     private LocalDate fechaAcontecimiento;
 
+    @JsonProperty("multimediaUrl")
+    private String multimediaUrl;
 
     public Hecho toHecho() {
         return new Hecho(
@@ -45,7 +47,8 @@ public class FuenteDinamicaHechoResponse {
                 new Categoria(this.getCategoria(), ""),
                 new Ubicacion(this.getUbicacionLatitud(), this.getUbicacionLongitud()),
                 this.fechaAcontecimiento,
-                this.fechaAcontecimiento.atStartOfDay()
+                this.fechaAcontecimiento.atStartOfDay(),
+                this.getMultimediaUrl()
         );
     }
 }
