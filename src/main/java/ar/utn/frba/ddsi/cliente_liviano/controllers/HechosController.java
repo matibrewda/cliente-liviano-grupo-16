@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -80,11 +81,25 @@ public class HechosController {
 
     @PostMapping("/crear")
     public String crearHecho(@ModelAttribute("hecho") HechoInputDTO hecho,
+                             @RequestParam(value = "archivo", required = false) MultipartFile archivo,
                              BindingResult bindingResult,
                              Model model,
                              RedirectAttributes redirectAttributes) {
 
         Hecho hechoCreado = this.hechosService.crearHecho(hecho.ToDomain());
+
+        // Si el usuario adjuntó archivo, lo subimos con PUT al microservicio dinámico
+        if (archivo != null && !archivo.isEmpty()) {
+            try {
+                this.hechosService.subirMultimedia(hechoCreado.getId(), archivo);
+            } catch (Exception e) {
+                redirectAttributes.addFlashAttribute("mensaje",
+                        "Hecho creado, pero no se pudo subir la multimedia.");
+                redirectAttributes.addFlashAttribute("tipoMensaje", "warning");
+                return "redirect:/hechos/" + hechoCreado.getId();
+            }
+        }
+
 
         redirectAttributes.addFlashAttribute("mensaje", "Hecho " + hechoCreado.getId() + " creado exitosamente");
         redirectAttributes.addFlashAttribute("tipoMensaje", "success");
@@ -111,12 +126,31 @@ public class HechosController {
     @PostMapping("/{id}/actualizar")
     public String actualizarHecho(@PathVariable Long id,
                                    @ModelAttribute("hecho") HechoInputDTO hechoDTO,
+                                  @RequestParam(value = "archivo", required = false) MultipartFile archivo,
                                    BindingResult bindingResult,
                                    Model model,
                                    RedirectAttributes redirectAttributes
     ){
         try {
             Hecho hechoActualizado = hechosService.actualizarHecho(id, hechoDTO);
+
+
+            // Si adjunto imagen
+            if (archivo != null && !archivo.isEmpty()) {
+                try {
+                    hechosService.subirMultimedia(id, archivo);
+                } catch (IllegalArgumentException e) {
+                    redirectAttributes.addFlashAttribute("mensaje",
+                            "Hecho actualizado, pero la imagen no es válida: " + e.getMessage());
+                    redirectAttributes.addFlashAttribute("tipoMensaje", "warning");
+                    return "redirect:/hechos/" + id;
+                } catch (Exception e) {
+                    redirectAttributes.addFlashAttribute("mensaje",
+                            "Hecho actualizado, pero no se pudo subir la imagen.");
+                    redirectAttributes.addFlashAttribute("tipoMensaje", "warning");
+                    return "redirect:/hechos/" + id;
+                }
+            }
 
             redirectAttributes.addFlashAttribute("mensaje", "Hecho actualizado exitosamente");
             redirectAttributes.addFlashAttribute("tipoMensaje", "success");

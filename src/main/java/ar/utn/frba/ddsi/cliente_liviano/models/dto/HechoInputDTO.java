@@ -26,6 +26,7 @@ public class HechoInputDTO {
     private Origen origen;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaAcontecimiento;
+    private String multimediaUrl;
 
     public Hecho ToDomain () {
         return new Hecho(
@@ -35,6 +36,7 @@ public class HechoInputDTO {
                 this.categoria,
                 this.ubicacion,
                 this.fechaAcontecimiento,
-                LocalDateTime.now());
+                LocalDateTime.now(),
+                this.multimediaUrl);
     }
 }
