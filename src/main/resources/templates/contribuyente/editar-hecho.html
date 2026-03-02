@@ -1,4 +1,4 @@
-<html th:replace="~{base ::html}">
+<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{}, ~{})}">
 <div th:fragment="contenido" class="row">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">

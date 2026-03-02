@@ -1,4 +1,4 @@
-<html th:replace="~{base::html}">
+<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{}, ~{})}">
 <div th:fragment="contenido" class="row">
     <section class="py-4 bg-light">
         <div class="container">

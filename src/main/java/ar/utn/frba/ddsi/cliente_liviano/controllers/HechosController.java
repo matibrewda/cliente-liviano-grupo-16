@@ -8,6 +8,7 @@ import ar.utn.frba.ddsi.cliente_liviano.models.Ubicacion;
 import ar.utn.frba.ddsi.cliente_liviano.models.dto.HechoInputDTO;
 import ar.utn.frba.ddsi.cliente_liviano.services.CategoriaService;
 import ar.utn.frba.ddsi.cliente_liviano.services.HechosService;
+import ar.utn.frba.ddsi.cliente_liviano.services.ArchivoService;
 import ar.utn.frba.ddsi.cliente_liviano.servicesAgregador.AgregadorHechoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -18,13 +19,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/hechos")
 public class HechosController {
     @Autowired
     private HechosService hechosService;
+    @Autowired
+    private ArchivoService archivoService;
     @Autowired
     private CategoriaService categoriaService;
 
@@ -161,4 +167,58 @@ public class HechosController {
             return "redirect:/404";
         }
     }
-}
+
+    @GetMapping("/carga-masiva")
+    public String formArchivo(Model model){
+        return "/contribuyente/carga-masiva";
+    }
+
+    @PostMapping("/carga-masiva")
+    public String subirArchivo(Model model, @RequestParam("archivo") MultipartFile file,
+                               RedirectAttributes redirectAttributes){
+        if (file.isEmpty()) {
+            redirectAttributes.addFlashAttribute("mensajeError", "Por favor selecciona un archivo válido.");
+            return "redirect:/hechos/carga";
+        }
+
+        try {
+            // Llamada al servicio que creamos antes
+            archivoService.almacenarArchivo(file);
+            // Mensaje Flash: Sobrevive a la redirección y se borra después
+            redirectAttributes.addFlashAttribute("mensajeExito",
+                    "Archivo cargado correctamente: " + file.getOriginalFilename());
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensajeError", "Error: " + e.getMessage());
+        }
+
+        // Redirigimos de vuelta a la página de carga para limpiar el formulario
+        return "redirect:/hechos/carga-masiva";
+    }
+
+    @GetMapping("/mapa")
+    public String mapaDeHechos(Model model){
+        List<Hecho> hechos = hechosService.obtenerHechos();
+        List<Map<String, Object>> hechosParaElMapa = new ArrayList<>();
+
+        for (Hecho h : hechos) {
+            Map<String, Object> dto = new HashMap<>();
+            dto.put("id", h.getId());
+            dto.put("titulo", h.getTitulo());
+            dto.put("categoria", h.getCategoria().getNombre());
+
+            // Extraemos latitud y longitud manualmente y nos aseguramos de que no sean nulos
+            if (h.getUbicacion() != null) {
+                dto.put("lat", h.getUbicacion().getLatitud());
+                dto.put("lng", h.getUbicacion().getLongitud());
+                hechosParaElMapa.add(dto); // Solo enviamos los que tienen coordenadas
+            }
+        }
+
+        // Enviamos esta lista simplificada a la vista
+        model.addAttribute("listaHechos", hechosParaElMapa);
+
+        return "mapa";
+    }
+    }
+

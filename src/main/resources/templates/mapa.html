@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout('Mapa Interactivo', ~{::main}, ~{::#estilosExtras}, ~{::#scriptsExtras})}">
+<head>
+    <th:block id="estilosExtras">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+        <style>
+            #miMapa { height: 550px; width: 100%; border-radius: 8px; z-index: 1; }
+            .popup-titulo { font-weight: bold; color: #0d6efd; margin-bottom: 5px; }
+        </style>
+    </th:block>
+</head>
+<body>
+
+<main>
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-1">
+            <div id="miMapa"></div>
+        </div>
+    </div>
+</main>
+
+<th:block id="scriptsExtras">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            var map = L.map('miMapa').setView([-34.6037, -58.3816], 12);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            var hechosReales = /*[[${listaHechos}]]*/ [];
+
+            if (hechosReales && hechosReales.length > 0) {
+                hechosReales.forEach(function(hecho) {
+                    if(hecho.lat !== null && hecho.lng !== null) {
+                        var marker = L.marker([hecho.lat, hecho.lng]).addTo(map);
+                        var popupContent = `
+                            <div class="popup-titulo">${hecho.titulo || 'Sin título'}</div>
+                            <div class="small text-muted mb-2">${hecho.categoria || ''}</div>
+                            <a href="/hechos/detalle/${hecho.id}" class="btn btn-sm btn-primary w-100">Ver Detalles</a>
+                        `;
+                        marker.bindPopup(popupContent);
+                    }
+                });
+            }
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

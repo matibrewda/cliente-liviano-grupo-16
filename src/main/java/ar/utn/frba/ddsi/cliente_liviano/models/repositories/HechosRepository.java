@@ -1,9 +1,11 @@
 package ar.utn.frba.ddsi.cliente_liviano.models.repositories;
+import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
 import ar.utn.frba.ddsi.cliente_liviano.models.Categoria;
 import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
 import ar.utn.frba.ddsi.cliente_liviano.models.Ubicacion;
 import ar.utn.frba.ddsi.cliente_liviano.models.repositories.dto.FuenteDinamicaHechoRequest;
 import ar.utn.frba.ddsi.cliente_liviano.models.repositories.dto.FuenteDinamicaHechoResponse;
+import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto.HechoResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -19,6 +21,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +34,9 @@ public class HechosRepository {
     @Value("${fuente-dinamica.base-url}")
     private String baseURL;
 
+    @Value("${agregador.base-url}")
+    private String AgregadorURL;
+
     private final List<Hecho> hechos = new ArrayList<Hecho>();
 
     public HechosRepository(ObjectMapper objectMapper, ISpringTemplateEngine iSpringTemplateEngine){
@@ -39,7 +45,36 @@ public class HechosRepository {
         this.iSpringTemplateEngine = iSpringTemplateEngine;
     }
 
-    public List<Hecho> findAll(){return hechos;}
+    public List<Hecho> findAll(){
+        URI uri = URI.create(AgregadorURL+ "/hechos");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", "application/json")
+                .GET()
+                .build();
+        try {
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            HechoResponse[] hechosResponse =
+                    mapper.readValue(response.body(), HechoResponse[].class);
+
+            System.out.println(Arrays.toString(hechosResponse));
+
+            List<HechoDTO> hechosdto =
+                    Arrays.stream(hechosResponse)
+                    .map(HechoResponse::toHechoDTO)
+                    .toList();
+            for (HechoDTO hechoDTO : hechosdto){
+                hechos.add(hechoDTO.toHecho());
+            }
+
+        }catch (InterruptedException | IOException e) {
+            throw new RuntimeException("Request was interrupted", e);
+        }
+
+        return hechos;
+    }
 
     public Optional<Hecho> findById(Long id){
         Hecho hecho;
@@ -67,7 +102,7 @@ public class HechosRepository {
             jsonBody = mapper.writeValueAsString(new FuenteDinamicaHechoRequest(
                     hechoNuevo.getTitulo(),
                     hechoNuevo.getDescripcion(),
-                    hechoNuevo.getCategoria().getId(),
+                    hechoNuevo.getCategoria().getNombre(),
                     hechoNuevo.getUbicacion().getLatitud(),
                     hechoNuevo.getUbicacion().getLongitud(),
                     hechoNuevo.getFechaAcontecimiento())
@@ -100,7 +135,7 @@ public class HechosRepository {
             jsonBody = mapper.writeValueAsString(new FuenteDinamicaHechoRequest(
                     hechoNuevo.getTitulo(),
                     hechoNuevo.getDescripcion(),
-                    hechoNuevo.getCategoria().getId(),
+                    hechoNuevo.getCategoria().getNombre(),
                     hechoNuevo.getUbicacion().getLatitud(),
                     hechoNuevo.getUbicacion().getLongitud(),
                     hechoNuevo.getFechaAcontecimiento())

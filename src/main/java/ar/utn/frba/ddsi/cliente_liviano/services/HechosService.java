@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -88,5 +90,9 @@ public class HechosService {
         }
 
         hechosRepository.subirMultimedia(idHecho, archivo);
+    }
+
+    public List<Hecho> obtenerHechos() {
+        return hechosRepository.findAll();
     }
 }
