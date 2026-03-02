@@ -126,4 +126,8 @@ public class AgregadorColeccionService {
     public void eliminar(Long id) {
         coleccionRepository.eliminar(id);
     }
+
+    public void actualizarConsenso(String coleccionId, String tipoConsenso) {
+        coleccionRepository.actualizarConsenso(coleccionId, tipoConsenso);
+    }
 }

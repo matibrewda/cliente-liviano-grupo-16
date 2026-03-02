@@ -7,7 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +32,20 @@ public class AdminController {
 
         model.addAttribute("coleccion", coleccionOpt.get());
         return "colecciones/configurar-consenso";
+    }
+
+    @PostMapping("/colecciones/{coleccionId}/consenso")
+    public String guardarConsenso(@PathVariable String coleccionId,
+                                   @RequestParam String tipoConsenso,
+                                   RedirectAttributes redirectAttributes) {
+        try {
+            coleccionService.actualizarConsenso(coleccionId, tipoConsenso);
+            redirectAttributes.addFlashAttribute("success", "Configuración de consenso guardada exitosamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar la configuración: " + e.getMessage());
+            return "redirect:/admin/colecciones/" + coleccionId + "/consenso";
+        }
+        return "redirect:/colecciones";
     }
 }
 

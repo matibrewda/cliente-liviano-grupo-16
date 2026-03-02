@@ -265,4 +265,36 @@ public class ColeccionRepository {
         }
     }
 
+    public void actualizarConsenso(String coleccionId, String tipoConsenso) {
+        String jsonBody;
+        try {
+            jsonBody = mapper.writeValueAsString(java.util.Map.of("tipo", tipoConsenso));
+        } catch (IOException e) {
+            throw new RuntimeException("Error serializando request de consenso", e);
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(this.baseURL + "/admin/colecciones/" + coleccionId + "/consenso"))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+
+        try {
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() / 100 != 2) {
+                throw new RuntimeException(
+                        "Error actualizando consenso: " + response.statusCode() + " - " + response.body()
+                );
+            }
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Request interrumpida al actualizar consenso", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Error de IO al actualizar consenso", e);
+        }
+    }
+
 }

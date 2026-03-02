@@ -25,7 +25,7 @@ public class FuenteDinamicaHechoResponse {
     private String descripcion;
 
     @JsonProperty("categoria")
-    private Long categoria;
+    private String categoria;
 
     @JsonProperty("ubicacionLatitud")
     private double ubicacionLatitud;
@@ -44,7 +44,7 @@ public class FuenteDinamicaHechoResponse {
                 this.getId(),
                 this.getTitulo(),
                 this.getDescripcion(),
-                new Categoria(this.getCategoria(), ""),
+                new Categoria(null, this.getCategoria()),
                 new Ubicacion(this.getUbicacionLatitud(), this.getUbicacionLongitud()),
                 this.fechaAcontecimiento,
                 this.fechaAcontecimiento.atStartOfDay(),

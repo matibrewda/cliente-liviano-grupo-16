@@ -19,5 +19,6 @@ public class ColeccionDTO {
     private ICriterioDePertenencia criterioPertenencia;
     private List<IFuenteDeDatos> fuenteDeDatos;
     private IConsensoStrategy algoritmoDeConsenso;
+    private String tipoConsenso;
     private List<Hecho> hechos;
 }

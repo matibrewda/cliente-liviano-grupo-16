@@ -1,4 +1,4 @@
-<html th:replace="~{base::html}">
+<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{}, ~{})}">
 <div th:fragment="contenido" class="row">
     <section class="py-4 bg-light">
         <div class="container">
@@ -23,35 +23,44 @@
                 </div>
             </div>
 
+            <!-- Alertas -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <span th:text="${success}">Éxito</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span th:text="${error}">Error</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
             <!-- Formulario de configuración -->
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <form id="formConfigurarConsenso">
-                        <input type="hidden" id="coleccionId" th:value="${coleccion.handle}">
+                    <form th:action="@{/admin/colecciones/{id}/consenso(id=${coleccion.handle})}" method="post">
 
                         <div class="mb-4">
                             <label for="tipoConsenso" class="form-label fw-bold">
                                 Tipo de Algoritmo de Consenso
                             </label>
-                            <select class="form-select" id="tipoConsenso" required>
-                                <option value="">Seleccione un tipo...</option>
-                                <option value="absoluta">Absoluta</option>
-                                <option value="mayoria simple">Mayoría Simple</option>
-                                <option value="multiples menciones">Múltiples Menciones</option>
+                            <select class="form-select" name="tipoConsenso" id="tipoConsenso" required>
+                                <option value="" th:selected="${coleccion.tipoConsenso == null or coleccion.tipoConsenso == '' or coleccion.tipoConsenso == 'DEFAULT'}">Seleccione un tipo...</option>
+                                <option value="ABSOLUTA" th:selected="${coleccion.tipoConsenso == 'ABSOLUTA'}">Absoluta</option>
+                                <option value="MAYORIA_SIMPLE" th:selected="${coleccion.tipoConsenso == 'MAYORIA_SIMPLE'}">Mayoría Simple</option>
+                                <option value="MULTIPLES_MENCIONES" th:selected="${coleccion.tipoConsenso == 'MULTIPLES_MENCIONES'}">Múltiples Menciones</option>
                             </select>
                             <div class="form-text">
                                 Seleccione el algoritmo de consenso que se utilizará para esta colección.
                             </div>
                         </div>
 
-                        <div id="alertContainer"></div>
-
                         <div class="d-flex justify-content-end gap-2">
                             <a class="btn btn-outline-secondary"
                                th:href="@{/colecciones}">
                                 Cancelar
                             </a>
-                            <button type="submit" class="btn btn-primary" id="btnGuardar">
+                            <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-save"></i> Guardar Configuración
                             </button>
                         </div>
@@ -61,95 +70,6 @@
 
         </div>
     </section>
-
-    <!-- Toast container -->
-    <div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer"></div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const form = document.getElementById("formConfigurarConsenso");
-            if (!form) return;
-
-            form.addEventListener("submit", async e => {
-                e.preventDefault();
-
-                const coleccionId = document.getElementById("coleccionId").value;
-                const tipoConsenso = document.getElementById("tipoConsenso").value;
-                const btnGuardar = document.getElementById("btnGuardar");
-                const alertContainer = document.getElementById("alertContainer");
-
-                if (!tipoConsenso) {
-                    alertContainer.innerHTML = `
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            Por favor seleccione un tipo de consenso
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    `;
-                    return;
-                }
-
-                btnGuardar.disabled = true;
-                btnGuardar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...';
-
-                const res = await apiFetch(`/admin/colecciones/${coleccionId}/consenso`, {
-                    method: "PUT",
-                    body: JSON.stringify({ tipo: tipoConsenso })
-                });
-
-                if (!res || !res.ok) {
-                    let errorMessage = 'Error al guardar la configuración';
-                    if (res) {
-                        if (res.status === 404) {
-                            errorMessage = 'Colección no encontrada';
-                        } else if (res.status === 400) {
-                            errorMessage = 'Datos inválidos. Por favor verifique la información';
-                        } else if (res.status === 500) {
-                            errorMessage = 'Error del servidor. Por favor intente más tarde';
-                        }
-                    }
-                    alertContainer.innerHTML = `
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            ${errorMessage}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    `;
-                    btnGuardar.disabled = false;
-                    btnGuardar.innerHTML = '<i class="bi bi-save"></i> Guardar Configuración';
-                    return;
-                }
-
-                // Mostrar toast de éxito
-                const toastContainer = document.getElementById('toastContainer');
-                const toastId = 'toast-success-' + Date.now();
-                const toastHtml = `
-                    <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-                        <div class="toast-header bg-success text-white">
-                            <i class="bi bi-check-circle-fill me-2"></i>
-                            <strong class="me-auto">Éxito</strong>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-                        </div>
-                        <div class="toast-body">
-                            Configuración de consenso guardada exitosamente
-                        </div>
-                    </div>
-                `;
-                toastContainer.insertAdjacentHTML('beforeend', toastHtml);
-                
-                const toastElement = document.getElementById(toastId);
-                const toast = new bootstrap.Toast(toastElement, { autohide: true, delay: 5000 });
-                toast.show();
-                
-                // Limpiar el toast del DOM después de que se oculte
-                toastElement.addEventListener('hidden.bs.toast', () => {
-                    toastElement.remove();
-                });
-
-                setTimeout(() => {
-                    window.location.href = "/colecciones";
-                }, 1500);
-            });
-        });
-    </script>
 
 </div>
 </html>

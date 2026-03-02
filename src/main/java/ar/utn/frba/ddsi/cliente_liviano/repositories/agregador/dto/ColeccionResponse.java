@@ -19,12 +19,16 @@ public class ColeccionResponse {
     @JsonProperty("descripcion")
     private String descripcion;
 
+    @JsonProperty("algoritmoConsenso")
+    private String tipoConsenso;
+
 
     public ColeccionDTO toColeccionDTO() {
         ColeccionDTO coleccionDTO = new ColeccionDTO();
         coleccionDTO.setHandle(this.id != null ? this.id.toString() : null);
         coleccionDTO.setTitulo(this.titulo);
         coleccionDTO.setDescripcion(this.descripcion);
+        coleccionDTO.setTipoConsenso(this.tipoConsenso);
 
         return coleccionDTO;
     }
