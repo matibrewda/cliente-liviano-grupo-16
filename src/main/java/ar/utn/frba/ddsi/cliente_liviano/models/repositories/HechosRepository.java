@@ -102,7 +102,7 @@ public class HechosRepository {
             jsonBody = mapper.writeValueAsString(new FuenteDinamicaHechoRequest(
                     hechoNuevo.getTitulo(),
                     hechoNuevo.getDescripcion(),
-                    hechoNuevo.getCategoria().getId(),
+                    hechoNuevo.getCategoria().getNombre(),
                     hechoNuevo.getUbicacion().getLatitud(),
                     hechoNuevo.getUbicacion().getLongitud(),
                     hechoNuevo.getFechaAcontecimiento())
@@ -135,7 +135,7 @@ public class HechosRepository {
             jsonBody = mapper.writeValueAsString(new FuenteDinamicaHechoRequest(
                     hechoNuevo.getTitulo(),
                     hechoNuevo.getDescripcion(),
-                    hechoNuevo.getCategoria().getId(),
+                    hechoNuevo.getCategoria().getNombre(),
                     hechoNuevo.getUbicacion().getLatitud(),
                     hechoNuevo.getUbicacion().getLongitud(),
                     hechoNuevo.getFechaAcontecimiento())

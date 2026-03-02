@@ -16,8 +16,8 @@ public class FuenteDinamicaHechoRequest {
     @JsonProperty("descripcion")
     private String descripcion;
 
-    @JsonProperty("categoriaId")
-    private Long categoria;
+    @JsonProperty("categoriaNombre")
+    private String categoria;
 
     @JsonProperty("ubicacionLatitud")
     private double ubicacionLatitud;
@@ -32,7 +32,7 @@ public class FuenteDinamicaHechoRequest {
     public FuenteDinamicaHechoRequest(
             String titulo,
             String descripcion,
-            Long Categoria,
+            String Categoria,
             Double Latitud,
             Double Longitud,
             LocalDate fechaAcontecimiento) {

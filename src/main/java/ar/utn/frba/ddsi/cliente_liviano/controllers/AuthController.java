@@ -7,6 +7,7 @@ import ar.utn.frba.ddsi.cliente_liviano.models.dto.LoginRequestDTO;
 import ar.utn.frba.ddsi.cliente_liviano.models.usuario.Usuario;
 import ar.utn.frba.ddsi.cliente_liviano.services.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,6 +22,9 @@ import java.util.List;
 public class AuthController {
     @Autowired
     private LoginService loginService;
+
+    @Value("${login.base-url}")
+    private String backendUrl;
 
     @GetMapping("/login")
     public String login(Model model) {
@@ -45,7 +49,8 @@ public class AuthController {
     }
 
     @GetMapping("/registro")
-    public String registro() {
+    public String registro(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
         return "registro"; // registro.html
     }
 }

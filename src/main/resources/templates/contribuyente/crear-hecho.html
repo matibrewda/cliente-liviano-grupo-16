@@ -86,11 +86,11 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="categoria" class="form-label">Categoría</label>
-                                        <select class="form-select " name="categoria" th:field="*{categoria.id}" id="categoria">
+                                        <select class="form-select " name="categoria" th:field="*{categoria.nombre}" id="categoria">
                                             <option th:each="cat : ${categoriasDisponibles}"
-                                                    th:value="${cat.id}"
+                                                    th:value="${cat.nombre}"
                                                     th:text="${cat.nombre}"
-                                                    th:selected="${param.categoria != null and param.categoria[0] == #strings.toString(cat.id)}">
+                                                    th:selected="${param.categoria != null and param.categoria[0] == #strings.toString(cat.nombre)}">
                                             </option>
                                         </select>
                                     </div>
