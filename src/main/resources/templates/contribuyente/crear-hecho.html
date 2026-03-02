@@ -1,4 +1,4 @@
-<html th:replace="~{base ::html}">
+<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{}, ~{})}">
 <div th:fragment="contenido" class="row">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -22,7 +22,8 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/hechos/crear}" th:object="${hecho}" method="post">
+<!--                        <form th:action="@{/hechos/crear}" th:object="${hecho}" method="post">-->
+                        <form th:action="@{/hechos/crear}" th:object="${hecho}" method="post" enctype="multipart/form-data">
                             <!-- Información básica -->
                             <div class="row">
                                 <div class="col-md-6">
@@ -85,15 +86,21 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="categoria" class="form-label">Categoría</label>
-                                        <select class="form-select " name="categoria" th:field="*{categoria.id}" id="categoria">
+                                        <select class="form-select " name="categoria" th:field="*{categoria.nombre}" id="categoria">
                                             <option th:each="cat : ${categoriasDisponibles}"
-                                                    th:value="${cat.id}"
+                                                    th:value="${cat.nombre}"
                                                     th:text="${cat.nombre}"
-                                                    th:selected="${param.categoria != null and param.categoria[0] == #strings.toString(cat.id)}">
+                                                    th:selected="${param.categoria != null and param.categoria[0] == #strings.toString(cat.nombre)}">
                                             </option>
                                         </select>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Multimedia (opcional)</label>
+                                <input class="form-control" type="file" name="archivo" accept="image/*,.pdf" />
+                                <div class="form-text">Podés adjuntar una imagen</div>
                             </div>
 
                             <hr>

@@ -1,4 +1,4 @@
-<html th:replace="~{base ::html}">
+<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{}, ~{})}">
 <div th:fragment="contenido" class="row">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -7,7 +7,7 @@
                 <span th:text="${titulo}">Editar Hecho</span>
             </h1>
             <div>
-                <a th:href="@{/hechos/${hecho.id}}" class="btn btn-info me-2">
+                <a th:href="@{/hechos/{id}(id=${hecho.id})}" class="btn btn-info me-2">
                     <i class="fas fa-eye me-1"></i>
                     Ver Detalle
                 </a>
@@ -28,7 +28,7 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/hechos/{id}/actualizar(id=${hecho.id})}" th:object="${hecho}" method="post">
+                        <form th:action="@{/hechos/{id}/actualizar(id=${hecho.id})}" th:object="${hecho}" method="post" enctype="multipart/form-data">
                             <!-- Información básica -->
                             <div class="row">
                                 <div class="col-md-6">
@@ -102,6 +102,27 @@
                                 </div>
                             </div>
 
+                            <div th:if="${hecho.multimediaUrl != null and hecho.multimediaUrl != ''}">
+                                <label class="form-label">Imagen actual</label><br/>
+                                <a th:href="${hecho.multimediaUrl}" target="_blank">
+                                    <img th:src="${hecho.multimediaUrl}"
+                                         class="img-fluid rounded border shadow-sm"
+                                         alt="Vista previa"
+                                         style="max-height: 400px; cursor: pointer;"
+                                         onerror="this.style.display='none';" />
+                                </a>
+
+                            </div>
+
+                            <div th:if="${hecho.multimediaUrl == null or hecho.multimediaUrl == ''}"
+                                 class="alert alert-secondary mb-0">
+                                Este hecho no tiene multimedia adjunta.
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Reemplazar imagen (opcional)</label>
+                                <input class="form-control" type="file" name="archivo" accept="image/*" />
+                                <div class="form-text">Si elegís un archivo, se reemplaza la imagen anterior.</div>
+                            </div>
                             <hr>
 
                             <!-- Botones -->
