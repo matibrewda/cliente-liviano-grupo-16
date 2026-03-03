@@ -94,7 +94,7 @@
                     <label class="form-label fw-bold">Multimedia</label>
 
                     <!-- Si tiene URL -->
-                    <div th:if="${hecho.multimediaUrl==null}">
+                    <div th:if="${hecho.multimediaUrl!=null}">
                         <a th:href="${hecho.multimediaUrl}" target="_blank">
                             <img th:src="${hecho.multimediaUrl}"
                                  class="img-fluid rounded border shadow-sm"
