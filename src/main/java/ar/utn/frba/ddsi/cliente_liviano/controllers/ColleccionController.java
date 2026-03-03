@@ -69,11 +69,9 @@ public class ColleccionController {
                 if (desde.isAfter(hasta)) {
                     model.addAttribute("errorFechas",
                             "Fecha Acontecimiento Desde no puede ser posterior a la Fecha Acontecimiento Hasta.");
-
-                    fechaIncidenteDesde = null;
                     fechaIncidenteHasta = null;
+                    fechaIncidenteDesde = null;
                 }
-
                 //Fecha Hasta no puede ser mayor que hoy
                 else if (hasta.isAfter(hoy)) {
                     model.addAttribute("errorFechas",
