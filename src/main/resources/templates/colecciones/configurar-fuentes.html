@@ -1,0 +1,79 @@
+<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{}, ~{})}">
+<div th:fragment="contenido" class="row">
+    <section class="py-4 bg-light">
+        <div class="container">
+
+            <!-- Botón volver -->
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+                <a class="btn btn-outline-secondary btn-sm"
+                   th:href="@{/colecciones}">
+                    <i class="bi bi-arrow-left"></i> Volver a colecciones
+                </a>
+            </div>
+
+            <!-- Información de la colección -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">
+                        <i class="bi bi-database"></i> Configurar fuentes
+                    </h2>
+                    <p class="text-muted mb-0">
+                        Colección: <strong th:text="${coleccion.titulo}">Título de la colección</strong>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Alertas -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <span th:text="${success}">Éxito</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span th:text="${error}">Error</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Formulario de configuración -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form th:action="@{/admin/colecciones/{id}/fuentes(id=${coleccion.handle})}" method="post">
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Fuentes de esta colección</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="fuenteProxy" id="fuenteProxy"
+                                       th:checked="${fuenteProxy}">
+                                <label class="form-check-label" for="fuenteProxy">Fuente proxy</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="fuenteEstatica" id="fuenteEstatica"
+                                       th:checked="${fuenteEstatica}">
+                                <label class="form-check-label" for="fuenteEstatica">Fuente estática</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="fuenteDinamica" id="fuenteDinamica"
+                                       th:checked="${fuenteDinamica}">
+                                <label class="form-check-label" for="fuenteDinamica">Fuente dinámica</label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a class="btn btn-outline-secondary"
+                               th:href="@{/colecciones}">
+                                Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Guardar configuración
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+</html>
