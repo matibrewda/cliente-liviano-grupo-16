@@ -85,6 +85,32 @@
                             N/D
                         </p>
                     </div>
+
+                    <!-- Multimedia SOLO para fuente dinámica -->
+                    <div class="mb-3"
+                         th:if="${hecho.origen == 'DINAMICA'}">
+
+                        <label class="form-label fw-bold">Multimedia</label>
+
+                        <!-- Si tiene URL -->
+                        <div th:if="${hecho.multimediaUrl==null}">
+                            <a th:href="${hecho.multimediaUrl}" target="_blank">
+                                <img th:src="${hecho.multimediaUrl}"
+                                     class="img-fluid rounded border shadow-sm"
+                                     alt="Vista previa"
+                                     style="max-height: 400px; cursor: pointer;"
+                                     onerror="this.style.display='none';" />
+                            </a>
+                        </div>
+
+                        <!-- Si NO tiene URL -->
+                        <div th:if="${hecho.multimediaUrl == null or hecho.multimediaUrl == ''}"
+                             class="alert alert-secondary mb-0">
+                            Este hecho no tiene multimedia adjunta.
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
         </div>
