@@ -1,7 +1,23 @@
-<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{}, ~{})}">
+<!DOCTYPE html>
+<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{::#estilosMapa}, ~{::#scriptsMapa})}">
+
+<th:block id="estilosMapa">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <style>
+        /* Un mapa pequeño y estilizado para la vista de detalle */
+        #mapaDetalle {
+            height: 300px;
+            width: 100%;
+            border-radius: 8px;
+            z-index: 1;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</th:block>
 
 <div th:fragment="contenido" class="container-fluid mt-4">
     <div class="row">
+
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0">
                 <i class="fas fa-file-alt me-2"></i>
@@ -86,8 +102,48 @@
                         </p>
                     </div>
                 </div>
+
+                <div class="row mt-2" th:if="${hecho.ubicacionDTO != null and hecho.ubicacionDTO.latitud != null}">
+                    <div class="col-12">
+                        <label class="form-label fw-bold mb-2">Ubicación en el Mapa</label>
+                        <div id="mapaDetalle"></div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 </div>
+
+<th:block id="scriptsMapa">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Obtenemos las coordenadas desde Thymeleaf
+            var lat = /*[[${hecho.ubicacionDTO != null ? hecho.ubicacionDTO.latitud : null}]]*/ null;
+            var lng = /*[[${hecho.ubicacionDTO != null ? hecho.ubicacionDTO.longitud : null}]]*/ null;
+
+            // Si existen las coordenadas, inicializamos el mapa
+            if (lat !== null && lng !== null) {
+
+                // Creamos el mapa con un nivel de zoom cercano (15) para ver bien las calles
+                var map = L.map('mapaDetalle').setView([lat, lng], 10);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+
+                // Colocamos el marcador en el punto exacto
+                var marker = L.marker([lat, lng]).addTo(map);
+
+                // Agregamos un popup sencillo con el título del hecho
+                var tituloHecho = /*[[${hecho.titulo}]]*/ 'Ubicación del Hecho';
+                marker.bindPopup("<b>" + tituloHecho + "</b>").openPopup();
+            }
+        });
+    </script>
+</th:block>
+
 </html>

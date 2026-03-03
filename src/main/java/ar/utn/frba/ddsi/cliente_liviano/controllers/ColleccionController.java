@@ -38,7 +38,7 @@ public class ColleccionController {
         model.addAttribute("hecho", hecho);
         model.addAttribute("coleccionId", coleccionId);
 
-        return "colecciones/detalle-hecho-coleccion";
+        return "detalle-un-hecho";
     }
 
     @GetMapping("/{coleccionId}/hechos")
