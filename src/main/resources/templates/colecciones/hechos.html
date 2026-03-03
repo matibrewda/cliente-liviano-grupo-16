@@ -141,14 +141,23 @@
                         <td th:text="${h.fechaCarga}">2025-03-12T14:30</td>
 
                         <td class="text-center">
-                            <a class="btn btn-sm btn-outline-primary"
-                               th:href="@{|/colecciones/${coleccionId}/hechos/${h.id}|}">
-                                <i class="bi bi-eye"></i> Ver detalle
-                            </a>
-                            <a class="btn btn-sm btn-outline-danger"
-                               th:href="@{|/solicitudes/solicitud-eliminacion/hecho/${h.id}|}">
-                                <i class="bi bi-eye"></i> Eliminar
-                            </a>
+                            <div class="d-flex justify-content-center gap-1">
+                             <a class="btn btn-sm btn-primary"
+                                th:href="@{|/colecciones/${coleccionId}/hechos/${h.id}|}"
+                                title="Ver detalle">
+                                 <i class="fas fa-eye"></i>
+                             </a>
+                             <a class="btn btn-sm btn-warning"
+                                th:href="@{|/hechos/editar/${h.id}|}"
+                                title="Solicitar Modificacion">
+                                 <i class="fas fa-pencil-alt"></i>
+                             </a>
+                             <a class="btn btn-sm btn-danger"
+                                th:href="@{|/solicitudes/solicitud-eliminacion/hecho/${h.id}|}"
+                                title="Solicitar eliminación">
+                                 <i class="fas fa-trash"></i>
+                             </a>
+                            </div>
                         </td>
                     </tr>
 
