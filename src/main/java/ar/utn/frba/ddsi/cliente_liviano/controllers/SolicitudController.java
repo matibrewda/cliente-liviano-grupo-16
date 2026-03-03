@@ -26,7 +26,7 @@ public class SolicitudController {
     public String enviarSolicitud(@PathVariable Long idHecho,
                                   @RequestParam String motivo) {
         agregadorSolicitudesService.crearSolicitud(idHecho, motivo);
-        return "redirect:/hechos";
+        return "redirect:/hechos/detalle/"+idHecho;
     }
 
     @GetMapping("/admin")
