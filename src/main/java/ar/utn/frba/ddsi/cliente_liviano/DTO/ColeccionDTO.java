@@ -10,6 +10,7 @@ import lombok.Setter;
 
 
 import java.util.List;
+
 @Setter
 @Getter
 public class ColeccionDTO {
@@ -21,4 +22,5 @@ public class ColeccionDTO {
     private IConsensoStrategy algoritmoDeConsenso;
     private String tipoConsenso;
     private List<Hecho> hechos;
+    private List<String> fuentesTipos;
 }

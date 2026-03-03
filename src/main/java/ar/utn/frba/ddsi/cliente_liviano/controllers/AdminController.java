@@ -47,5 +47,40 @@ public class AdminController {
         }
         return "redirect:/colecciones";
     }
+
+    @GetMapping("/colecciones/{coleccionId}/fuentes")
+    public String configurarFuentes(@PathVariable String coleccionId, Model model) {
+        try {
+            ColeccionDTO coleccion = coleccionService.obtenerColeccionPorId(Long.parseLong(coleccionId));
+            var fuentes = coleccionService.obtenerFuentes(coleccionId);
+            model.addAttribute("titulo", "Configurar fuentes");
+            model.addAttribute("coleccion", coleccion);
+            model.addAttribute("fuenteProxy", fuentes.isFuenteProxy());
+            model.addAttribute("fuenteEstatica", fuentes.isFuenteEstatica());
+            model.addAttribute("fuenteDinamica", fuentes.isFuenteDinamica());
+            return "colecciones/configurar-fuentes";
+        } catch (NumberFormatException e) {
+            return "redirect:/colecciones";
+        }
+    }
+
+    @PostMapping("/colecciones/{coleccionId}/fuentes")
+    public String guardarFuentes(@PathVariable String coleccionId,
+                                 @RequestParam(name = "fuenteProxy", required = false) String fuenteProxy,
+                                 @RequestParam(name = "fuenteEstatica", required = false) String fuenteEstatica,
+                                 @RequestParam(name = "fuenteDinamica", required = false) String fuenteDinamica,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            boolean proxy = fuenteProxy != null && "on".equalsIgnoreCase(fuenteProxy);
+            boolean estatica = fuenteEstatica != null && "on".equalsIgnoreCase(fuenteEstatica);
+            boolean dinamica = fuenteDinamica != null && "on".equalsIgnoreCase(fuenteDinamica);
+            coleccionService.actualizarFuentes(coleccionId, proxy, estatica, dinamica);
+            redirectAttributes.addFlashAttribute("success", "Configuración de fuentes guardada exitosamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar las fuentes: " + e.getMessage());
+            return "redirect:/admin/colecciones/" + coleccionId + "/fuentes";
+        }
+        return "redirect:/colecciones";
+    }
 }
 

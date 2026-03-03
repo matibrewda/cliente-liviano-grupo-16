@@ -1,10 +1,12 @@
 package ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto;
 
 import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
-import ar.utn.frba.ddsi.cliente_liviano.models.Coleccion;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+
+import java.util.Collections;
+import java.util.List;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -22,6 +24,8 @@ public class ColeccionResponse {
     @JsonProperty("algoritmoConsenso")
     private String tipoConsenso;
 
+    @JsonProperty("fuentes")
+    private List<FuenteItemResponse> fuentes;
 
     public ColeccionDTO toColeccionDTO() {
         ColeccionDTO coleccionDTO = new ColeccionDTO();
@@ -29,6 +33,10 @@ public class ColeccionResponse {
         coleccionDTO.setTitulo(this.titulo);
         coleccionDTO.setDescripcion(this.descripcion);
         coleccionDTO.setTipoConsenso(this.tipoConsenso);
+        List<String> tipos = this.fuentes != null
+                ? this.fuentes.stream().map(FuenteItemResponse::getTipo).toList()
+                : Collections.emptyList();
+        coleccionDTO.setFuentesTipos(tipos);
 
         return coleccionDTO;
     }

@@ -297,4 +297,54 @@ public class ColeccionRepository {
         }
     }
 
+    public void agregarFuente(Long id, String tipo) {
+        String jsonBody;
+        try {
+            jsonBody = mapper.writeValueAsString(java.util.Map.of("tipo", tipo));
+        } catch (IOException e) {
+            throw new RuntimeException("Error serializando request de fuente", e);
+        }
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(this.baseURL + "/admin/colecciones/" + id + "/fuente"))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+        try {
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() / 100 != 2) {
+                throw new RuntimeException(
+                        "Error agregando fuente: " + response.statusCode() + " - " + response.body()
+                );
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Request interrumpida al agregar fuente", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Error de IO al agregar fuente", e);
+        }
+    }
+
+    public void quitarFuente(Long id, String tipo) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(this.baseURL + "/admin/colecciones/" + id + "/fuente/" + tipo))
+                .header("Content-Type", "application/json")
+                .DELETE()
+                .build();
+        try {
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() / 100 != 2) {
+                throw new RuntimeException(
+                        "Error eliminando fuente: " + response.statusCode() + " - " + response.body()
+                );
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Request interrumpida al eliminar fuente", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Error de IO al eliminar fuente", e);
+        }
+    }
+
 }
