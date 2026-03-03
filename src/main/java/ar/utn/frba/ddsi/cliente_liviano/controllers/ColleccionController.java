@@ -129,6 +129,26 @@ public class ColleccionController {
         }
     }
 
+    @GetMapping("/{id}/mapa")
+    public String verMapaColeccion(
+            @PathVariable Long id,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            ColeccionDTO coleccion = coleccionService.obtenerColeccionPorId(id);
+
+            model.addAttribute("coleccion", coleccion);
+            model.addAttribute("titulo", "Detalle de la Colección");
+
+            return "colecciones/ABM/detalle-coleccion";
+        }
+        catch (NotFoundException ex) {
+            redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+            return "redirect:/404";
+        }
+    }
+
     @GetMapping("/{id}/editar")
     public String mostrarFormularioEditarColeccion(@PathVariable Long id,
                                                    Model model,

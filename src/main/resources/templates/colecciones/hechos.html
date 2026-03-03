@@ -1,106 +1,93 @@
-<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{}, ~{})}">
+<!DOCTYPE html>
+<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{::#estilosMapa}, ~{::#scriptsMapa})}">
+
+<th:block id="estilosMapa">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <style>
+        #miMapa { height: 600px; width: 100%; border-radius: 8px; z-index: 1; }
+        .form-switch .form-check-input { width: 3em; height: 1.5em; cursor: pointer; }
+        .leaflet-popup-content a.btn { color: #ffffff !important; }
+        .popup-titulo { font-weight: bold; color: #0d6efd; margin-bottom: 5px; }
+
+        /* Estilos para el Loader Superpuesto */
+        #mapLoader {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 10; /* Mayor que el z-index del mapa */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+        }
+    </style>
+</th:block>
+
 <div th:fragment="contenido" class="row">
     <section class="py-4 bg-light">
         <div class="container">
 
-            <!-- Botón volver -->
-            <div class="mb-3 d-flex justify-content-between align-items-center">
-                <a class="btn btn-outline-secondary btn-sm"
-                   th:href="@{/colecciones}">
+            <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <a class="btn btn-outline-secondary btn-sm" th:href="@{/colecciones}">
                     <i class="bi bi-arrow-left"></i> Volver a colecciones
                 </a>
+
+                <div class="form-check form-switch d-flex align-items-center mb-0">
+                    <input class="form-check-input mt-0" type="checkbox" role="switch" id="toggleVista">
+                    <label class="form-check-label ms-2 fw-bold text-muted" for="toggleVista" id="labelToggle">
+                        <i class="bi bi-map-fill text-primary"></i> Ver Mapa
+                    </label>
+                </div>
             </div>
 
-            <!-- Filtros -->
             <div class="card mb-4 shadow-sm">
                 <div class="card-body">
-                    <h2 class="h5 mb-3">
-                        <i class="bi bi-funnel"></i> Filtros
-                    </h2>
-
-                    <form class="row g-3"
-                          th:action="@{|/colecciones/${coleccionId}/hechos|}"
-                          method="get">
-
+                    <h2 class="h5 mb-3"><i class="bi bi-funnel"></i> Filtros</h2>
+                    <form class="row g-3" th:action="@{|/colecciones/${coleccionId}/hechos|}" method="get">
                         <div class="col-md-3">
                             <label class="form-label">Modo de navegación</label>
                             <select class="form-select" name="modoNavegacion">
-                                <option value=""
-                                        th:selected="${modoNavegacion == null or modoNavegacion == ''}">
-                                    Todas
-                                </option>
+                                <option value="" th:selected="${modoNavegacion == null or modoNavegacion == ''}">Todas</option>
                                 <option value="true" th:selected="${modoNavegacion == 'true'}">Curado</option>
                                 <option value="false" th:selected="${modoNavegacion == 'false'}">Irrestricto</option>
                             </select>
                         </div>
-
                         <div class="col-md-3">
-                            <label for="fechaDesde" class="form-label">Fecha acontecimiento desde</label>
-                            <input type="date"
-                                   class="form-control"
-                                   id="fechaDesde"
-                                   name="fechaDesde"
-                                   th:value="${param.fechaDesde}">
+                            <label for="fechaDesde" class="form-label">Fecha desde</label>
+                            <input type="date" class="form-control" id="fechaDesde" name="fechaDesde" th:value="${param.fechaDesde}">
                         </div>
-
                         <div class="col-md-3">
-                            <label for="fechaHasta" class="form-label">Fecha acontecimiento hasta</label>
-                            <input type="date"
-                                   class="form-control"
-                                   id="fechaHasta"
-                                   name="fechaHasta"
-                                   th:value="${param.fechaHasta}">
+                            <label for="fechaHasta" class="form-label">Fecha hasta</label>
+                            <input type="date" class="form-control" id="fechaHasta" name="fechaHasta" th:value="${param.fechaHasta}">
                         </div>
-
                         <div class="col-md-3">
                             <label for="ubicacion" class="form-label">Ubicación</label>
-                            <input type="text"
-                                   class="form-control"
-                                   id="ubicacion"
-                                   name="ubicacion"
-                                   placeholder="CABA, Rosario..."
-                                   th:value="${param.ubicacion}">
+                            <input type="text" class="form-control" id="ubicacion" name="ubicacion" placeholder="CABA, Rosario..." th:value="${param.ubicacion}">
                         </div>
-
                         <div class="col-md-3">
                             <label for="categoria" class="form-label">Categoría</label>
                             <select class="form-select" name="categoria" id="categoria">
                                 <option value="">Todas</option>
-                                <option th:each="cat : ${categoriasDisponibles}"
-                                        th:value="${cat.id}"
-                                        th:text="${cat.nombre}"
-                                        th:selected="${param.categoria != null and param.categoria[0] == #strings.toString(cat.id)}">
-                                </option>
+                                <option th:each="cat : ${categoriasDisponibles}" th:value="${cat.id}" th:text="${cat.nombre}" th:selected="${param.categoria != null and param.categoria[0] == #strings.toString(cat.id)}"></option>
                             </select>
                         </div>
-
                         <div class="col-md-3">
                             <label for="origen" class="form-label">Origen</label>
                             <select class="form-select" name="origen" id="origen">
                                 <option value="">Todas</option>
-                                <option th:each="orig : ${origenesDisponibles}"
-                                        th:value="${orig}"
-                                        th:text="${orig}"
-                                        th:selected="${param.origen != null and param.origen[0] == orig}">
-                                </option>
+                                <option th:each="orig : ${origenesDisponibles}" th:value="${orig}" th:text="${orig}" th:selected="${param.origen != null and param.origen[0] == orig}"></option>
                             </select>
                         </div>
-
                         <div class="col-12 d-flex justify-content-end mt-2">
-                            <a class="btn btn-outline-secondary me-2"
-                               th:href="@{|/colecciones/${coleccionId}/hechos|}">
-                                Limpiar
-                            </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-search"></i> Aplicar filtros
-                            </button>
+                            <a class="btn btn-outline-secondary me-2" th:href="@{|/colecciones/${coleccionId}/hechos|}">Limpiar</a>
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Aplicar filtros</button>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <!-- Tabla de hechos -->
-            <div class="table-responsive shadow-sm bg-white rounded-3">
+            <div id="vistaTabla" class="table-responsive shadow-sm bg-white rounded-3">
                 <table class="table table-hover mb-0 align-middle">
                     <thead class="table-dark">
                     <tr>
@@ -115,64 +102,137 @@
                     </tr>
                     </thead>
                     <tbody>
-
                     <tr th:each="h : ${hechos}">
                         <td th:text="${h.id}">1</td>
-                        <td th:text="${h.titulo}">Choque leve en Av. Corrientes</td>
-
+                        <td th:text="${h.titulo}">Choque leve</td>
                         <td th:text="${h.fechaAcontecimiento}">2025-03-12</td>
-
                         <td>
                             <span th:if="${h.ubicacionDTO != null}">
-                                Lat: <span th:text="${h.ubicacionDTO.latitud}">-34.60</span>,
-                                Lon: <span th:text="${h.ubicacionDTO.longitud}">-58.38</span>
+                                Lat: <span th:text="${h.ubicacionDTO.latitud}">-34.60</span>, Lon: <span th:text="${h.ubicacionDTO.longitud}">-58.38</span>
                             </span>
-                            <span th:if="${h.ubicacionDTO == null}">
-                                Sin datos
-                            </span>
+                            <span th:if="${h.ubicacionDTO == null}">Sin datos</span>
                         </td>
-
-                        <td th:text="${h.categoriaDTO != null and h.categoriaDTO.nombre != null ? h.categoriaDTO.nombre : 'N/D'}">
-                            Categoria-1
-                        </td>
-
+                        <td th:text="${h.categoriaDTO != null and h.categoriaDTO.nombre != null ? h.categoriaDTO.nombre : 'N/D'}">Cat-1</td>
                         <td th:text="${h.origen != null ? h.origen : 'N/D'}">Estática</td>
-
-                        <td th:text="${h.fechaCarga}">2025-03-12T14:30</td>
-
+                        <td th:text="${h.fechaCarga}">2025-03-12</td>
                         <td class="text-center">
                             <div class="d-flex justify-content-center gap-1">
-                             <a class="btn btn-sm btn-primary"
-                                th:href="@{|/colecciones/${coleccionId}/hechos/${h.id}|}"
-                                title="Ver detalle">
-                                 <i class="fas fa-eye"></i>
-                             </a>
-                             <a class="btn btn-sm btn-warning"
-                                th:href="@{|/hechos/editar/${h.id}|}"
-                                title="Solicitar Modificacion">
-                                 <i class="fas fa-pencil-alt"></i>
-                             </a>
-                             <a class="btn btn-sm btn-danger"
-                                th:href="@{|/solicitudes/solicitud-eliminacion/hecho/${h.id}|}"
-                                title="Solicitar eliminación">
-                                 <i class="fas fa-trash"></i>
-                             </a>
+                                <a class="btn btn-sm btn-primary" th:href="@{|/colecciones/${coleccionId}/hechos/${h.id}|}" title="Ver detalle"><i class="fas fa-eye"></i></a>
+                                <a class="btn btn-sm btn-warning" th:href="@{|/hechos/editar/${h.id}|}" title="Solicitar Modificacion"><i class="fas fa-pencil-alt"></i></a>
+                                <a class="btn btn-sm btn-danger" th:href="@{|/solicitudes/solicitud-eliminacion/hecho/${h.id}|}" title="Solicitar eliminación"><i class="fas fa-trash"></i></a>
                             </div>
                         </td>
                     </tr>
-
                     <tr th:if="${#lists.isEmpty(hechos)}">
-                        <td colspan="8" class="text-center text-muted py-4">
-                            No se encontraron hechos para esta colección con los filtros aplicados.
-                        </td>
+                        <td colspan="8" class="text-center text-muted py-4">No se encontraron hechos con los filtros aplicados.</td>
                     </tr>
-
                     </tbody>
                 </table>
             </div>
 
+            <div id="vistaMapa" class="card shadow-sm border-0 position-relative" style="display: none;">
+
+                <div id="mapLoader" style="display: none;">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <div class="mt-2 fw-bold text-muted">Cargando mapa...</div>
+                    </div>
+                </div>
+
+                <div class="card-body p-0">
+                    <div id="miMapa"></div>
+                </div>
+            </div>
+
         </div>
     </section>
-
 </div>
+
+<th:block id="scriptsMapa">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const toggleVista = document.getElementById('toggleVista');
+            const labelToggle = document.getElementById('labelToggle');
+            const vistaTabla = document.getElementById('vistaTabla');
+            const vistaMapa = document.getElementById('vistaMapa');
+            const mapLoader = document.getElementById('mapLoader');
+
+            // 1. Inicializar Mapa (Centrado en ARGENTINA: Latitud -38.41, Longitud -63.61, Zoom 4)
+            var map = L.map('miMapa').setView([-38.4161, -63.6167], 4);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            var hechosFiltrados = /*[[${hechos}]]*/ [];
+            var idColeccion = /*[[${coleccionId}]]*/ '';
+            var marcadoresGroup = new L.featureGroup();
+
+            if (hechosFiltrados && hechosFiltrados.length > 0) {
+                hechosFiltrados.forEach(function(hecho) {
+                    var lat = (hecho.ubicacionDTO != null) ? hecho.ubicacionDTO.latitud : null;
+                    var lng = (hecho.ubicacionDTO != null) ? hecho.ubicacionDTO.longitud : null;
+
+                    if(lat !== null && lng !== null) {
+                        var marker = L.marker([lat, lng]);
+                        var categoriaNombre = (hecho.categoriaDTO != null) ? hecho.categoriaDTO.nombre : 'N/D';
+                        var urlDetalle = `/colecciones/${idColeccion}/hechos/${hecho.id}`;
+
+                        var popupContent = `
+                            <div class="popup-titulo">${hecho.titulo || 'Sin título'}</div>
+                            <div class="small text-muted mb-1"><strong>Fecha:</strong> ${hecho.fechaAcontecimiento || 'N/D'}</div>
+                            <div class="small text-muted mb-2"><strong>Categoría:</strong> ${categoriaNombre}</div>
+                            <a href="${urlDetalle}" class="btn btn-sm btn-primary text-white w-100 mt-1">Ver Detalles</a>
+                        `;
+
+                        marker.bindPopup(popupContent);
+                        marcadoresGroup.addLayer(marker);
+                    }
+                });
+
+                map.addLayer(marcadoresGroup);
+            }
+
+            // 2. Lógica del Switch con el Loader
+            toggleVista.addEventListener('change', function() {
+                if (this.checked) {
+                    // Mostrar Contenedor Mapa y Loader
+                    vistaTabla.style.display = 'none';
+                    vistaMapa.style.display = 'block';
+                    mapLoader.style.display = 'flex'; // Encendemos el loader
+
+                    labelToggle.innerHTML = '<i class="bi bi-list-ul text-primary"></i> Ver Lista';
+
+                    // Ajustamos el tamaño del mapa y los límites
+                    setTimeout(() => {
+                        map.invalidateSize();
+
+                        // Si hay marcadores filtrados, hacemos zoom a esos marcadores.
+                        // Si no hay (o si la lista está vacía), el mapa se quedará en el paneo general de Argentina.
+                        if (marcadoresGroup.getLayers().length > 0) {
+                            map.fitBounds(marcadoresGroup.getBounds(), { padding: [50, 50] });
+                        }
+
+                        // Apagamos el loader medio segundo después de que Leaflet procesa los cuadros
+                        setTimeout(() => { mapLoader.style.display = 'none'; }, 600);
+
+                    }, 200);
+
+                } else {
+                    // Mostrar Lista
+                    vistaMapa.style.display = 'none';
+                    vistaTabla.style.display = 'block';
+                    labelToggle.innerHTML = '<i class="bi bi-map-fill text-primary"></i> Ver Mapa';
+                }
+            });
+        });
+    </script>
+</th:block>
+
 </html>
