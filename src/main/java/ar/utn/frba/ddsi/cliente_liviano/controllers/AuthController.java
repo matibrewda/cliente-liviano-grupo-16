@@ -44,4 +44,10 @@ public class AuthController {
         model.addAttribute("backendUrl", backendUrl);
         return "registro"; // registro.html
     }
+
+    @PostMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();// Destruye la sesión y borra las variables
+        return "redirect:/";
+    }
 }

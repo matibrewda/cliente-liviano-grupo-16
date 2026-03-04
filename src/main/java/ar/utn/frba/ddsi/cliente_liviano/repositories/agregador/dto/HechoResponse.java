@@ -16,6 +16,8 @@ public class HechoResponse {
 
     @JsonProperty("id")
     private Long id;
+    @JsonProperty("externalId")
+    private Long externalId;
     @JsonProperty("titulo")
     private String titulo;
     @JsonProperty("descripcion")
@@ -38,15 +40,16 @@ public class HechoResponse {
     public HechoDTO toHechoDTO() {
         HechoDTO hechoDTO = new HechoDTO();
         hechoDTO.setId(id);
+        hechoDTO.setExternalId(externalId);
         hechoDTO.setTitulo(titulo);
         hechoDTO.setDescripcion(descripcion);
         hechoDTO.setOrigen(origen);
-        hechoDTO.setFechaAcontecimiento(fechaAcontecimiento.toLocalDate());
+        hechoDTO.setFechaAcontecimiento(fechaAcontecimiento != null ? fechaAcontecimiento.toLocalDate() : null);
         hechoDTO.setFechaCarga(fechaCarga);
-        hechoDTO.setUbicacionDTO(new UbicacionDTO(ubicacion.getLatitud(),  ubicacion.getLongitud()));
-        hechoDTO.setCategoriaDTO(new CategoriaDTO(categoria.getId(),categoria.getNombre()));
+        hechoDTO.setUbicacionDTO(ubicacion != null ? new UbicacionDTO(ubicacion.getLatitud(), ubicacion.getLongitud()) : null);
+        hechoDTO.setCategoriaDTO(categoria != null ? new CategoriaDTO(categoria.getId(), categoria.getNombre()) : null);
         hechoDTO.setConsenso(consenso);
         hechoDTO.setMultimediaUrl(multimediaUrl);
-    return hechoDTO;
+        return hechoDTO;
     }
 }
