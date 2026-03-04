@@ -7,7 +7,9 @@
                 <h1 class="fw-bold mb-0">Hechos Reportados</h1>
 
                 <div class="d-flex flex-wrap gap-2">
-                    <a th:href="@{/hechos/carga-masiva}" class="btn btn-success">
+                    <a th:if="${session.ROLES != null and #arrays.contains(session.ROLES, 'ADMIN')}"
+                       th:href="@{/hechos/carga-masiva}"
+                       class="btn btn-success">
                         <i class="fas fa-file-upload me-1"></i> Carga masiva
                     </a>
                     <a th:href="@{/hechos/nuevo}" class="btn btn-primary">
