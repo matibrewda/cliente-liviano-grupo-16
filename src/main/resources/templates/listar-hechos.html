@@ -68,6 +68,11 @@
                                    title="Modificar">
                                     <i class="fas fa-pencil-alt"></i>
                                 </a>
+                                <a class="btn btn-sm btn-warning"
+                                   th:href="@{|/solicitudes-modificacion/nueva?hechoId=${h.id}|}"
+                                   title="Solicitar modificación">
+                                    <i class="fas fa-edit"></i>
+                                </a>
                                 <a class="btn btn-sm btn-danger"
                                    th:href="@{|/solicitudes/solicitud-eliminacion/hecho/${h.id}|}"
                                    title="Solicitar eliminación">

@@ -44,6 +44,11 @@
             <i class="fas fa-clipboard-list me-1"></i> Admin Solicitudes
           </a>
         </li>
+        <li class="nav-item" th:if="${session.ROLES != null and #lists.contains(session.ROLES, 'ADMIN')}">
+          <a class="nav-link" th:href="@{/solicitudes-modificacion}">
+            <i class="fas fa-edit me-1"></i> Solicitudes de modificación
+          </a>
+        </li>
         <li class="nav-item" >
           <div  th:if="${session['NOMBRE_REAL'] == null}">
             <a class="nav-link btn btn-primary btn-sm px-3 ms-lg-2 text-white" th:href="@{/login}">
