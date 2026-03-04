@@ -16,7 +16,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 @Controller
@@ -53,7 +55,7 @@ public class ColleccionController {
             @RequestParam(required = false) String latitud,
             @RequestParam(required = false) String longitud,
             @RequestParam(required = false) String radioKm,
-
+            HttpServletRequest request,
             Model model
     ) {
             // ---- Validación fechas ----
@@ -110,15 +112,31 @@ public class ColleccionController {
         }
 
         // ---- Traer hechos filtrados ----
-        List<HechoDTO> hechos = coleccionService.obtenerHechosPorColeccion(
-                coleccionId,
-                fechaIncidenteDesde,
-                fechaIncidenteHasta,
-                ubicacion,
-                categoria,
-                origen,
-                modoNavegacion
-        );
+        List<HechoDTO> hechos;
+        try {
+            hechos = coleccionService.obtenerHechosPorColeccion(
+                    coleccionId,
+                    fechaIncidenteDesde,
+                    fechaIncidenteHasta,
+                    ubicacion,
+                    categoria,
+                    origen,
+                    modoNavegacion
+            );
+        } catch (Exception e) {
+            hechos = Collections.emptyList();
+            model.addAttribute("errorHechos", "Error al cargar los hechos: " + e.getMessage());
+        }
+        if (hechos == null) {
+            hechos = Collections.emptyList();
+        }
+
+        // ---- URL con filtros (para volver después de crear solicitud de modificación) ----
+        String returnUrl = request.getRequestURI();
+        if (request.getQueryString() != null && !request.getQueryString().isEmpty()) {
+            returnUrl = returnUrl + "?" + request.getQueryString();
+        }
+        model.addAttribute("returnUrl", returnUrl);
 
         // ---- Model básico ----
         model.addAttribute("coleccionId", coleccionId);

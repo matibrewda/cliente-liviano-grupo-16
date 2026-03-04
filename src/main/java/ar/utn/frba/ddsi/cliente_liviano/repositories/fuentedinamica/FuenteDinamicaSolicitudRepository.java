@@ -1,5 +1,7 @@
 package ar.utn.frba.ddsi.cliente_liviano.repositories.fuentedinamica;
 
+import ar.utn.frba.ddsi.cliente_liviano.repositories.fuentedinamica.dto.AprobarSolicitudRequest;
+import ar.utn.frba.ddsi.cliente_liviano.repositories.fuentedinamica.dto.ComentarioRequest;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.fuentedinamica.dto.SolicitudModificacionRequest;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.fuentedinamica.dto.SolicitudModificacionResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -89,22 +91,64 @@ public class FuenteDinamicaSolicitudRepository {
         }
     }
 
-    public void aprobarSolicitud(Long idSolicitud) {
+    public void aprobarSolicitud(Long idSolicitud, AprobarSolicitudRequest request) {
         if (idSolicitud == null) {
             throw new IllegalArgumentException("idSolicitud no puede ser null");
         }
+        if (request == null) {
+            throw new IllegalArgumentException("request no puede ser null");
+        }
         URI uri = URI.create(baseURL + "/solicitudes/" + idSolicitud + "/aprobar");
+        String jsonBody;
+        try {
+            jsonBody = mapper.writeValueAsString(request);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error serializando body de aprobar", e);
+        }
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+
+        try {
+            HttpResponse<String> response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() / 100 != 2) {
+                throw new RuntimeException(
+                        "Error llamando a fuente dinámica (aprobar solicitud): " +
+                                response.statusCode() + " - " + response.body()
+                );
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error llamando a fuente dinámica (IO)", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Request interrumpida al llamar fuente dinámica", e);
+        }
+    }
+
+    public void rechazarSolicitud(Long idSolicitud, String comentario) {
+        if (idSolicitud == null) {
+            throw new IllegalArgumentException("idSolicitud no puede ser null");
+        }
+        URI uri = URI.create(baseURL + "/solicitudes/" + idSolicitud + "/rechazar");
+        String jsonBody;
+        try {
+            jsonBody = mapper.writeValueAsString(new ComentarioRequest(comentario != null ? comentario : ""));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error serializando body de rechazar", e);
+        }
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyPublishers.noBody())
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
 
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() / 100 != 2) {
                 throw new RuntimeException(
-                        "Error llamando a fuente dinámica (aprobar solicitud): " +
+                        "Error llamando a fuente dinámica (rechazar solicitud): " +
                                 response.statusCode() + " - " + response.body()
                 );
             }

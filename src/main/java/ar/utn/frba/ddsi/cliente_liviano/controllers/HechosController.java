@@ -114,19 +114,8 @@ public class HechosController {
     }
 
     @GetMapping("/{id}/editar")
-    public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
-        try {
-            HechoInputDTO hechoDTO = hechosService.obtenerHechoPorID(id).get();
-            List<Categoria> categoriasDisponibles = categoriaService.getAll();
-            model.addAttribute("categoriasDisponibles", categoriasDisponibles);
-            model.addAttribute("hecho", hechoDTO);
-            model.addAttribute("titulo", "Editar Hecho");
-            return "/contribuyente/editar-hecho";
-        }
-        catch (NotFoundException ex) {
-            redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
-            return "redirect:/404";
-        }
+    public String mostrarFormularioEditar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        return "redirect:/admin/solicitudes-modificacion/nueva?hechoId=" + id;
     }
 
     @PostMapping("/{id}/actualizar")

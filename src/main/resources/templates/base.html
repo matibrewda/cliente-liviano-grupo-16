@@ -39,15 +39,14 @@
         <li class="nav-item">
           <a class="nav-link" th:href="@{/hechos}">Explorar Hechos</a>
         </li>
-        <li class="nav-item" th:if="${session.ROLES != null and #lists.contains(session.ROLES, 'ADMIN')}" >
-          <a class="nav-link" th:href="@{/solicitudes/admin}">
+        <li class="nav-item dropdown" th:if="${session.ROLES != null and #lists.contains(session.ROLES, 'ADMIN')}">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarSolicitudes" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fas fa-clipboard-list me-1"></i> Admin Solicitudes
           </a>
-        </li>
-        <li class="nav-item" th:if="${session.ROLES != null and #lists.contains(session.ROLES, 'ADMIN')}">
-          <a class="nav-link" th:href="@{/solicitudes-modificacion}">
-            <i class="fas fa-edit me-1"></i> Solicitudes de modificación
-          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarSolicitudes">
+            <li><a class="dropdown-item" th:href="@{/solicitudes/admin}">Eliminación</a></li>
+            <li><a class="dropdown-item" th:href="@{/admin/solicitudes-modificacion}">Modificación</a></li>
+          </ul>
         </li>
         <li class="nav-item" >
           <div  th:if="${session['NOMBRE_REAL'] == null}">

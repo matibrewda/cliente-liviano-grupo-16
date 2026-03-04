@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 public class HechoDTO {
 
     private Long id;
+    private Long externalId;
     private String titulo;
     private String descripcion;
     private byte[] datosMultimedia;

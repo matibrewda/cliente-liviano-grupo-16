@@ -1,6 +1,7 @@
 package ar.utn.frba.ddsi.cliente_liviano.services;
 
 import ar.utn.frba.ddsi.cliente_liviano.repositories.fuentedinamica.FuenteDinamicaSolicitudRepository;
+import ar.utn.frba.ddsi.cliente_liviano.repositories.fuentedinamica.dto.AprobarSolicitudRequest;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.fuentedinamica.dto.SolicitudModificacionRequest;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.fuentedinamica.dto.SolicitudModificacionResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,11 @@ public class SolicitudModificacionService {
         fuenteDinamicaSolicitudRepository.crearSolicitud(request);
     }
 
-    public void aprobar(Long idSolicitud) {
-        fuenteDinamicaSolicitudRepository.aprobarSolicitud(idSolicitud);
+    public void aprobar(Long idSolicitud, AprobarSolicitudRequest request) {
+        fuenteDinamicaSolicitudRepository.aprobarSolicitud(idSolicitud, request);
+    }
+
+    public void rechazar(Long idSolicitud, String comentario) {
+        fuenteDinamicaSolicitudRepository.rechazarSolicitud(idSolicitud, comentario);
     }
 }

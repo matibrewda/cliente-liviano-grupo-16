@@ -6,7 +6,7 @@
                 <i class="fas fa-edit me-2 text-primary"></i>
                 <span th:text="${titulo}">Nueva solicitud de modificación</span>
             </h1>
-            <a th:href="@{/solicitudes-modificacion}" class="btn btn-secondary">
+            <a th:href="${volverA != null and !volverA.isBlank()} ? ${volverA} : @{/admin/solicitudes-modificacion}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left me-1"></i>
                 Volver al listado
             </a>
@@ -30,7 +30,8 @@
                     La solicitud de modificación será revisada por un administrador antes de aplicarse.
                 </div>
 
-                <form th:action="@{/solicitudes-modificacion/crear}" method="post">
+                <form th:action="@{/admin/solicitudes-modificacion/crear}" method="post" autocomplete="off">
+                    <input th:if="${volverA != null}" type="hidden" name="volverA" th:value="${volverA}"/>
                     <div th:if="${idHecho != null}" class="mb-3">
                         <input type="hidden" name="idHecho" th:value="${idHecho}"/>
                     </div>
@@ -52,9 +53,13 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="categoriaNombre" class="form-label">Categoría <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="categoriaNombre" name="categoriaNombre"
-                                       th:value="${categoriaNombre}"
-                                       placeholder="Ej: Alud" required/>
+                                <select class="form-select" id="categoriaNombre" name="categoriaNombre" required>
+                                    <option value="" th:selected="${categoriaNombre == null or categoriaNombre.isEmpty()}">Seleccionar categoría</option>
+                                    <option th:each="cat : ${categoriasDisponibles}"
+                                            th:value="${cat.nombre}"
+                                            th:text="${cat.nombre}"
+                                            th:selected="${categoriaNombre != null and categoriaNombre == cat.nombre}"></option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -99,7 +104,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end gap-2">
-                        <a th:href="@{/solicitudes-modificacion}" class="btn btn-outline-secondary">Cancelar</a>
+                        <a th:href="${volverA != null and !volverA.isBlank()} ? ${volverA} : @{/admin/solicitudes-modificacion}" class="btn btn-outline-secondary">Cancelar</a>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-paper-plane me-1"></i>
                             Enviar solicitud
