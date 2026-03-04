@@ -1,7 +1,22 @@
-<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{}, ~{})}">
+<!DOCTYPE html>
+<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{::#estilosMapa}, ~{::#scriptsMapa})}">
+
+<th:block id="estilosMapa">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <style>
+        #mapaDetalle {
+            height: 350px;
+            width: 100%;
+            border-radius: 8px;
+            z-index: 1;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</th:block>
 
 <div th:fragment="contenido" class="container-fluid mt-4">
     <div class="row">
+
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0">
                 <i class="fas fa-file-alt me-2"></i>
@@ -21,10 +36,10 @@
             </div>
         </div>
 
-        <div class="card mb-4 shadow-sm">
-            <div class="card-header bg-light">
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-light border-bottom-0 pt-3">
                 <h5 class="card-title mb-0">
-                    <i class="fas fa-id-card me-2"></i>
+                    <i class="fas fa-id-card me-2 text-primary"></i>
                     Información básica
                 </h5>
             </div>
@@ -85,35 +100,69 @@
                             N/D
                         </p>
                     </div>
+                </div>
 
-                    <!-- Multimedia SOLO para fuente dinámica -->
-                    <div class="mb-3"
-                         th:if="${hecho.origen == 'DINAMICA'}">
+                <div class="row mb-3" th:if="${hecho.origen == 'DINAMICA'}">
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Multimedia adjunta</label>
 
-                        <label class="form-label fw-bold">Multimedia</label>
-
-                        <!-- Si tiene URL -->
-                        <div th:if="${hecho.multimediaUrl!=null}">
-                            <a th:href="${hecho.multimediaUrl}" target="_blank">
+                        <div th:if="${hecho.multimediaUrl != null and hecho.multimediaUrl != ''}">
+                            <a th:href="${hecho.multimediaUrl}" target="_blank" title="Haga clic para ver en tamaño completo">
                                 <img th:src="${hecho.multimediaUrl}"
                                      class="img-fluid rounded border shadow-sm"
                                      alt="Vista previa"
-                                     style="max-height: 400px; cursor: pointer;"
+                                     style="max-height: 300px; cursor: pointer; object-fit: cover;"
                                      onerror="this.style.display='none';" />
                             </a>
                         </div>
 
-                        <!-- Si NO tiene URL -->
                         <div th:if="${hecho.multimediaUrl == null or hecho.multimediaUrl == ''}"
-                             class="alert alert-secondary mb-0">
-                            Este hecho no tiene multimedia adjunta.
+                             class="alert alert-secondary mb-0 bg-light border-0">
+                            <i class="bi bi-info-circle me-1"></i> Este hecho no tiene archivos multimedia adjuntos.
                         </div>
-
                     </div>
-
                 </div>
+
+                <div class="row mt-2" th:if="${hecho.ubicacionDTO != null and hecho.ubicacionDTO.latitud != null}">
+                    <div class="col-12">
+                        <label class="form-label fw-bold mb-2">Ubicación en el Mapa</label>
+                        <div id="mapaDetalle" class="shadow-sm"></div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 </div>
+
+<th:block id="scriptsMapa">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Extraer las coordenadas del DTO de Spring
+            var lat = /*[[${hecho.ubicacionDTO != null ? hecho.ubicacionDTO.latitud : null}]]*/ null;
+            var lng = /*[[${hecho.ubicacionDTO != null ? hecho.ubicacionDTO.longitud : null}]]*/ null;
+
+            // Inicializar el mapa solo si hay coordenadas válidas
+            if (lat !== null && lng !== null) {
+
+                // Nivel de zoom 15 para ver las calles de cerca
+                var map = L.map('mapaDetalle').setView([lat, lng], 9);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+
+                var marker = L.marker([lat, lng]).addTo(map);
+
+                // Mostrar el título en el marcador del mapa automáticamente
+                var tituloHecho = /*[[${hecho.titulo}]]*/ 'Ubicación del Hecho';
+                marker.bindPopup("<strong class='text-primary'>" + tituloHecho + "</strong>").openPopup();
+            }
+        });
+    </script>
+</th:block>
+
 </html>

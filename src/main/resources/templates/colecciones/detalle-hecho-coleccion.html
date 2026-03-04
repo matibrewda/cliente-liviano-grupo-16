@@ -1,7 +1,22 @@
-<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{}, ~{})}">
-<div th:fragment="contenido" class="row">
+<!DOCTYPE html>
+<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{::#estilosMapa}, ~{::#scriptsMapa})}">
 
-        <!-- HEADER -->
+<th:block id="estilosMapa">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <style>
+        #mapaDetalle {
+            height: 350px;
+            width: 100%;
+            border-radius: 8px;
+            z-index: 1;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</th:block>
+
+<div th:fragment="contenido" class="container-fluid mt-4">
+    <div class="row">
+
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0">
                 <i class="fas fa-file-alt me-2"></i>
@@ -9,41 +24,43 @@
             </h1>
 
             <div>
-                <a th:href="@{/colecciones/{cid}/hechos(cid=${coleccionId})}"
-                   class="btn btn-secondary">
+                <a th:href="@{/hechos}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left me-1"></i>
                     Volver
+                </a>
+                <a th:href="@{/solicitudes/solicitud-eliminacion/hecho/{id}(id=${hecho.id})}"
+                   class="btn btn-danger">
+                    <i class="fas fa-trash me-1"></i>
+                    Eliminar
                 </a>
             </div>
         </div>
 
-        <!-- INFO -->
-        <div class="card mb-4">
-            <div class="card-header">
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-light border-bottom-0 pt-3">
                 <h5 class="card-title mb-0">
-                    <i class="fas fa-id-card me-2"></i>
+                    <i class="fas fa-id-card me-2 text-primary"></i>
                     Información básica
                 </h5>
             </div>
 
             <div class="card-body">
-
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Título</label>
-                        <p class="form-control-plaintext" th:text="${hecho.titulo}">Título</p>
+                        <p class="form-control-plaintext border-bottom" th:text="${hecho.titulo}">Título</p>
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Descripción</label>
-                        <p class="form-control-plaintext" th:text="${hecho.descripcion}">Descripción</p>
+                        <p class="form-control-plaintext border-bottom" th:text="${hecho.descripcion}">Descripción</p>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Categoría</label>
-                        <p class="form-control-plaintext"
+                        <p class="form-control-plaintext border-bottom"
                            th:text="${hecho.categoriaDTO != null and hecho.categoriaDTO.nombre != null ? hecho.categoriaDTO.nombre : 'Sin categoría'}">
                             Sin categoría
                         </p>
@@ -51,7 +68,7 @@
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Origen</label>
-                        <p class="form-control-plaintext"
+                        <p class="form-control-plaintext border-bottom"
                            th:text="${hecho.origen != null ? hecho.origen : 'N/D'}">
                             N/D
                         </p>
@@ -61,7 +78,7 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Fecha del acontecimiento</label>
-                        <p class="form-control-plaintext" th:text="${hecho.fechaAcontecimiento}">
+                        <p class="form-control-plaintext border-bottom" th:text="${hecho.fechaAcontecimiento}">
                             2025-12-12
                         </p>
                     </div>
@@ -70,7 +87,7 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Latitud</label>
-                        <p class="form-control-plaintext"
+                        <p class="form-control-plaintext border-bottom"
                            th:text="${hecho.ubicacionDTO != null ? hecho.ubicacionDTO.latitud : 'N/D'}">
                             N/D
                         </p>
@@ -78,42 +95,74 @@
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Longitud</label>
-                        <p class="form-control-plaintext"
+                        <p class="form-control-plaintext border-bottom"
                            th:text="${hecho.ubicacionDTO != null ? hecho.ubicacionDTO.longitud : 'N/D'}">
                             N/D
                         </p>
                     </div>
                 </div>
 
+                <div class="row mb-3" th:if="${hecho.origen == 'DINAMICA'}">
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Multimedia adjunta</label>
 
+                        <div th:if="${hecho.multimediaUrl != null and hecho.multimediaUrl != ''}">
+                            <a th:href="${hecho.multimediaUrl}" target="_blank" title="Haga clic para ver en tamaño completo">
+                                <img th:src="${hecho.multimediaUrl}"
+                                     class="img-fluid rounded border shadow-sm"
+                                     alt="Vista previa"
+                                     style="max-height: 300px; cursor: pointer; object-fit: cover;"
+                                     onerror="this.style.display='none';" />
+                            </a>
+                        </div>
 
-                <!-- Multimedia SOLO para fuente dinámica -->
-                <div class="mb-3"
-                     th:if="${hecho.origen == 'DINAMICA'}">
-
-                    <label class="form-label fw-bold">Multimedia</label>
-
-                    <!-- Si tiene URL -->
-                    <div th:if="${hecho.multimediaUrl!=null}">
-                        <a th:href="${hecho.multimediaUrl}" target="_blank">
-                            <img th:src="${hecho.multimediaUrl}"
-                                 class="img-fluid rounded border shadow-sm"
-                                 alt="Vista previa"
-                                 style="max-height: 400px; cursor: pointer;"
-                                 onerror="this.style.display='none';" />
-                        </a>
+                        <div th:if="${hecho.multimediaUrl == null or hecho.multimediaUrl == ''}"
+                             class="alert alert-secondary mb-0 bg-light border-0">
+                            <i class="bi bi-info-circle me-1"></i> Este hecho no tiene archivos multimedia adjuntos.
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Si NO tiene URL -->
-                    <div th:if="${hecho.multimediaUrl == null or hecho.multimediaUrl == ''}"
-                         class="alert alert-secondary mb-0">
-                        Este hecho no tiene multimedia adjunta.
+                <div class="row mt-2" th:if="${hecho.ubicacionDTO != null and hecho.ubicacionDTO.latitud != null}">
+                    <div class="col-12">
+                        <label class="form-label fw-bold mb-2">Ubicación en el Mapa</label>
+                        <div id="mapaDetalle" class="shadow-sm"></div>
                     </div>
                 </div>
 
             </div>
         </div>
-
     </div>
 </div>
+
+<th:block id="scriptsMapa">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Extraer las coordenadas del DTO de Spring
+            var lat = /*[[${hecho.ubicacionDTO != null ? hecho.ubicacionDTO.latitud : null}]]*/ null;
+            var lng = /*[[${hecho.ubicacionDTO != null ? hecho.ubicacionDTO.longitud : null}]]*/ null;
+
+            // Inicializar el mapa solo si hay coordenadas válidas
+            if (lat !== null && lng !== null) {
+
+                // Nivel de zoom 15 para ver las calles de cerca
+                var map = L.map('mapaDetalle').setView([lat, lng], 9);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+
+                var marker = L.marker([lat, lng]).addTo(map);
+
+                // Mostrar el título en el marcador del mapa automáticamente
+                var tituloHecho = /*[[${hecho.titulo}]]*/ 'Ubicación del Hecho';
+                marker.bindPopup("<strong class='text-primary'>" + tituloHecho + "</strong>").openPopup();
+            }
+        });
+    </script>
+</th:block>
+
 </html>
