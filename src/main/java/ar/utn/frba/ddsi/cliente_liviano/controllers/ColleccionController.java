@@ -1,13 +1,13 @@
 package ar.utn.frba.ddsi.cliente_liviano.controllers;
 
-import ar.utn.frba.ddsi.cliente_liviano.DTO.CategoriaDTO;
-import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
-import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
+import ar.utn.frba.ddsi.cliente_liviano.DTO.*;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.input.ColeccionInputDTO;
+import ar.utn.frba.ddsi.cliente_liviano.DTO.input.ColeccionInputViewDTO;
 import ar.utn.frba.ddsi.cliente_liviano.exceptions.AgregadorApiException;
 import ar.utn.frba.ddsi.cliente_liviano.exceptions.NotFoundException;
 import ar.utn.frba.ddsi.cliente_liviano.models.Coleccion;
 import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
+import ar.utn.frba.ddsi.cliente_liviano.services.CategoriaService;
 import ar.utn.frba.ddsi.cliente_liviano.servicesAgregador.AgregadorColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +17,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 @Controller
@@ -24,6 +27,8 @@ import java.util.Objects;
 public class ColleccionController {
     @Autowired
     private AgregadorColeccionService coleccionService;
+    @Autowired
+    private CategoriaService categoriaService;
 
     @GetMapping
     public String listarColecciones(Model model) {
@@ -153,15 +158,19 @@ public class ColleccionController {
 
     @GetMapping("/nuevo")
     public String mostrarFormularioCrearColeccion(Model model) {
-        ColeccionDTO coleccionDTO = new ColeccionDTO();
+        ColeccionInputViewDTO coleccionDTO = new ColeccionInputViewDTO();
         model.addAttribute("coleccion", coleccionDTO);
         model.addAttribute("titulo", "Crear Nueva Colección");
+
+        var categoriasDisponibles = categoriaService.getAll();
+
+        model.addAttribute("categoriasDisponibles", categoriasDisponibles);
         return "colecciones/ABM/crear-coleccion";
     }
 
     @PostMapping("/crear")
     public String crearColeccion(
-            @ModelAttribute("coleccion") ColeccionInputDTO coleccion,
+            @ModelAttribute("coleccion") ColeccionInputViewDTO viewDto,
             BindingResult bindingResult,
             Model model,
             RedirectAttributes redirectAttributes) {
@@ -170,6 +179,43 @@ public class ColleccionController {
             model.addAttribute("titulo", "Crear Nueva Colección");
             return "colecciones/ABM/crear-coleccion";
         }
+
+        List<FiltroDto> filtros = new ArrayList<>();
+
+        if(!viewDto.getFechaAcontecimientoDesde().isBlank() || !viewDto.getFechaAcontecimientoHasta().isBlank()){
+            var filtroFecha = new FiltroDto();
+            filtroFecha.setTipoFiltro("filtroPorFechas");
+            if(!viewDto.getFechaAcontecimientoDesde().isBlank()) {
+                filtroFecha.setFechaAcontecimientoDesde(LocalDate.parse(viewDto.getFechaAcontecimientoDesde()).atStartOfDay());
+            }
+
+            if(!viewDto.getFechaAcontecimientoHasta().isBlank()) {
+                filtroFecha.setFechaAcontecimientoHasta(LocalDate.parse(viewDto.getFechaAcontecimientoHasta()).atStartOfDay());
+            }
+
+            filtros.add(filtroFecha);
+        }
+
+        if(viewDto.getCategoria() != null && viewDto.getCategoria() > 0){
+            var filtroCategoria = new FiltroDto();
+            filtroCategoria.setTipoFiltro("filtroPorCategoria");
+            filtroCategoria.setCodigoCategoria(viewDto.getCategoria());
+            filtros.add(filtroCategoria);
+        }
+
+        if(viewDto.getLatitud() != null && viewDto.getLongitud() != null && viewDto.getRadioKm() != null){
+            var filtroZona = new FiltroDto();
+            filtroZona.setTipoFiltro("filtroPorZona");
+            var zona = new ZonaDTO(viewDto.getLatitud(), viewDto.getLongitud(), viewDto.getRadioKm());
+            filtroZona.setZona(zona);
+            filtros.add(filtroZona);
+        }
+
+        var coleccion = new ColeccionInputDTO();
+
+        coleccion.setTitulo(viewDto.getTitulo());
+        coleccion.setDescripcion(viewDto.getDescripcion());
+        coleccion.setFiltros(filtros);
 
         ColeccionDTO coleccionCreada = this.coleccionService.crear(coleccion);
 

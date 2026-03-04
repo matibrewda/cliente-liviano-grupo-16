@@ -23,4 +23,11 @@ public class ColeccionDTO {
     private String tipoConsenso;
     private List<Hecho> hechos;
     private List<String> fuentesTipos;
+    private String fechaAcontecimientoDesde;
+    private String fechaAcontecimientoHasta;
+    private Long categoria;
+    private String origen;
+    private Double latitud;
+    private Double longitud;
+    private Double radioKm;
 }

@@ -136,8 +136,10 @@ public class ColeccionRepository {
         String jsonBody;
         try {
             jsonBody = mapper.writeValueAsString(new ColeccionRequest(
+                    0L,
                     coleccionNueva.getTitulo(),
-                    coleccionNueva.getDescripcion()));
+                    coleccionNueva.getDescripcion(),
+                    coleccionNueva.getFiltros()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -204,8 +206,10 @@ public class ColeccionRepository {
         String jsonBody;
         try {
             jsonBody = mapper.writeValueAsString(new ColeccionRequest(
+                    idColeccion,
                     coleccionNueva.getTitulo(),
-                    coleccionNueva.getDescripcion()
+                    coleccionNueva.getDescripcion(),
+                    coleccionNueva.getFiltros()
             ));
         } catch (IOException e) {
             throw new RuntimeException(e);
