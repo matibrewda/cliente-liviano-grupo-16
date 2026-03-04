@@ -1,0 +1,76 @@
+<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{}, ~{})}">
+<div th:fragment="contenido" class="row">
+    <section class="py-4 bg-light">
+        <div class="container">
+
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+                <a class="btn btn-outline-secondary btn-sm" th:href="@{/colecciones}">
+                    <i class="bi bi-arrow-left"></i> Volver a colecciones
+                </a>
+            </div>
+
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5 mb-3"><i class="bi bi-funnel"></i> Configurar criterios de pertenencia</h2>
+                    <p class="text-muted mb-0">Colección: <strong th:text="${coleccion.titulo}">Título</strong></p>
+                </div>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+                <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Dejá vacío un criterio (fechas, categoría o zona) y guardá para quitarlo. Si dejás todo vacío, se eliminan todos los filtros.</p>
+                    <form th:action="@{/admin/colecciones/{id}/criterio-pertenencia(id=${coleccion.handle})}" method="post" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="fechaAcontecimientoDesde" class="form-label">Fecha acontecimiento desde</label>
+                            <input type="date" class="form-control" id="fechaAcontecimientoDesde"
+                                   name="fechaAcontecimientoDesde" th:value="${fechaAcontecimientoDesde}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="fechaAcontecimientoHasta" class="form-label">Fecha acontecimiento hasta</label>
+                            <input type="date" class="form-control" id="fechaAcontecimientoHasta"
+                                   name="fechaAcontecimientoHasta" th:value="${fechaAcontecimientoHasta}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="categoria" class="form-label">Categoría</label>
+                            <select class="form-select" name="categoria" id="categoria">
+                                <option value="">Todas</option>
+                                <option th:each="cat : ${categoriasDisponibles}" th:value="${cat.id}"
+                                        th:text="${cat.nombre}" th:selected="${categoria != null and categoria == cat.id}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="latitud" class="form-label">Latitud</label>
+                            <input type="number" step="any" class="form-control" id="latitud" name="latitud"
+                                   placeholder="-34.60" th:value="${latitud}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="longitud" class="form-label">Longitud</label>
+                            <input type="number" step="any" class="form-control" id="longitud" name="longitud"
+                                   placeholder="-58.38" th:value="${longitud}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="radioKm" class="form-label">Radio (km)</label>
+                            <input type="number" step="any" min="0" class="form-control" id="radioKm" name="radioKm"
+                                   placeholder="5" th:value="${radioKm}">
+                        </div>
+                        <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                            <a class="btn btn-outline-secondary" th:href="@{/colecciones}">Cancelar</a>
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</div>
+</html>

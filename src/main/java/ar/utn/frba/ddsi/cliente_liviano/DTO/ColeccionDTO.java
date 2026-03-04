@@ -8,7 +8,6 @@ import ar.utn.frba.ddsi.cliente_liviano.models.interfaces.IFuenteDeDatos;
 import lombok.Getter;
 import lombok.Setter;
 
-
 import java.util.List;
 
 @Setter
@@ -18,6 +17,8 @@ public class ColeccionDTO {
     private String titulo;
     private String descripcion;
     private ICriterioDePertenencia criterioPertenencia;
+    /** Filtros del criterio de pertenencia (desde GET colección o GET criterio-pertenencia). */
+    private List<FiltroDto> filtrosCriterioPertenencia;
     private List<IFuenteDeDatos> fuenteDeDatos;
     private IConsensoStrategy algoritmoDeConsenso;
     private String tipoConsenso;

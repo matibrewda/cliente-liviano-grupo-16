@@ -3,10 +3,12 @@ package ar.utn.frba.ddsi.cliente_liviano.repositories.agregador;
 
 import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.input.ColeccionInputDTO;
+import ar.utn.frba.ddsi.cliente_liviano.DTO.FiltroDto;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
 import ar.utn.frba.ddsi.cliente_liviano.exceptions.AgregadorApiException;
-import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto.ColeccionResponse;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto.ColeccionRequest;
+import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto.ColeccionResponse;
+import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto.CriterioPertenenciaResponse;
 import ar.utn.frba.ddsi.cliente_liviano.repositories.agregador.dto.HechoResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +21,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;
 @Repository
 public class ColeccionRepository {
 
@@ -246,6 +249,35 @@ public class ColeccionRepository {
 
         return coleccion;
     }
+
+    /** Actualiza solo los filtros (criterio de pertenencia). PUT con body {"filtros": [...]} como en el API del agregador. */
+    public void actualizarSoloFiltros(Long id, List<FiltroDto> filtros) {
+        String jsonBody;
+        try {
+            jsonBody = mapper.writeValueAsString(java.util.Map.of("filtros", filtros != null ? filtros : List.of()));
+        } catch (IOException e) {
+            throw new RuntimeException("Error serializando filtros", e);
+        }
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(this.baseURL + "/admin/colecciones/" + id))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+        try {
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() / 100 != 2) {
+                throw new RuntimeException(
+                        "Error actualizando colección: " + response.statusCode() + " - " + response.body());
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Request interrumpida al actualizar filtros", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Error de IO al actualizar filtros", e);
+        }
+    }
+
     public void eliminar(Long id) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(this.baseURL + "/admin/colecciones/" + id))
@@ -348,6 +380,28 @@ public class ColeccionRepository {
             throw new RuntimeException("Request interrumpida al eliminar fuente", e);
         } catch (IOException e) {
             throw new RuntimeException("Error de IO al eliminar fuente", e);
+        }
+    }
+
+    public List<FiltroDto> getCriterioPertenencia(Long id) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(this.baseURL + "/admin/colecciones/" + id + "/criterio-pertenencia"))
+                .header("Content-Type", "application/json")
+                .GET()
+                .build();
+        try {
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() / 100 != 2) {
+                return Collections.emptyList();
+            }
+            CriterioPertenenciaResponse body = mapper.readValue(response.body(), CriterioPertenenciaResponse.class);
+            return body.getFiltros() != null ? body.getFiltros() : Collections.emptyList();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return Collections.emptyList();
+        } catch (IOException e) {
+            return Collections.emptyList();
         }
     }
 

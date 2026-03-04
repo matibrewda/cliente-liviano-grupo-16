@@ -1,90 +1,234 @@
 <html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{}, ~{})}">
 <div th:fragment="contenido" class="row">
   <div class="col-12">
+    <!-- Alertas (solo en admin tras guardar) -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+      <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h1 class="h3 mb-0">
         <i class="fas fa-layer-group me-2"></i>
         <span th:text="${titulo}">Detalle de la Colección</span>
       </h1>
 
-<!--Botones-->
-      <div>
-
-        <div class="btn-group me-2">
-          <button type="button"
-                  class="btn btn-outline-primary dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false">
-            <i class="fas fa-cog me-1"></i>
-            Configurar
-          </button>
-
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li>
-              <a class="dropdown-item"
-                 th:href="@{/admin/colecciones/{id}/consenso(id=${coleccion.handle})}">
-                <i class="fas fa-sliders-h me-2"></i>
-                Algoritmo de consenso
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item"
-                 th:href="@{/admin/colecciones/{id}/fuentes(id=${coleccion.handle})}">
-                <i class="fas fa-database me-2"></i>
-                Fuentes
-              </a>
-            </li>
-          </ul>
-        </div>
-        <a th:href="@{/colecciones/{id}/eliminar(id=${coleccion.handle})}"
-           class="btn btn-danger me-2">
-          <i class="fas fa-trash me-1"></i>
-          Eliminar
+      <div class="d-flex flex-wrap gap-2 align-items-center">
+        <!-- Solo en /admin: dropdown Configurar y Eliminar -->
+        <th:block th:if="${editable}">
+          <div class="btn-group">
+            <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-cog me-1"></i> Configurar
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="#seccion-consenso"><i class="fas fa-sliders-h me-2"></i>Algoritmo de consenso</a></li>
+              <li><a class="dropdown-item" href="#seccion-fuentes"><i class="fas fa-database me-2"></i>Fuentes</a></li>
+              <li><a class="dropdown-item" href="#seccion-criterios"><i class="bi bi-funnel me-2"></i>Criterios de pertenencia</a></li>
+            </ul>
+          </div>
+          <a th:href="@{/colecciones/{id}/eliminar(id=${coleccion.handle})}" class="btn btn-danger">
+            <i class="fas fa-trash me-1"></i> Eliminar
+          </a>
+        </th:block>
+        <a th:href="@{|/colecciones/${coleccion.handle}/hechos|}" class="btn btn-primary">
+          <i class="bi bi-eye me-1"></i> Ver hechos
         </a>
-        <a th:href="@{/colecciones/{id}/editar(id=${coleccion.handle})}" class="btn btn-warning me-2">
-          <i class="fas fa-edit me-1"></i>
-          Editar
+        <a th:if="${!editable}" th:href="@{|/admin/colecciones/${coleccion.handle}|}" class="btn btn-outline-secondary">
+          <i class="bi bi-gear me-1"></i> Administrar
         </a>
-        <a href="/colecciones" class="btn btn-secondary">
-          <i class="fas fa-arrow-left me-1"></i>
-          Volver a la Lista
+        <a th:href="@{/colecciones}" class="btn btn-secondary">
+          <i class="fas fa-arrow-left me-1"></i> Volver
         </a>
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-md-12">
-        <!-- Información básica -->
-      <div class="card mb-4">
-          <div class="card-header">
-            <h5 class="card-title mb-0">
-              <i class="fas fa-id-card me-2"></i>
-              Información Básica
-            </h5>
+    <!-- Información básica -->
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header bg-light">
+        <h5 class="card-title mb-0"><i class="fas fa-id-card me-2"></i>Información básica</h5>
+      </div>
+      <div class="card-body">
+        <!-- Solo lectura (público) -->
+        <div th:if="${!editable}">
+          <div class="row">
+            <div class="col-md-6">
+              <p class="mb-2"><span class="fw-bold text-muted">Título:</span> <span th:text="${coleccion.titulo}">—</span></p>
+            </div>
+            <div class="col-md-6">
+              <p class="mb-2"><span class="fw-bold text-muted">Descripción:</span> <span th:text="${coleccion.descripcion}">—</span></p>
+            </div>
           </div>
+        </div>
+        <!-- Editable (admin) -->
+        <form th:if="${editable}" th:action="@{/admin/colecciones/{id}/actualizar(id=${coleccion.handle})}" method="post" class="row g-3">
+          <div class="col-md-6">
+            <label for="tituloColeccion" class="form-label fw-bold">Título <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="tituloColeccion" name="titulo" th:value="${coleccion.titulo}" required minlength="1">
+          </div>
+          <div class="col-md-6">
+            <label for="descripcionColeccion" class="form-label fw-bold">Descripción <span class="text-danger">*</span></label>
+            <textarea class="form-control" id="descripcionColeccion" name="descripcion" rows="3" required minlength="1" th:text="${coleccion.descripcion}">—</textarea>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i> Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
-          <div class="card-body">
-            <div class="row">
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label class="form-label fw-bold">Título:</label>
-                  <p class="form-control-plaintext" th:text="${coleccion.titulo}">Título</p>
-                </div>
-              </div>
+    <!-- Sección: Algoritmo de consenso -->
+    <div class="card mb-4 shadow-sm" id="seccion-consenso">
+      <div class="card-header bg-light">
+        <h5 class="card-title mb-0"><i class="bi bi-gear me-2"></i>Algoritmo de consenso</h5>
+      </div>
+      <div class="card-body">
+        <!-- Solo lectura (público) -->
+        <div th:if="${!editable}">
+          <p class="mb-0" th:if="${coleccion.tipoConsenso != null and coleccion.tipoConsenso != '' and coleccion.tipoConsenso != 'DEFAULT'}">
+            <i class="bi bi-check-circle-fill text-success me-2"></i>
+            <span th:switch="${coleccion.tipoConsenso}">
+              <span th:case="'ABSOLUTA'">Absoluta</span>
+              <span th:case="'MAYORIA_SIMPLE'">Mayoría simple</span>
+              <span th:case="'MULTIPLES_MENCIONES'">Múltiples menciones</span>
+              <span th:case="*" th:text="${coleccion.tipoConsenso}">—</span>
+            </span>
+          </p>
+          <p class="mb-0 text-muted" th:if="${coleccion.tipoConsenso == null or coleccion.tipoConsenso == '' or coleccion.tipoConsenso == 'DEFAULT'}">No configurado</p>
+        </div>
+        <!-- Editable (admin) -->
+        <form th:if="${editable}" th:action="@{/admin/colecciones/{id}/consenso(id=${coleccion.handle})}" method="post" class="row align-items-end">
+          <div class="col-md-8">
+            <label for="tipoConsenso" class="form-label fw-bold">Tipo de algoritmo</label>
+            <select class="form-select" name="tipoConsenso" id="tipoConsenso" required>
+              <option value="" th:selected="${coleccion.tipoConsenso == null or coleccion.tipoConsenso == '' or coleccion.tipoConsenso == 'DEFAULT'}">Seleccione un tipo...</option>
+              <option value="ABSOLUTA" th:selected="${coleccion.tipoConsenso == 'ABSOLUTA'}">Absoluta</option>
+              <option value="MAYORIA_SIMPLE" th:selected="${coleccion.tipoConsenso == 'MAYORIA_SIMPLE'}">Mayoría Simple</option>
+              <option value="MULTIPLES_MENCIONES" th:selected="${coleccion.tipoConsenso == 'MULTIPLES_MENCIONES'}">Múltiples Menciones</option>
+            </select>
+          </div>
+          <div class="col-md-4 mt-2 mt-md-0">
+            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-save me-1"></i> Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label class="form-label fw-bold">Descripción:</label>
-                  <p class="form-control-plaintext" th:text="${coleccion.descripcion}">Descripción</p>
-                </div>
+    <!-- Sección: Fuentes -->
+    <div class="card mb-4 shadow-sm" id="seccion-fuentes">
+      <div class="card-header bg-light">
+        <h5 class="card-title mb-0"><i class="bi bi-database me-2"></i>Fuentes</h5>
+      </div>
+      <div class="card-body">
+        <!-- Solo lectura (público) -->
+        <div th:if="${!editable}">
+          <ul class="list-unstyled mb-0">
+            <li th:if="${fuentesConfig.fuenteProxy}" class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Fuente proxy</li>
+            <li th:if="${fuentesConfig.fuenteEstatica}" class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Fuente estática</li>
+            <li th:if="${fuentesConfig.fuenteDinamica}" class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Fuente dinámica</li>
+          </ul>
+          <p class="mb-0 text-muted" th:if="${!fuentesConfig.fuenteProxy and !fuentesConfig.fuenteEstatica and !fuentesConfig.fuenteDinamica}">Ninguna fuente configurada</p>
+        </div>
+        <!-- Editable (admin) -->
+        <form th:if="${editable}" th:action="@{/admin/colecciones/{id}/fuentes(id=${coleccion.handle})}" method="post">
+          <label class="form-label fw-bold">Fuentes de esta colección</label>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="fuenteProxy" id="fuenteProxy" th:checked="${fuentesConfig.fuenteProxy}">
+                <label class="form-check-label" for="fuenteProxy">Fuente proxy</label>
               </div>
             </div>
-
-
+            <div class="col-md-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="fuenteEstatica" id="fuenteEstatica" th:checked="${fuentesConfig.fuenteEstatica}">
+                <label class="form-check-label" for="fuenteEstatica">Fuente estática</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="fuenteDinamica" id="fuenteDinamica" th:checked="${fuentesConfig.fuenteDinamica}">
+                <label class="form-check-label" for="fuenteDinamica">Fuente dinámica</label>
+              </div>
+            </div>
           </div>
-
+          <div class="mt-3">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i> Guardar</button>
+          </div>
+        </form>
       </div>
+    </div>
 
+    <!-- Sección: Criterios de pertenencia -->
+    <div class="card mb-4 shadow-sm" id="seccion-criterios">
+      <div class="card-header bg-light">
+        <h5 class="card-title mb-0"><i class="bi bi-funnel me-2"></i>Criterios de pertenencia</h5>
+      </div>
+      <div class="card-body">
+        <!-- Solo lectura (público) -->
+        <div th:if="${!editable}">
+          <ul class="list-unstyled mb-0" th:if="${criterioPertenencia != null and !criterioPertenencia.isEmpty()}">
+            <li th:each="f : ${criterioPertenencia}" class="mb-2">
+              <span th:if="${f.tipoFiltro == 'filtroPorFechas'}">
+                <i class="bi bi-calendar-range text-primary me-2"></i>
+                <strong>Fechas:</strong>
+                <span th:if="${f.fechaAcontecimientoDesde != null}"> desde <span th:text="${#temporals.format(f.fechaAcontecimientoDesde, 'dd/MM/yyyy')}">—</span></span>
+                <span th:if="${f.fechaAcontecimientoHasta != null}"> hasta <span th:text="${#temporals.format(f.fechaAcontecimientoHasta, 'dd/MM/yyyy')}">—</span></span>
+              </span>
+              <span th:if="${f.tipoFiltro == 'filtroPorCategoria'}">
+                <i class="bi bi-tag-fill text-primary me-2"></i>
+                <strong>Categoría:</strong>
+                <th:block th:if="${categoriasDisponibles != null}" th:each="cat : ${categoriasDisponibles}">
+                  <span th:if="${cat.id != null and f.codigoCategoria != null and cat.id.equals(f.codigoCategoria)}" th:text="${cat.nombre}">—</span>
+                </th:block>
+                <span th:if="${f.codigoCategoria != null and (categoriasDisponibles == null or categoriasDisponibles.isEmpty())}" th:text="'ID ' + ${f.codigoCategoria}">—</span>
+              </span>
+              <span th:if="${f.tipoFiltro == 'filtroPorZona' and f.zona != null}">
+                <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+                <strong>Zona:</strong>
+                lat <span th:text="${f.zona.latitud}">—</span>, long <span th:text="${f.zona.longitud}">—</span>, radio <span th:text="${f.zona.radio}">—</span> km
+              </span>
+            </li>
+          </ul>
+          <p class="mb-0 text-muted" th:if="${criterioPertenencia == null or criterioPertenencia.isEmpty()}">Ningún criterio configurado</p>
+        </div>
+        <!-- Editable (admin): al guardar se reemplaza la lista de filtros; lo que no envíes se elimina -->
+        <form th:if="${editable}" th:action="@{/admin/colecciones/{id}/criterio-pertenencia(id=${coleccion.handle})}" method="post" class="row g-3">
+          <p class="text-muted small mb-3 col-12">Dejá vacío un criterio (fechas, categoría o zona) y guardá para quitarlo. Si dejás todo vacío, se eliminan todos los filtros.</p>
+          <div class="col-md-3">
+            <label for="fechaAcontecimientoDesde" class="form-label">Fecha acontecimiento desde</label>
+            <input type="date" class="form-control" id="fechaAcontecimientoDesde" name="fechaAcontecimientoDesde" th:value="${fechaAcontecimientoDesde}">
+          </div>
+          <div class="col-md-3">
+            <label for="fechaAcontecimientoHasta" class="form-label">Fecha acontecimiento hasta</label>
+            <input type="date" class="form-control" id="fechaAcontecimientoHasta" name="fechaAcontecimientoHasta" th:value="${fechaAcontecimientoHasta}">
+          </div>
+          <div class="col-md-3">
+            <label for="categoria" class="form-label">Categoría</label>
+            <select class="form-select" name="categoria" id="categoria">
+              <option value="">Todas</option>
+              <option th:each="cat : ${categoriasDisponibles}" th:value="${cat.id}" th:text="${cat.nombre}" th:selected="${categoria != null and categoria == cat.id}"></option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label for="latitud" class="form-label">Latitud</label>
+            <input type="number" step="any" class="form-control" id="latitud" name="latitud" placeholder="-34.60" th:value="${latitud}">
+          </div>
+          <div class="col-md-3">
+            <label for="longitud" class="form-label">Longitud</label>
+            <input type="number" step="any" class="form-control" id="longitud" name="longitud" placeholder="-58.38" th:value="${longitud}">
+          </div>
+          <div class="col-md-3">
+            <label for="radioKm" class="form-label">Radio (km)</label>
+            <input type="number" step="any" min="0" class="form-control" id="radioKm" name="radioKm" placeholder="5" th:value="${radioKm}">
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i> Guardar</button>
+          </div>
+        </form>
       </div>
     </div>
 
