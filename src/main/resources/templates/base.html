@@ -39,15 +39,21 @@
         <li class="nav-item">
           <a class="nav-link" th:href="@{/hechos}">Explorar Hechos</a>
         </li>
-        <li class="nav-item" id="admin-area" style="display: none;">
+        <li class="nav-item" th:if="${session.ROLES != null and #lists.contains(session.ROLES, 'ADMIN')}" >
           <a class="nav-link" th:href="@{/solicitudes/admin}">
             <i class="fas fa-clipboard-list me-1"></i> Admin Solicitudes
           </a>
         </li>
-        <li class="nav-item" id="auth-area">
-          <a class="nav-link btn btn-primary btn-sm px-3 ms-lg-2 text-white" th:href="@{/login}">
-            Iniciar Sesión / Registro
-          </a>
+        <li class="nav-item" >
+          <div  th:if="${session['NOMBRE_REAL'] == null}">
+            <a class="nav-link btn btn-primary btn-sm px-3 ms-lg-2 text-white" th:href="@{/login}">
+              Iniciar Sesión / Registro
+            </a>
+          </div>
+          <div class="d-flex align-items-center"  th:if="${session['NOMBRE_REAL'] != null and !session['NOMBRE_REAL'].isBlank()}">
+            <span class="me-2 px-3 ms-lg-2 text-white">Hola, <strong th:text="${session.NOMBRE_REAL}"></strong></span>
+            <button class="btn btn-outline-danger btn-sm" onclick="logout()">Cerrar Sesión</button>
+          </div>
         </li>
       </ul>
     </div>
@@ -82,43 +88,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
-<script th:inline="javascript">
-  const token = [[${token}]];
-  const nombre = [[${nombreReal}]];
-  const username = [[${username}]];
-
-  if (token) {
-    sessionStorage.setItem('jwt', token);
-    sessionStorage.setItem('nombreReal', nombre);
-    sessionStorage.setItem('username', username);
-  }
-</script>
-
 <script src="script.js"></script>
 
 <script src="/js/auth.js"></script>
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const authArea = document.getElementById("auth-area");
-    const adminArea = document.getElementById("admin-area");
-
-    if (isLoggedIn()) {
-      const nombreReal = getNombreReal();
-
-      authArea.innerHTML = `
-    <div class="d-flex align-items-center">
-        <span class="me-2 px-3 ms-lg-2 text-white">Hola, <strong>${nombreReal}</strong></span>
-        <button class="btn btn-outline-danger btn-sm" onclick="logout()">Cerrar Sesión</button>
-    </div>
-    `;
-
-      if (adminArea) {
-        adminArea.style.display = "block";
-      }
-    }
-  });
-</script>
 
 <script src="/js/common.js" onerror="this.style.display='none'"></script>
 
