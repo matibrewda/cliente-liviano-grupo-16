@@ -1,6 +1,7 @@
 package ar.utn.frba.ddsi.cliente_liviano.servicesAgregador;
 
 import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
+import ar.utn.frba.ddsi.cliente_liviano.DTO.FiltroDto;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.FuentesConfigDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
@@ -176,5 +177,18 @@ public class AgregadorColeccionService {
         } else if (!fuenteDinamica && actuales.contains(TIPO_DINAMICA)) {
             coleccionRepository.quitarFuente(id, TIPO_DINAMICA);
         }
+    }
+
+    public List<FiltroDto> obtenerCriterioPertenencia(Long id) {
+        return coleccionRepository.getCriterioPertenencia(id);
+    }
+
+    public void actualizarCriterioPertenencia(Long id, List<FiltroDto> filtros) {
+        ColeccionDTO actual = coleccionRepository.findById(id);
+        ColeccionInputDTO input = new ColeccionInputDTO();
+        input.setTitulo(actual.getTitulo() != null ? actual.getTitulo() : "");
+        input.setDescripcion(actual.getDescripcion() != null ? actual.getDescripcion() : "");
+        input.setFiltros(filtros != null ? filtros : List.of());
+        coleccionRepository.actualizarColeccion(id, input);
     }
 }

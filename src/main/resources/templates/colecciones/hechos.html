@@ -29,12 +29,9 @@
                         <div class="col-md-3">
                             <label class="form-label">Modo de navegación</label>
                             <select class="form-select" name="modoNavegacion">
-                                <option value=""
-                                        th:selected="${modoNavegacion == null or modoNavegacion == ''}">
-                                    Todas
-                                </option>
                                 <option value="true" th:selected="${modoNavegacion == 'true'}">Curado</option>
-                                <option value="false" th:selected="${modoNavegacion == 'false'}">Irrestricto</option>
+                                <option value="false"
+                                        th:selected="${modoNavegacion == null or modoNavegacion == '' or modoNavegacion == 'false'}">Irrestricto</option>
                             </select>
                         </div>
 
@@ -187,7 +184,7 @@
                              </a>
                              <a th:if="${h.origen != null and #strings.contains(#strings.toLowerCase(h.origen), 'dinamica')}"
                                 class="btn btn-sm btn-warning"
-                                th:href="@{/admin/solicitudes-modificacion/nueva(hechoId=${h.externalId != null ? h.externalId : h.id}, volverA=${returnUrl != null ? returnUrl : '/colecciones/' + coleccionId + '/hechos'})}"
+                                th:href="@{/solicitudes-modificacion/nueva(hechoId=${h.externalId != null ? h.externalId : h.id}, volverA=${returnUrl != null ? returnUrl : '/colecciones/' + coleccionId + '/hechos'})}"
                                 title="Modificar">
                                  <i class="fas fa-pencil-alt"></i>
                              </a>

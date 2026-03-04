@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -25,20 +26,23 @@ public class SolicitudController {
     @PostMapping("/crear/solicitud-eliminacion/hecho/{idHecho:\\d+}")
     public String enviarSolicitud(@PathVariable Long idHecho,
                                   @RequestParam String motivo,
-                                  Model model) {
+                                  RedirectAttributes redirectAttributes) {
 
 //        if (motivo == null || motivo.trim().length() < 500) {
-//            model.addAttribute("titulo", "Solicitud eliminacion");
-//            model.addAttribute("idHecho", idHecho);
-//            model.addAttribute("errorMotivo",
-//                    "El motivo debe tener al menos 500 caracteres.");
-//            model.addAttribute("motivo", motivo);
-//
-//            return "solicitudes/hecho-eliminacion";
+//            redirectAttributes.addFlashAttribute("errorMotivo", "El motivo debe tener al menos 500 caracteres.");
+//            redirectAttributes.addFlashAttribute("motivo", motivo);
+//            return "redirect:/solicitudes/solicitud-eliminacion/hecho/" + idHecho;
 //        }
 
-        agregadorSolicitudesService.crearSolicitud(idHecho, motivo);
-        return "redirect:/hechos/detalle/"+idHecho;
+        try {
+            agregadorSolicitudesService.crearSolicitud(idHecho, motivo);
+            redirectAttributes.addFlashAttribute("mensaje", "Solicitud de eliminación enviada correctamente.");
+            return "redirect:/hechos/detalle/" + idHecho;
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "No se pudo crear la solicitud. " + (e.getMessage() != null ? e.getMessage() : "Error en el servidor."));
+            redirectAttributes.addFlashAttribute("motivo", motivo);
+            return "redirect:/solicitudes/solicitud-eliminacion/hecho/" + idHecho;
+        }
     }
 
     @GetMapping("/admin")

@@ -115,7 +115,7 @@ public class HechosController {
 
     @GetMapping("/{id}/editar")
     public String mostrarFormularioEditar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        return "redirect:/admin/solicitudes-modificacion/nueva?hechoId=" + id;
+        return "redirect:/solicitudes-modificacion/nueva?hechoId=" + id;
     }
 
     @PostMapping("/{id}/actualizar")

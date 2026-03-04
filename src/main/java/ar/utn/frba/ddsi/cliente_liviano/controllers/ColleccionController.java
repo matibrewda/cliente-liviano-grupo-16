@@ -1,13 +1,13 @@
 package ar.utn.frba.ddsi.cliente_liviano.controllers;
 
-import ar.utn.frba.ddsi.cliente_liviano.DTO.CategoriaDTO;
-import ar.utn.frba.ddsi.cliente_liviano.DTO.ColeccionDTO;
-import ar.utn.frba.ddsi.cliente_liviano.DTO.HechoDTO;
+import ar.utn.frba.ddsi.cliente_liviano.DTO.*;
 import ar.utn.frba.ddsi.cliente_liviano.DTO.input.ColeccionInputDTO;
+import ar.utn.frba.ddsi.cliente_liviano.DTO.input.ColeccionInputViewDTO;
 import ar.utn.frba.ddsi.cliente_liviano.exceptions.AgregadorApiException;
 import ar.utn.frba.ddsi.cliente_liviano.exceptions.NotFoundException;
 import ar.utn.frba.ddsi.cliente_liviano.models.Coleccion;
 import ar.utn.frba.ddsi.cliente_liviano.models.Hecho;
+import ar.utn.frba.ddsi.cliente_liviano.services.CategoriaService;
 import ar.utn.frba.ddsi.cliente_liviano.servicesAgregador.AgregadorColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +29,8 @@ import java.util.Objects;
 public class ColleccionController {
     @Autowired
     private AgregadorColeccionService coleccionService;
+    @Autowired
+    private CategoriaService categoriaService;
 
     @GetMapping
     public String listarColecciones(Model model) {
@@ -111,6 +116,11 @@ public class ColleccionController {
             ubicacion = latitud.trim() + ";" + longitud.trim() + ";" + radioKm.trim();
         }
 
+        // ---- Modo de navegación: por defecto Irrestricto (no existe "Todas") ----
+        if (modoNavegacion == null || modoNavegacion.isBlank()) {
+            modoNavegacion = "false";
+        }
+
         // ---- Traer hechos filtrados ----
         List<HechoDTO> hechos;
         try {
@@ -160,6 +170,7 @@ public class ColleccionController {
 
 
         model.addAttribute("modoActual", modoNavegacion);
+        model.addAttribute("modoNavegacion", modoNavegacion);
         model.addAttribute("fechaIncidenteDesde", fechaIncidenteDesde);
         model.addAttribute("fechaIncidenteHasta", fechaIncidenteHasta);
         model.addAttribute("latitud", latitud);
@@ -171,34 +182,90 @@ public class ColleccionController {
 
     @GetMapping("/nuevo")
     public String mostrarFormularioCrearColeccion(Model model) {
-        ColeccionDTO coleccionDTO = new ColeccionDTO();
+        ColeccionInputViewDTO coleccionDTO = new ColeccionInputViewDTO();
         model.addAttribute("coleccion", coleccionDTO);
         model.addAttribute("titulo", "Crear Nueva Colección");
+
+        var categoriasDisponibles = categoriaService.getAll();
+
+        model.addAttribute("categoriasDisponibles", categoriasDisponibles);
         return "colecciones/ABM/crear-coleccion";
     }
 
     @PostMapping("/crear")
     public String crearColeccion(
-            @ModelAttribute("coleccion") ColeccionInputDTO coleccion,
+            @ModelAttribute("coleccion") ColeccionInputViewDTO viewDto,
             BindingResult bindingResult,
             Model model,
             RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("titulo", "Crear Nueva Colección");
+            model.addAttribute("categoriasDisponibles", categoriaService.getAll());
             return "colecciones/ABM/crear-coleccion";
         }
 
-        ColeccionDTO coleccionCreada = this.coleccionService.crear(coleccion);
+        List<FiltroDto> filtros = new ArrayList<>();
+        String fechaDesde = viewDto.getFechaAcontecimientoDesde();
+        String fechaHasta = viewDto.getFechaAcontecimientoHasta();
+        boolean hasFechas = fechaDesde != null && !fechaDesde.isBlank() || fechaHasta != null && !fechaHasta.isBlank();
+        if (hasFechas) {
+            var filtroFecha = new FiltroDto();
+            filtroFecha.setTipoFiltro("filtroPorFechas");
+            filtroFecha.setCodigoCategoria(null);
+            if (fechaDesde != null && !fechaDesde.isBlank()) {
+                filtroFecha.setFechaAcontecimientoDesde(LocalDate.parse(fechaDesde).atStartOfDay());
+            }
+            if (fechaHasta != null && !fechaHasta.isBlank()) {
+                filtroFecha.setFechaAcontecimientoHasta(LocalDate.parse(fechaHasta).atTime(23, 59, 59));
+            }
+            filtros.add(filtroFecha);
+        }
 
-        redirectAttributes.addFlashAttribute(
-                "mensaje",
-                "Colección \"" + coleccionCreada.getTitulo() + "\" creada exitosamente"
-        );
-        redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+        if (viewDto.getCategoria() != null && viewDto.getCategoria() > 0) {
+            var filtroCategoria = new FiltroDto();
+            filtroCategoria.setTipoFiltro("filtroPorCategoria");
+            filtroCategoria.setCodigoCategoria(viewDto.getCategoria());
+            filtros.add(filtroCategoria);
+        }
 
-        return "redirect:/colecciones/" + coleccionCreada.getHandle();
+        if (viewDto.getLatitud() != null && viewDto.getLongitud() != null && viewDto.getRadioKm() != null) {
+            var filtroZona = new FiltroDto();
+            filtroZona.setTipoFiltro("filtroPorZona");
+            filtroZona.setCodigoCategoria(null);
+            filtroZona.setZona(new ZonaDTO(viewDto.getLatitud(), viewDto.getLongitud(), viewDto.getRadioKm()));
+            filtros.add(filtroZona);
+        }
 
+        var coleccion = new ColeccionInputDTO();
+        coleccion.setTitulo(viewDto.getTitulo() != null ? viewDto.getTitulo().trim() : "");
+        coleccion.setDescripcion(viewDto.getDescripcion() != null ? viewDto.getDescripcion().trim() : "");
+        coleccion.setFiltros(filtros);
+
+        try {
+            ColeccionDTO coleccionCreada = this.coleccionService.crear(coleccion);
+            String handle = coleccionCreada.getHandle();
+
+            if (viewDto.getTipoConsenso() != null && !viewDto.getTipoConsenso().isBlank()) {
+                try {
+                    coleccionService.actualizarConsenso(handle, viewDto.getTipoConsenso());
+                } catch (Exception ignored) { }
+            }
+            try {
+                boolean proxy = Boolean.TRUE.equals(viewDto.getFuenteProxy());
+                boolean estatica = Boolean.TRUE.equals(viewDto.getFuenteEstatica());
+                boolean dinamica = Boolean.TRUE.equals(viewDto.getFuenteDinamica());
+                coleccionService.actualizarFuentes(handle, proxy, estatica, dinamica);
+            } catch (Exception ignored) { }
+
+            redirectAttributes.addFlashAttribute("mensaje", "Colección \"" + coleccionCreada.getTitulo() + "\" creada exitosamente");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+            return "redirect:/colecciones";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensaje", "No se pudo crear la colección. " + (e.getMessage() != null ? e.getMessage() : "Error en el servidor."));
+            redirectAttributes.addFlashAttribute("tipoMensaje", "danger");
+            return "redirect:/colecciones/nuevo";
+        }
     }
 
     @GetMapping("/{id}")
@@ -209,9 +276,44 @@ public class ColleccionController {
 
         try {
             ColeccionDTO coleccion = coleccionService.obtenerColeccionPorId(id);
+            var fuentesConfig = coleccionService.obtenerFuentes(coleccion.getHandle());
+            List<FiltroDto> criterioPertenencia = coleccion.getFiltrosCriterioPertenencia();
+            if (criterioPertenencia == null || criterioPertenencia.isEmpty()) {
+                criterioPertenencia = coleccionService.obtenerCriterioPertenencia(id);
+            }
+
+            String fechaAcontecimientoDesde = null, fechaAcontecimientoHasta = null;
+            Long categoria = null;
+            Double latitud = null;
+            Double longitud = null;
+            Double radioKm = null;
+            if (criterioPertenencia != null) {
+                for (FiltroDto f : criterioPertenencia) {
+                    if ("filtroPorFechas".equals(f.getTipoFiltro())) {
+                        if (f.getFechaAcontecimientoDesde() != null) fechaAcontecimientoDesde = f.getFechaAcontecimientoDesde().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+                        if (f.getFechaAcontecimientoHasta() != null) fechaAcontecimientoHasta = f.getFechaAcontecimientoHasta().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+                    } else if ("filtroPorCategoria".equals(f.getTipoFiltro()) && f.getCodigoCategoria() != null) {
+                        categoria = f.getCodigoCategoria();
+                    } else if ("filtroPorZona".equals(f.getTipoFiltro()) && f.getZona() != null) {
+                        latitud = f.getZona().getLatitud();
+                        longitud = f.getZona().getLongitud();
+                        radioKm = f.getZona().getRadio();
+                    }
+                }
+            }
 
             model.addAttribute("coleccion", coleccion);
+            model.addAttribute("fuentesConfig", fuentesConfig);
+            model.addAttribute("criterioPertenencia", criterioPertenencia);
+            model.addAttribute("categoriasDisponibles", categoriaService.getAll());
+            model.addAttribute("fechaAcontecimientoDesde", fechaAcontecimientoDesde);
+            model.addAttribute("fechaAcontecimientoHasta", fechaAcontecimientoHasta);
+            model.addAttribute("categoria", categoria);
+            model.addAttribute("latitud", latitud);
+            model.addAttribute("longitud", longitud);
+            model.addAttribute("radioKm", radioKm);
             model.addAttribute("titulo", "Detalle de la Colección");
+            model.addAttribute("editable", false);
 
             return "colecciones/ABM/detalle-coleccion";
         }

@@ -67,7 +67,7 @@
                                 </a>
                                 <a th:if="${h.origen != null and #strings.contains(#strings.toLowerCase(h.origen), 'dinamica')}"
                                    class="btn btn-sm btn-warning"
-                                   th:href="@{/admin/solicitudes-modificacion/nueva(hechoId=${h.externalId != null ? h.externalId : h.id}, volverA='/hechos')}"
+                                   th:href="@{/solicitudes-modificacion/nueva(hechoId=${h.externalId != null ? h.externalId : h.id}, volverA='/hechos')}"
                                    title="Modificar">
                                     <i class="fas fa-pencil-alt"></i>
                                 </a>
