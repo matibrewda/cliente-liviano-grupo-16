@@ -1,0 +1,207 @@
+<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{}, ~{})}">
+<div th:fragment="contenido" class="row">
+    <section class="py-4 bg-light">
+        <div class="container">
+
+            <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${mensaje}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-edit me-2 text-primary"></i>
+                    <span th:text="${titulo}">Solicitudes de modificación</span>
+                </h1>
+                <a th:href="@{/}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Volver
+                </a>
+            </div>
+
+            <div class="table-responsive shadow-sm bg-white rounded-3">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-dark">
+                    <tr>
+                        <th scope="col">ID Solicitud</th>
+                        <th scope="col">ID Hecho</th>
+                        <th scope="col">Título del Hecho</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col" class="text-center">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="s : ${solicitudes}"
+                        th:class="${s.estado == 'PENDIENTE'} ? 'table-warning' : (${s.estado == 'APROBADO' or s.estado == 'APROBADO_CON_MODIFICACIONES'} ? 'table-success' : (${s.estado == 'RECHAZADO'} ? 'table-danger' : ''))">
+                        <td th:text="${s.idSolicitud}">1</td>
+                        <td th:text="${s.idHecho}">10</td>
+                        <td th:text="${s.tituloHecho != null and !s.tituloHecho.isEmpty() ? s.tituloHecho : '(sin título)'}">Título del hecho</td>
+                        <td>
+                            <span th:if="${s.estado == 'PENDIENTE'}" class="badge bg-warning text-dark">
+                                <i class="fas fa-clock me-1"></i>
+                                <span th:text="${s.estado}">PENDIENTE</span>
+                            </span>
+                            <span th:if="${s.estado == 'APROBADO'}" class="badge bg-success">
+                                <i class="fas fa-check me-1"></i>
+                                <span th:text="${s.estado}">APROBADO</span>
+                            </span>
+                            <span th:if="${s.estado == 'APROBADO_CON_MODIFICACIONES'}" class="badge bg-success">
+                                <i class="fas fa-check me-1"></i>
+                                Aprobado con modificaciones
+                            </span>
+                            <span th:if="${s.estado == 'RECHAZADO'}" class="badge bg-danger">
+                                <i class="fas fa-times me-1"></i>
+                                <span th:text="${s.estado}">RECHAZADO</span>
+                            </span>
+                            <span th:if="${s.estado != 'PENDIENTE' and s.estado != 'APROBADO' and s.estado != 'APROBADO_CON_MODIFICACIONES' and s.estado != 'RECHAZADO'}" class="badge bg-secondary">
+                                <span th:text="${s.estado}">OTRO</span>
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <button th:if="${s.estado == 'PENDIENTE'}"
+                                    type="button"
+                                    class="btn btn-sm btn-primary"
+                                    data-bs-toggle="modal"
+                                    th:data-bs-target="'#modalProcesar' + ${s.idSolicitud}">
+                                <i class="fas fa-gavel me-1"></i> Procesar
+                            </button>
+                            <span th:if="${s.estado == 'APROBADO' or s.estado == 'APROBADO_CON_MODIFICACIONES' or s.estado == 'RECHAZADO'}" class="text-muted">
+                                <i class="fas fa-lock me-1"></i> Procesada
+                            </span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(solicitudes)}">
+                        <td colspan="5" class="text-center text-muted py-4">
+                            No se encontraron solicitudes de modificación.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </section>
+
+    <div th:each="s : ${solicitudes}" th:if="${s.estado == 'PENDIENTE'}">
+        <div class="modal fade" th:id="'modalProcesar' + ${s.idSolicitud}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-gavel me-2"></i>
+                            Procesar Solicitud #<span th:text="${s.idSolicitud}">1</span>
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Datos de la solicitud de modificación (cambios a aplicar) -->
+                        <div class="card mb-3 border-primary">
+                            <div class="card-header bg-primary bg-opacity-10">
+                                <i class="fas fa-edit me-1"></i>
+                                <strong>Cambios solicitados</strong>
+                            </div>
+                            <div class="card-body">
+                                <p class="small text-muted mb-3">La solicitud de modificación propone aplicar estos valores al hecho. Son los datos que envió el solicitante; podés editarlos antes de aprobar.</p>
+                                <p class="mb-2"><strong>Motivo de la solicitud:</strong></p>
+                                <p class="mb-3 ps-2 border-start border-2 border-primary" th:text="${s.motivo}" style="white-space: pre-wrap;">—</p>
+                                <form th:id="'formAprobar' + ${s.idSolicitud}">
+                                    <input type="hidden" name="idHecho" th:value="${s.idHecho}"/>
+                                    <div class="row mb-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Nuevo título</label>
+                                            <input type="text" class="form-control form-control-sm" name="titulo"
+                                                   th:value="${s.titulo != null ? s.titulo : ''}"
+                                                   placeholder="Título que quedará al aprobar"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Nueva categoría</label>
+                                            <select class="form-select form-select-sm" name="categoriaNombre">
+                                                <option value="">Seleccione categoría</option>
+                                                <option th:if="${s.categoriaNombre != null and !s.categoriaNombre.isEmpty() and !categoriasDisponibles.![nombre].contains(s.categoriaNombre)}"
+                                                        th:value="${s.categoriaNombre}"
+                                                        th:text="${'[Solicitado: ' + s.categoriaNombre + ']'}"
+                                                        th:selected="true"></option>
+                                                <option th:each="cat : ${categoriasDisponibles}"
+                                                        th:value="${cat.nombre}"
+                                                        th:text="${cat.nombre}"
+                                                        th:selected="${s.categoriaNombre != null and s.categoriaNombre == cat.nombre}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label small fw-bold">Nueva descripción</label>
+                                        <input type="text" class="form-control form-control-sm" name="descripcion"
+                                               th:value="${s.descripcion != null ? s.descripcion : ''}"
+                                               placeholder="Descripción que quedará al aprobar"/>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Latitud</label>
+                                            <input type="number" step="any" class="form-control form-control-sm" name="latitud"
+                                                   th:value="${s.latitud}"
+                                                   placeholder="Latitud"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Longitud</label>
+                                            <input type="number" step="any" class="form-control form-control-sm" name="longitud"
+                                                   th:value="${s.longitud}"
+                                                   placeholder="Longitud"/>
+                                        </div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label small fw-bold">Fecha acontecimiento</label>
+                                        <input type="date" class="form-control form-control-sm" name="fechaAcontecimiento"
+                                               th:value="${s.fechaAcontecimiento != null ? s.fechaAcontecimiento : ''}"/>
+                                    </div>
+                                    <input type="hidden" name="motivo" th:value="${s.motivo}"/>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Comentario <span class="text-danger">*</span></label>
+                            <textarea class="form-control" rows="2" placeholder="Comentario de resolución (obligatorio)..."
+                                      th:id="'comentario' + ${s.idSolicitud}" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i> Cancelar
+                        </button>
+                        <div class="d-flex gap-2">
+                            <form th:action="@{/admin/solicitudes-modificacion/rechazar/{idSolicitud}(idSolicitud=${s.idSolicitud})}" method="post" class="d-inline">
+                                <input type="hidden" name="_method" value="PUT"/>
+                                <input type="hidden" name="comentario" th:id="'comentarioRechazar' + ${s.idSolicitud}"/>
+                                <button type="submit" class="btn btn-danger"
+                                        th:onclick="'var t=document.getElementById(\'comentario'+${s.idSolicitud}+'\'); var h=document.getElementById(\'comentarioRechazar'+${s.idSolicitud}+'\'); if(t) h.value=t.value; if(!h.value.trim()) { alert(\'El comentario es obligatorio.\'); return false; }'">
+                                    <i class="fas fa-times me-1"></i> Rechazar
+                                </button>
+                            </form>
+                            <form th:action="@{/admin/solicitudes-modificacion/aprobar/{idSolicitud}(idSolicitud=${s.idSolicitud})}" method="post" class="d-inline" th:id="'formAprobarSubmit' + ${s.idSolicitud}">
+                                <input type="hidden" name="_method" value="PUT"/>
+                                <input type="hidden" name="comentario" th:id="'comentarioAprobar' + ${s.idSolicitud}"/>
+                                <input type="hidden" name="idHecho" th:id="'aprobIdHecho' + ${s.idSolicitud}"/>
+                                <input type="hidden" name="titulo" th:id="'aprobTitulo' + ${s.idSolicitud}"/>
+                                <input type="hidden" name="descripcion" th:id="'aprobDescripcion' + ${s.idSolicitud}"/>
+                                <input type="hidden" name="categoriaNombre" th:id="'aprobCategoria' + ${s.idSolicitud}"/>
+                                <input type="hidden" name="latitud" th:id="'aprobLatitud' + ${s.idSolicitud}"/>
+                                <input type="hidden" name="longitud" th:id="'aprobLongitud' + ${s.idSolicitud}"/>
+                                <input type="hidden" name="fechaAcontecimiento" th:id="'aprobFecha' + ${s.idSolicitud}"/>
+                                <input type="hidden" name="motivo" th:id="'aprobMotivo' + ${s.idSolicitud}"/>
+                                <button type="submit" class="btn btn-success" th:id="'btnAprobar' + ${s.idSolicitud}"
+                                        th:onclick="'var sid=' + ${s.idSolicitud} + '; var c=document.getElementById(\'comentario\'+sid); if(!c || !c.value.trim()){ alert(\'El comentario es obligatorio.\'); return false; } var d=document.getElementById(\'formAprobar\'+sid); var f=document.getElementById(\'formAprobarSubmit\'+sid); if(d && f){ var get=function(n){ var i=d.elements[n]; return i ? i.value : \'\'; }; document.getElementById(\'comentarioAprobar\'+sid).value=c.value; document.getElementById(\'aprobIdHecho\'+sid).value=get(\'idHecho\'); document.getElementById(\'aprobTitulo\'+sid).value=get(\'titulo\'); document.getElementById(\'aprobDescripcion\'+sid).value=get(\'descripcion\'); document.getElementById(\'aprobCategoria\'+sid).value=get(\'categoriaNombre\'); document.getElementById(\'aprobLatitud\'+sid).value=get(\'latitud\'); document.getElementById(\'aprobLongitud\'+sid).value=get(\'longitud\'); document.getElementById(\'aprobFecha\'+sid).value=get(\'fechaAcontecimiento\'); document.getElementById(\'aprobMotivo\'+sid).value=get(\'motivo\'); } return true;'">
+                                    <i class="fas fa-check me-1"></i> Aprobar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</html>
