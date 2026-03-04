@@ -116,6 +116,11 @@ public class ColleccionController {
             ubicacion = latitud.trim() + ";" + longitud.trim() + ";" + radioKm.trim();
         }
 
+        // ---- Modo de navegación: por defecto Irrestricto (no existe "Todas") ----
+        if (modoNavegacion == null || modoNavegacion.isBlank()) {
+            modoNavegacion = "false";
+        }
+
         // ---- Traer hechos filtrados ----
         List<HechoDTO> hechos;
         try {
@@ -165,6 +170,7 @@ public class ColleccionController {
 
 
         model.addAttribute("modoActual", modoNavegacion);
+        model.addAttribute("modoNavegacion", modoNavegacion);
         model.addAttribute("fechaIncidenteDesde", fechaIncidenteDesde);
         model.addAttribute("fechaIncidenteHasta", fechaIncidenteHasta);
         model.addAttribute("latitud", latitud);
