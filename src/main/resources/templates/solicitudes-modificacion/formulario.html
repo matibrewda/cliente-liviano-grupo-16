@@ -6,7 +6,7 @@
                 <i class="fas fa-edit me-2 text-primary"></i>
                 <span th:text="${titulo}">Nueva solicitud de modificación</span>
             </h1>
-            <a th:href="${volverA != null and !volverA.isBlank()} ? ${volverA} : @{/admin/solicitudes-modificacion}" class="btn btn-secondary">
+            <a th:href="${volverA != null and !volverA.isBlank()} ? ${volverA} : @{/hechos}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left me-1"></i>
                 Volver al listado
             </a>
@@ -30,7 +30,7 @@
                     La solicitud de modificación será revisada por un administrador antes de aplicarse.
                 </div>
 
-                <form th:action="@{/admin/solicitudes-modificacion/crear}" method="post" autocomplete="off">
+                <form th:action="@{/solicitudes-modificacion/crear}" method="post" autocomplete="off">
                     <input th:if="${volverA != null}" type="hidden" name="volverA" th:value="${volverA}"/>
                     <div th:if="${idHecho != null}" class="mb-3">
                         <input type="hidden" name="idHecho" th:value="${idHecho}"/>
@@ -104,7 +104,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end gap-2">
-                        <a th:href="${volverA != null and !volverA.isBlank()} ? ${volverA} : @{/admin/solicitudes-modificacion}" class="btn btn-outline-secondary">Cancelar</a>
+                        <a th:href="${volverA != null and !volverA.isBlank()} ? ${volverA} : @{/hechos}" class="btn btn-outline-secondary">Cancelar</a>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-paper-plane me-1"></i>
                             Enviar solicitud
