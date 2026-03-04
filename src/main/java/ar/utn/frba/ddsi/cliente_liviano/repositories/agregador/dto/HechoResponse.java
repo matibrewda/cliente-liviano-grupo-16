@@ -32,6 +32,8 @@ public class HechoResponse {
     private String origen;
     @JsonProperty("consenso")
     private Boolean consenso;
+    @JsonProperty("multimediaUrl")
+    private String multimediaUrl;
 
     public HechoDTO toHechoDTO() {
         HechoDTO hechoDTO = new HechoDTO();
@@ -44,6 +46,7 @@ public class HechoResponse {
         hechoDTO.setUbicacionDTO(new UbicacionDTO(ubicacion.getLatitud(),  ubicacion.getLongitud()));
         hechoDTO.setCategoriaDTO(new CategoriaDTO(categoria.getId(),categoria.getNombre()));
         hechoDTO.setConsenso(consenso);
+        hechoDTO.setMultimediaUrl(multimediaUrl);
     return hechoDTO;
     }
 }

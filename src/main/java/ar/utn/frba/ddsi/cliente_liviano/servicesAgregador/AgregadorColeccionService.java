@@ -62,14 +62,23 @@ public class AgregadorColeccionService {
 
         // ubicacion = "lat,long,radio"
         if (ubicacion != null && !ubicacion.isBlank()) {
-            String[] parts = ubicacion.split(",");
+
+            String[] parts = ubicacion.split(";");
 
             if (parts.length >= 2) {
-                builder.queryParam("zona.latitud", parts[0].trim());
-                builder.queryParam("zona.longitud", parts[1].trim());
+
+                String lat = parts[0].trim().replace(',', '.');
+                String lon = parts[1].trim().replace(',', '.');
+
+                builder.queryParam("zona.latitud", lat);
+                builder.queryParam("zona.longitud", lon);
             }
+
             if (parts.length >= 3) {
-                builder.queryParam("zona.radio", parts[2].trim());
+
+                String radio = parts[2].trim().replace(',', '.');
+
+                builder.queryParam("zona.radio", radio);
             }
         }
 

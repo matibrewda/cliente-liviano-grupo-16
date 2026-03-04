@@ -17,7 +17,11 @@
                     <h2 class="h5 mb-3">
                         <i class="bi bi-funnel"></i> Filtros
                     </h2>
-
+                    <div class="alert alert-danger"
+                         th:if="${errorFechas}"
+                         th:text="${errorFechas}">
+                    </div>
+                    <div class="alert alert-warning" th:if="${errorGeo}" th:text="${errorGeo}"></div>
                     <form class="row g-3"
                           th:action="@{|/colecciones/${coleccionId}/hechos|}"
                           method="get">
@@ -35,33 +39,66 @@
                         </div>
 
                         <div class="col-md-3">
-                            <label for="fechaDesde" class="form-label">Fecha acontecimiento desde</label>
+                            <label for="fechaIncidenteDesde" class="form-label">Fecha acontecimiento desde</label>
                             <input type="date"
                                    class="form-control"
-                                   id="fechaDesde"
-                                   name="fechaDesde"
-                                   th:value="${param.fechaDesde}">
+                                   id="fechaIncidenteDesde"
+                                   name="fechaIncidenteDesde"
+                                   th:value="${param.fechaIncidenteDesde}">
                         </div>
 
                         <div class="col-md-3">
-                            <label for="fechaHasta" class="form-label">Fecha acontecimiento hasta</label>
+                            <label for="fechaIncidenteHasta" class="form-label">Fecha acontecimiento hasta</label>
                             <input type="date"
                                    class="form-control"
-                                   id="fechaHasta"
-                                   name="fechaHasta"
-                                   th:value="${param.fechaHasta}">
+                                   id="fechaIncidenteHasta"
+                                   name="fechaIncidenteHasta"
+                                   th:value="${param.fechaIncidenteHasta}">
+                        </div>
+
+<!--                        <div class="col-md-3">-->
+<!--                            <label for="ubicacion" class="form-label">Ubicación</label>-->
+<!--                            <input type="text"-->
+<!--                                   class="form-control"-->
+<!--                                   id="ubicacion"-->
+<!--                                   name="ubicacion"-->
+<!--                                   placeholder="CABA, Rosario..."-->
+<!--                                   th:value="${param.ubicacion}">-->
+<!--                        </div>-->
+                        <!-- Filtro por cercanía (lat, lon, radio) -->
+                        <div class="col-md-3">
+                            <label for="latitud" class="form-label">Latitud</label>
+                            <input type="number"
+                                   step="any"
+                                   class="form-control"
+                                   id="latitud"
+                                   name="latitud"
+                                   placeholder="-34.60"
+                                   th:value="${param.latitud}">
                         </div>
 
                         <div class="col-md-3">
-                            <label for="ubicacion" class="form-label">Ubicación</label>
-                            <input type="text"
+                            <label for="longitud" class="form-label">Longitud</label>
+                            <input type="number"
+                                   step="any"
                                    class="form-control"
-                                   id="ubicacion"
-                                   name="ubicacion"
-                                   placeholder="CABA, Rosario..."
-                                   th:value="${param.ubicacion}">
+                                   id="longitud"
+                                   name="longitud"
+                                   placeholder="-58.38"
+                                   th:value="${param.longitud}">
                         </div>
 
+                        <div class="col-md-3">
+                            <label for="radioKm" class="form-label">Radio (km)</label>
+                            <input type="number"
+                                   step="any"
+                                   min="0"
+                                   class="form-control"
+                                   id="radioKm"
+                                   name="radioKm"
+                                   placeholder="5"
+                                   th:value="${param.radioKm}">
+                        </div>
                         <div class="col-md-3">
                             <label for="categoria" class="form-label">Categoría</label>
                             <select class="form-select" name="categoria" id="categoria">
@@ -106,7 +143,7 @@
                     <tr>
                         <th scope="col">ID</th>
                         <th scope="col">Título</th>
-                        <th scope="col">Fecha Incidente</th>
+                        <th scope="col">Fecha Acontecimiento</th>
                         <th scope="col">Ubicación</th>
                         <th scope="col">Categoría</th>
                         <th scope="col">Origen / Fuente</th>
@@ -175,4 +212,31 @@
     </section>
 
 </div>
+
+<script>
+    (function () {
+        const lat = document.getElementById('latitud');
+        const lon = document.getElementById('longitud');
+        const rad = document.getElementById('radioKm');
+
+        if (!lat || !lon || !rad) return;
+
+        function hasValue(el) {
+            return el.value != null && el.value.trim() !== '';
+        }
+
+        function syncRequired() {
+            const anyFilled = hasValue(lat) || hasValue(lon) || hasValue(rad);
+            lat.required = anyFilled;
+            lon.required = anyFilled;
+            rad.required = anyFilled;
+        }
+
+        // al cargar la página (por si vienen params)
+        syncRequired();
+
+        // al escribir
+        [lat, lon, rad].forEach(el => el.addEventListener('input', syncRequired));
+    })();
+</script>
 </html>

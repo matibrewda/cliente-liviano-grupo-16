@@ -24,7 +24,19 @@ public class SolicitudController {
 
     @PostMapping("/crear/solicitud-eliminacion/hecho/{idHecho:\\d+}")
     public String enviarSolicitud(@PathVariable Long idHecho,
-                                  @RequestParam String motivo) {
+                                  @RequestParam String motivo,
+                                  Model model) {
+
+        if (motivo == null || motivo.trim().length() < 500) {
+            model.addAttribute("titulo", "Solicitud eliminacion");
+            model.addAttribute("idHecho", idHecho);
+            model.addAttribute("errorMotivo",
+                    "El motivo debe tener al menos 500 caracteres.");
+            model.addAttribute("motivo", motivo);
+
+            return "solicitudes/hecho-eliminacion";
+        }
+
         agregadorSolicitudesService.crearSolicitud(idHecho, motivo);
         return "redirect:/hechos/detalle/"+idHecho;
     }

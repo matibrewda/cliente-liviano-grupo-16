@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 @Controller
@@ -45,25 +46,91 @@ public class ColleccionController {
     public String listarHechosDeColeccion(
             @PathVariable String coleccionId,
             @RequestParam(required = false) String fechaIncidenteDesde,
-            @RequestParam(required = false) String fechafechaIncidenteDesdeHasta,
-            @RequestParam(required = false) String ubicacion,
+            @RequestParam(required = false) String fechaIncidenteHasta,
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) String origen,
             @RequestParam(required = false) String modoNavegacion,
+            @RequestParam(required = false) String latitud,
+            @RequestParam(required = false) String longitud,
+            @RequestParam(required = false) String radioKm,
+
             Model model
     ) {
+            // ---- Validación fechas ----
+        if (fechaIncidenteDesde != null && !fechaIncidenteDesde.isBlank() &&
+                fechaIncidenteHasta != null && !fechaIncidenteHasta.isBlank()) {
+
+            try {
+                LocalDate desde = LocalDate.parse(fechaIncidenteDesde);
+                LocalDate hasta = LocalDate.parse(fechaIncidenteHasta);
+                LocalDate hoy = LocalDate.now();
+
+                // Fecha Desde no puede ser mayor que Hasta
+                if (desde.isAfter(hasta)) {
+                    model.addAttribute("errorFechas",
+                            "Fecha Acontecimiento Desde no puede ser posterior a la Fecha Acontecimiento Hasta.");
+                    fechaIncidenteHasta = null;
+                    fechaIncidenteDesde = null;
+                }
+                //Fecha Hasta no puede ser mayor que hoy
+                else if (hasta.isAfter(hoy)) {
+                    model.addAttribute("errorFechas",
+                            "La Fecha Acontecimiento Hasta no puede ser posterior a la fecha actual.");
+
+                    fechaIncidenteHasta = null;
+                }
+
+            } catch (Exception e) {
+                model.addAttribute("errorFechas",
+                        "Formato de fecha inválido.");
+
+                fechaIncidenteDesde = null;
+                fechaIncidenteHasta = null;
+            }
+        }
+
+        // ---- Validación GEO: si completa uno, deben venir los 3 ----
+        boolean hasLat = latitud != null && !latitud.trim().isEmpty();
+        boolean hasLon = longitud != null && !longitud.trim().isEmpty();
+        boolean hasRadio = radioKm != null && !radioKm.trim().isEmpty();
+
+        boolean anyGeo = hasLat || hasLon || hasRadio;
+        boolean allGeo = hasLat && hasLon && hasRadio;
+
+        if (anyGeo && !allGeo) {
+            model.addAttribute("errorGeo",
+                    "Si completás latitud, longitud o radio, debés completar los tres campos.");
+        }
+
+        // ---- Construcción del filtro "ubicacion" en formato CSV: lat,long,radio ----
+        // (solo si allGeo; si no, se manda vacío y no filtra por zona)
+        String ubicacion = "";
+        if (allGeo) {
+            ubicacion = latitud.trim() + ";" + longitud.trim() + ";" + radioKm.trim();
+        }
+
+        // ---- Traer hechos filtrados ----
         List<HechoDTO> hechos = coleccionService.obtenerHechosPorColeccion(
-                coleccionId, fechaIncidenteDesde, fechaIncidenteDesde, ubicacion, categoria, origen, modoNavegacion
+                coleccionId,
+                fechaIncidenteDesde,
+                fechaIncidenteHasta,
+                ubicacion,
+                categoria,
+                origen,
+                modoNavegacion
         );
 
+        // ---- Model básico ----
         model.addAttribute("coleccionId", coleccionId);
         model.addAttribute("hechos", hechos);
 
+        // ---- Opciones de filtros (según los hechos resultantes) ----
         List<CategoriaDTO> categoriasDisponibles = hechos.stream()
-                .map(h -> h.getCategoriaDTO())
+                .map(HechoDTO::getCategoriaDTO)
                 .filter(Objects::nonNull)
                 .distinct()
                 .toList();
+
         List<String> origenesDisponibles = hechos.stream()
                 .map(HechoDTO::getOrigen)
                 .filter(Objects::nonNull)
@@ -72,7 +139,14 @@ public class ColleccionController {
 
         model.addAttribute("categoriasDisponibles", categoriasDisponibles);
         model.addAttribute("origenesDisponibles", origenesDisponibles);
+
+
         model.addAttribute("modoActual", modoNavegacion);
+        model.addAttribute("fechaIncidenteDesde", fechaIncidenteDesde);
+        model.addAttribute("fechaIncidenteHasta", fechaIncidenteHasta);
+        model.addAttribute("latitud", latitud);
+        model.addAttribute("longitud", longitud);
+        model.addAttribute("radioKm", radioKm);
 
         return "colecciones/hechos";
     }
