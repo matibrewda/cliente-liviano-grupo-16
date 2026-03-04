@@ -26,11 +26,17 @@
         <li class="nav-item">
           <a class="nav-link" th:href="@{/hechos}">Explorar Hechos</a>
         </li>
+        <li class="nav-item" >
+          <a class="nav-link" th:href="@{/actividad}">
+            <i class="fas fa-clipboard-list me-1"></i> Control de actividad
+          </a>
+        </li>
         <li class="nav-item" id="admin-area" style="display: none;">
           <a class="nav-link" th:href="@{/solicitudes/admin}">
             <i class="fas fa-clipboard-list me-1"></i> Admin Solicitudes
           </a>
         </li>
+
         <li class="nav-item" id="auth-area">
           <a class="nav-link btn btn-primary btn-sm px-3 ms-lg-2 text-white" th:href="@{/login}">
             Iniciar Sesión / Registro

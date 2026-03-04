@@ -1,0 +1,83 @@
+<html th:replace="~{base ::html}">
+<div th:fragment="contenido" class="row">
+    <section class="py-4 bg-light">
+        <div class="container">
+
+            <!-- Filtros -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">
+                        <i class="bi bi-funnel"></i> Filtros
+                    </h2>
+
+                    <form class="row g-3"
+                          th:action="@{/actividad}"
+                          method="get">
+
+                        <div class="col-md-3">
+                            <label class="form-label">Fecha desde</label>
+                            <input type="date"
+                                   class="form-control"
+                                   name="fechaDesde"
+                                   th:value="${fechaDesde}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Fecha hasta</label>
+                            <input type="date"
+                                   class="form-control"
+                                   name="fechaHasta"
+                                   th:value="${fechaHasta}">
+                        </div>
+
+                        <div class="col-12 d-flex justify-content-end mt-2">
+                            <a class="btn btn-outline-secondary me-2"
+                               th:href="@{/actividad}">
+                                Limpiar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Aplicar filtros
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tabla -->
+            <div class="table-responsive shadow-sm bg-white rounded-3">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Módulo</th>
+                        <th>Tipo</th>
+                        <th>Entidad</th>
+                        <th>Referencia</th>
+                        <th>Mensaje</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr th:each="a : ${actividades}">
+                        <td th:text="${#temporals.format(a.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td th:text="${a.modulo}"></td>
+                        <td th:text="${a.tipo}"></td>
+                        <td th:text="${a.entidad != null ? a.entidad : '-'}"></td>
+                        <td th:text="${a.referencia != null ? a.referencia : '-'}"></td>
+                        <td th:text="${a.mensaje}"></td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(actividades)}">
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No se encontraron actividades para el rango seleccionado.
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </section>
+</div>
+</html>
