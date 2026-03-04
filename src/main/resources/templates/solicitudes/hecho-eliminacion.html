@@ -31,6 +31,8 @@
         La eliminación no es inmediata: queda pendiente de moderación.
       </div>
 
+      <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
       <form th:action="@{/solicitudes/crear/solicitud-eliminacion/hecho/{idHecho}(idHecho=${idHecho})}"
             method="post">
 
