@@ -22,7 +22,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 @Controller
 @RequestMapping("/colecciones")
@@ -176,6 +178,21 @@ public class ColleccionController {
         model.addAttribute("latitud", latitud);
         model.addAttribute("longitud", longitud);
         model.addAttribute("radioKm", radioKm);
+
+        // Lista para el mapa: solo hechos con coordenadas (id, titulo, categoria, lat, lng)
+        List<Map<String, Object>> listaHechosMapa = new ArrayList<>();
+        for (HechoDTO h : hechos) {
+            if (h.getUbicacionDTO() != null) {
+                Map<String, Object> punto = new HashMap<>();
+                punto.put("id", h.getId());
+                punto.put("titulo", h.getTitulo() != null ? h.getTitulo() : "");
+                punto.put("categoria", h.getCategoriaDTO() != null && h.getCategoriaDTO().getNombre() != null ? h.getCategoriaDTO().getNombre() : "");
+                punto.put("lat", h.getUbicacionDTO().getLatitud());
+                punto.put("lng", h.getUbicacionDTO().getLongitud());
+                listaHechosMapa.add(punto);
+            }
+        }
+        model.addAttribute("listaHechosMapa", listaHechosMapa);
 
         return "colecciones/hechos";
     }

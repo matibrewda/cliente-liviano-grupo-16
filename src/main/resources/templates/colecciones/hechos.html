@@ -1,4 +1,4 @@
-<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{}, ~{})}">
+<html th:replace="~{base :: layout(${titulo}, ~{::contenido}, ~{::#estilosMapa}, ~{::#scriptsMapa})}">
 <div th:fragment="contenido" class="row">
     <section class="py-4 bg-light">
         <div class="container">
@@ -134,8 +134,17 @@
             </div>
 
             <div th:if="${errorHechos}" class="alert alert-warning" th:text="${errorHechos}"></div>
-            <!-- Tabla de hechos: contenedor con altura máxima para que el scroll horizontal quede siempre visible -->
-            <div class="table-responsive shadow-sm bg-white rounded-3 overflow-auto" style="max-height: min(70vh, 600px);">
+
+            <!-- Listado de hechos (colapsable) -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center pe-3"
+                     role="button" data-bs-toggle="collapse" data-bs-target="#collapseListado"
+                     aria-expanded="false" aria-controls="collapseListado">
+                    <h2 class="h6 mb-0"><i class="bi bi-list-ul"></i> Listado de hechos</h2>
+                    <i class="bi bi-chevron-down collapse-icon"></i>
+                </div>
+                <div id="collapseListado" class="collapse">
+                    <div class="table-responsive shadow-sm bg-white overflow-auto" style="max-height: min(70vh, 600px);">
                 <table class="table table-hover mb-0 align-middle">
                     <thead class="table-dark position-sticky top-0 z-1">
                     <tr>
@@ -205,12 +214,76 @@
 
                     </tbody>
                 </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mapa con los hechos del listado (colapsable) -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center pe-3"
+                     role="button" data-bs-toggle="collapse" data-bs-target="#collapseMapa"
+                     aria-expanded="false" aria-controls="collapseMapa">
+                    <h2 class="h6 mb-0"><i class="bi bi-geo-alt-fill"></i> Mapa de hechos</h2>
+                    <i class="bi bi-chevron-down collapse-icon"></i>
+                </div>
+                <div id="collapseMapa" class="collapse">
+                    <div class="card-body p-2">
+                        <div id="mapaColeccionHechos"></div>
+                    </div>
+                </div>
             </div>
 
         </div>
     </section>
 
 </div>
+
+<th:block id="estilosMapa">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <style>
+        #mapaColeccionHechos { height: 450px; width: 100%; border-radius: 8px; z-index: 1; }
+        .popup-titulo { font-weight: bold; color: #0d6efd; margin-bottom: 5px; }
+        .leaflet-popup-content a.btn { color: #ffffff !important; }
+        .card-header[aria-expanded="true"] .collapse-icon { transform: rotate(180deg); }
+        .collapse-icon { transition: transform 0.2s ease; }
+    </style>
+</th:block>
+
+<th:block id="scriptsMapa">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            var map = L.map('mapaColeccionHechos').setView([-34.6037, -58.3816], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            var hechosEnMapa = /*[[${listaHechosMapa}]]*/ [];
+            var coleccionId = /*[[${coleccionId}]]*/ '';
+
+            if (hechosEnMapa && hechosEnMapa.length > 0) {
+                hechosEnMapa.forEach(function(hecho) {
+                    if (hecho.lat != null && hecho.lng != null) {
+                        var marker = L.marker([hecho.lat, hecho.lng]).addTo(map);
+                        var detalleUrl = '/colecciones/' + coleccionId + '/hechos/' + hecho.id;
+                        var popupContent = '<div class="popup-titulo">' + (hecho.titulo || 'Sin título') + '</div>' +
+                            '<div class="small text-muted mb-2">' + (hecho.categoria || '') + '</div>' +
+                            '<a href="' + detalleUrl + '" class="btn btn-sm btn-primary text-white w-100">Ver detalle</a>';
+                        marker.bindPopup(popupContent);
+                    }
+                });
+            }
+
+            // Al expandir el mapa, Leaflet debe recalcular el tamaño del contenedor
+            var collapseMapa = document.getElementById('collapseMapa');
+            if (collapseMapa) {
+                collapseMapa.addEventListener('shown.bs.collapse', function () {
+                    map.invalidateSize();
+                });
+            }
+        });
+    </script>
+</th:block>
 
 <script>
     (function () {
