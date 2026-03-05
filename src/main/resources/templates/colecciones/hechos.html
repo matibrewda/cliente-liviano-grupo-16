@@ -134,10 +134,10 @@
             </div>
 
             <div th:if="${errorHechos}" class="alert alert-warning" th:text="${errorHechos}"></div>
-            <!-- Tabla de hechos -->
-            <div class="table-responsive shadow-sm bg-white rounded-3">
+            <!-- Tabla de hechos: contenedor con altura máxima para que el scroll horizontal quede siempre visible -->
+            <div class="table-responsive shadow-sm bg-white rounded-3 overflow-auto" style="max-height: min(70vh, 600px);">
                 <table class="table table-hover mb-0 align-middle">
-                    <thead class="table-dark">
+                    <thead class="table-dark position-sticky top-0 z-1">
                     <tr>
                         <th scope="col">ID</th>
                         <th scope="col">Título</th>
